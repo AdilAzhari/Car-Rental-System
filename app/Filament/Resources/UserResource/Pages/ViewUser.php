@@ -6,12 +6,11 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\BooleanEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Grid;
-use Filament\Support\Colors\Color;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
 
 class ViewUser extends ViewRecord
 {
@@ -25,34 +24,30 @@ class ViewUser extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Section::make('Personal Information')
                     ->icon('heroicon-m-user')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('name')
+                                TextInput::make('name')
                                     ->label('Full Name')
-                                    ->weight('bold')
-                                    ->size('lg'),
+                                    ->disabled(),
 
-                                TextEntry::make('email')
+                                TextInput::make('email')
                                     ->label('Email Address')
-                                    ->icon('heroicon-m-envelope')
-                                    ->copyable(),
+                                    ->disabled(),
 
-                                TextEntry::make('phone')
+                                TextInput::make('phone')
                                     ->label('Phone Number')
-                                    ->icon('heroicon-m-phone')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('date_of_birth')
+                                TextInput::make('date_of_birth')
                                     ->label('Date of Birth')
-                                    ->date()
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
                             ]),
                     ]),
 
@@ -61,37 +56,28 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('role')
+                                TextInput::make('role')
                                     ->label('User Role')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'admin' => 'danger',
-                                        'owner' => 'warning',
-                                        'renter' => 'success',
-                                        default => 'gray',
-                                    }),
+                                    ->disabled(),
 
-                                BooleanEntry::make('is_verified')
+                                Toggle::make('is_verified')
                                     ->label('Account Verified')
-                                    ->trueColor('success')
-                                    ->falseColor('danger'),
+                                    ->disabled(),
 
-                                BooleanEntry::make('is_active')
+                                Toggle::make('is_active')
                                     ->label('Account Active')
-                                    ->trueColor('success')
-                                    ->falseColor('gray'),
+                                    ->disabled(),
                             ]),
 
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('email_verified_at')
+                                TextInput::make('email_verified_at')
                                     ->label('Email Verified At')
-                                    ->dateTime()
-                                    ->placeholder('Not verified'),
+                                    ->disabled(),
 
-                                TextEntry::make('created_at')
+                                TextInput::make('created_at')
                                     ->label('Account Created')
-                                    ->dateTime(),
+                                    ->disabled(),
                             ]),
                     ]),
 
@@ -100,26 +86,26 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('address')
+                                TextInput::make('address')
                                     ->label('Street Address')
-                                    ->placeholder('Not provided')
+                                    ->disabled()
                                     ->columnSpanFull(),
 
-                                TextEntry::make('city')
+                                TextInput::make('city')
                                     ->label('City')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('state')
+                                TextInput::make('state')
                                     ->label('State/Province')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('postal_code')
+                                TextInput::make('postal_code')
                                     ->label('Postal Code')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('country')
+                                TextInput::make('country')
                                     ->label('Country')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
@@ -129,62 +115,24 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('driver_license_number')
+                                TextInput::make('driver_license_number')
                                     ->label('License Number')
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('license_expiry_date')
+                                TextInput::make('license_expiry_date')
                                     ->label('License Expiry')
-                                    ->date()
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
 
-                                TextEntry::make('preferred_language')
+                                TextInput::make('preferred_language')
                                     ->label('Language')
-                                    ->badge(),
+                                    ->disabled(),
 
-                                TextEntry::make('notification_preferences')
+                                TextInput::make('notification_preferences')
                                     ->label('Notifications')
-                                    ->badge(),
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
-
-                Section::make('Statistics')
-                    ->icon('heroicon-m-chart-bar')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('bookings_count')
-                                    ->label('Total Bookings')
-                                    ->state(fn ($record) => $record->bookings->count())
-                                    ->badge()
-                                    ->color('info'),
-
-                                TextEntry::make('vehicles_count')
-                                    ->label('Owned Vehicles')
-                                    ->state(fn ($record) => $record->vehicles->count())
-                                    ->badge()
-                                    ->color('warning'),
-
-                                TextEntry::make('reviews_count')
-                                    ->label('Reviews Given')
-                                    ->state(fn ($record) => $record->reviews->count())
-                                    ->badge()
-                                    ->color('success'),
-                            ]),
-                    ])
-                    ->collapsible(),
-
-                Section::make('Admin Notes')
-                    ->icon('heroicon-m-document-text')
-                    ->schema([
-                        TextEntry::make('notes')
-                            ->label('')
-                            ->placeholder('No notes available')
-                            ->columnSpanFull(),
-                    ])
-                    ->collapsible()
-                    ->visible(fn () => auth()->user()->role === 'admin'),
             ]);
     }
 }

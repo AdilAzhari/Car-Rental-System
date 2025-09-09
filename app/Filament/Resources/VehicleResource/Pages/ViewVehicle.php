@@ -6,13 +6,13 @@ use App\Filament\Resources\VehicleResource;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\BooleanEntry;
-use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\KeyValue;
 
 class ViewVehicle extends ViewRecord
 {
@@ -26,21 +26,22 @@ class ViewVehicle extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Section::make('Vehicle Gallery')
                     ->icon('heroicon-m-photo')
                     ->schema([
-                        ImageEntry::make('featured_image')
+                        FileUpload::make('featured_image')
                             ->label('Featured Image')
-                            ->height(300)
+                            ->disabled()
                             ->columnSpanFull(),
 
-                        ImageEntry::make('gallery_images')
+                        FileUpload::make('gallery_images')
                             ->label('Gallery')
-                            ->height(150)
+                            ->disabled()
+                            ->multiple()
                             ->columnSpanFull(),
                     ]),
 
@@ -49,34 +50,28 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('make')
+                                TextInput::make('make')
                                     ->label('Make')
-                                    ->weight('bold')
-                                    ->size('lg'),
+                                    ->disabled(),
 
-                                TextEntry::make('model')
+                                TextInput::make('model')
                                     ->label('Model')
-                                    ->weight('bold')
-                                    ->size('lg'),
+                                    ->disabled(),
 
-                                TextEntry::make('year')
+                                TextInput::make('year')
                                     ->label('Year')
-                                    ->badge()
-                                    ->color('primary'),
+                                    ->disabled(),
                             ]),
 
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('license_plate')
+                                TextInput::make('license_plate')
                                     ->label('License Plate')
-                                    ->fontFamily('mono')
-                                    ->copyable(),
+                                    ->disabled(),
 
-                                TextEntry::make('vin')
+                                TextInput::make('vin')
                                     ->label('VIN Number')
-                                    ->fontFamily('mono')
-                                    ->copyable()
-                                    ->placeholder('Not provided'),
+                                    ->disabled(),
                             ]),
                     ]),
 
@@ -85,91 +80,59 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(4)
                             ->schema([
-                                TextEntry::make('category')
+                                TextInput::make('category')
                                     ->label('Category')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'luxury' => 'danger',
-                                        'sports' => 'warning',
-                                        'suv' => 'info',
-                                        default => 'success',
-                                    }),
+                                    ->disabled(),
 
-                                TextEntry::make('transmission')
+                                TextInput::make('transmission')
                                     ->label('Transmission')
-                                    ->badge(),
+                                    ->disabled(),
 
-                                TextEntry::make('fuel_type')
+                                TextInput::make('fuel_type')
                                     ->label('Fuel Type')
-                                    ->badge(),
+                                    ->disabled(),
 
-                                TextEntry::make('seating_capacity')
+                                TextInput::make('seating_capacity')
                                     ->label('Seats')
-                                    ->suffix(' passengers')
-                                    ->icon('heroicon-m-user-group'),
+                                    ->disabled(),
                             ]),
 
                         Grid::make(4)
                             ->schema([
-                                TextEntry::make('doors')
+                                TextInput::make('doors')
                                     ->label('Doors')
-                                    ->placeholder('Not specified'),
+                                    ->disabled(),
 
-                                TextEntry::make('engine_size')
-                                    ->label('Engine Size')
-                                    ->suffix('L')
-                                    ->placeholder('Not specified'),
+                                TextInput::make('engine_size')
+                                    ->label('Engine Size (L)')
+                                    ->disabled(),
 
-                                TextEntry::make('mileage')
-                                    ->label('Mileage')
-                                    ->suffix(' km')
-                                    ->placeholder('Not specified'),
+                                TextInput::make('mileage')
+                                    ->label('Mileage (km)')
+                                    ->disabled(),
 
-                                TextEntry::make('daily_rate')
+                                TextInput::make('daily_rate')
                                     ->label('Daily Rate')
-                                    ->money('MYR')
-                                    ->size('lg')
-                                    ->weight('bold')
-                                    ->color('success'),
+                                    ->disabled(),
                             ]),
                     ]),
 
                 Section::make('Ownership & Status')
                     ->icon('heroicon-m-user-circle')
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('owner.name')
-                                    ->label('Owner')
-                                    ->weight('medium'),
-
-                                TextEntry::make('owner.email')
-                                    ->label('Owner Email')
-                                    ->copyable(),
-                            ]),
-
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('status')
+                                TextInput::make('status')
                                     ->label('Status')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'published' => 'success',
-                                        'draft' => 'warning',
-                                        'maintenance' => 'danger',
-                                        'archived' => 'gray',
-                                        default => 'primary',
-                                    }),
+                                    ->disabled(),
 
-                                BooleanEntry::make('is_available')
+                                Toggle::make('is_available')
                                     ->label('Available for Rent')
-                                    ->trueColor('success')
-                                    ->falseColor('danger'),
+                                    ->disabled(),
 
-                                BooleanEntry::make('insurance_included')
+                                Toggle::make('insurance_included')
                                     ->label('Insurance Included')
-                                    ->trueColor('success')
-                                    ->falseColor('gray'),
+                                    ->disabled(),
                             ]),
                     ]),
 
@@ -178,13 +141,13 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('location')
+                                TextInput::make('location')
                                     ->label('Current Location')
-                                    ->placeholder('Not specified'),
+                                    ->disabled(),
 
-                                TextEntry::make('pickup_location')
+                                TextInput::make('pickup_location')
                                     ->label('Pickup Location')
-                                    ->placeholder('Not specified'),
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
@@ -192,62 +155,15 @@ class ViewVehicle extends ViewRecord
                 Section::make('Features & Specifications')
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
-                        KeyValueEntry::make('features')
+                        KeyValue::make('features')
                             ->label('Vehicle Features')
+                            ->disabled()
                             ->columnSpanFull(),
 
-                        TextEntry::make('description')
+                        TextInput::make('description')
                             ->label('Description')
-                            ->placeholder('No description available')
+                            ->disabled()
                             ->columnSpanFull(),
-
-                        TextEntry::make('terms_and_conditions')
-                            ->label('Terms & Conditions')
-                            ->placeholder('No specific terms')
-                            ->columnSpanFull(),
-                    ])
-                    ->collapsible(),
-
-                Section::make('Statistics')
-                    ->icon('heroicon-m-chart-bar')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('bookings_count')
-                                    ->label('Total Bookings')
-                                    ->state(fn ($record) => $record->bookings->count())
-                                    ->badge()
-                                    ->color('info'),
-
-                                TextEntry::make('total_revenue')
-                                    ->label('Total Revenue')
-                                    ->state(fn ($record) => $record->bookings->where('status', 'completed')->sum('total_amount'))
-                                    ->money('MYR')
-                                    ->badge()
-                                    ->color('success'),
-
-                                TextEntry::make('average_rating')
-                                    ->label('Average Rating')
-                                    ->state(fn ($record) => $record->reviews->avg('rating') ? round($record->reviews->avg('rating'), 1) . '/5' : 'No reviews')
-                                    ->badge()
-                                    ->color('warning'),
-                            ]),
-                    ])
-                    ->collapsible(),
-
-                Section::make('System Information')
-                    ->icon('heroicon-m-information-circle')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('created_at')
-                                    ->label('Added to Fleet')
-                                    ->dateTime(),
-
-                                TextEntry::make('updated_at')
-                                    ->label('Last Updated')
-                                    ->dateTime(),
-                            ]),
                     ])
                     ->collapsible(),
             ]);

@@ -6,10 +6,11 @@ use App\Filament\Resources\ReviewResource;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Grid;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
 
 class ViewReview extends ViewRecord
 {
@@ -23,42 +24,34 @@ class ViewReview extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Section::make('Review Overview')
                     ->icon('heroicon-m-star')
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('id')
+                                TextInput::make('id')
                                     ->label('Review ID')
-                                    ->prefix('RV-')
-                                    ->weight('bold'),
+                                    ->formatStateUsing(fn ($state) => 'RV-' . $state)
+                                    ->disabled(),
 
-                                TextEntry::make('rating')
+                                TextInput::make('rating')
                                     ->label('Overall Rating')
                                     ->formatStateUsing(fn ($state) => str_repeat('⭐', (int) $state) . ' (' . $state . '/5)')
-                                    ->size('lg')
-                                    ->weight('bold')
-                                    ->color('warning'),
+                                    ->disabled(),
 
-                                TextEntry::make('recommendation')
+                                TextInput::make('recommendation')
                                     ->label('Recommends')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'yes' => 'success',
-                                        'no' => 'danger',
-                                        'maybe' => 'warning',
-                                        default => 'gray',
-                                    })
                                     ->formatStateUsing(fn ($state) => match($state) {
                                         'yes' => 'Yes, would recommend',
                                         'no' => 'No, would not recommend',
                                         'maybe' => 'Maybe, with conditions',
                                         default => 'Not specified',
-                                    }),
+                                    })
+                                    ->disabled(),
                             ]),
                     ]),
 
@@ -67,39 +60,40 @@ class ViewReview extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('reviewer.name')
+                                TextInput::make('reviewer.name')
                                     ->label('Customer Name')
-                                    ->weight('medium'),
+                                    ->disabled(),
 
-                                TextEntry::make('reviewer.email')
+                                TextInput::make('reviewer.email')
                                     ->label('Customer Email')
-                                    ->copyable(),
+                                    ->disabled(),
 
-                                TextEntry::make('booking.id')
+                                TextInput::make('booking.id')
                                     ->label('Booking ID')
-                                    ->prefix('BK-')
-                                    ->url(fn ($record) => $record->booking ? route('filament.admin.resources.bookings.view', $record->booking) : null),
+                                    ->formatStateUsing(fn ($state) => 'BK-' . $state)
+                                    ->disabled(),
 
-                                TextEntry::make('booking.vehicle')
+                                TextInput::make('booking_vehicle')
                                     ->label('Vehicle')
-                                    ->formatStateUsing(fn ($record) => $record->booking ? "{$record->booking->vehicle->make} {$record->booking->vehicle->model} ({$record->booking->vehicle->year})" : 'N/A'),
+                                    ->formatStateUsing(fn ($state, $record) => $record->booking ? "{$record->booking->vehicle->make} {$record->booking->vehicle->model} ({$record->booking->vehicle->year})" : 'N/A')
+                                    ->disabled(),
                             ]),
                     ]),
 
                 Section::make('Review Content')
                     ->icon('heroicon-m-chat-bubble-left-ellipsis')
                     ->schema([
-                        TextEntry::make('title')
+                        TextInput::make('title')
                             ->label('Review Title')
                             ->placeholder('No title provided')
-                            ->weight('bold')
-                            ->size('lg')
+                            ->disabled()
                             ->columnSpanFull(),
 
-                        TextEntry::make('review_text')
+                        Textarea::make('review_text')
                             ->label('Review Text')
-                            ->columnSpanFull()
-                            ->prose(),
+                            ->disabled()
+                            ->rows(4)
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Detailed Ratings')
@@ -107,20 +101,20 @@ class ViewReview extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('vehicle_condition_rating')
+                                TextInput::make('vehicle_condition_rating')
                                     ->label('Vehicle Condition')
                                     ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
-                                    ->placeholder('Not rated'),
+                                    ->disabled(),
 
-                                TextEntry::make('cleanliness_rating')
+                                TextInput::make('cleanliness_rating')
                                     ->label('Cleanliness')
                                     ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
-                                    ->placeholder('Not rated'),
+                                    ->disabled(),
 
-                                TextEntry::make('service_rating')
+                                TextInput::make('service_rating')
                                     ->label('Customer Service')
                                     ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
-                                    ->placeholder('Not rated'),
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
@@ -130,35 +124,24 @@ class ViewReview extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('status')
+                                TextInput::make('status')
                                     ->label('Review Status')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'approved' => 'success',
-                                        'pending' => 'warning',
-                                        'rejected' => 'danger',
-                                        'flagged' => 'info',
-                                        default => 'gray',
-                                    }),
+                                    ->disabled(),
 
-                                TextEntry::make('visibility')
+                                TextInput::make('visibility')
                                     ->label('Visibility')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'public' => 'success',
-                                        'private' => 'warning',
-                                        'hidden' => 'gray',
-                                        default => 'gray',
-                                    }),
+                                    ->disabled(),
 
-                                TextEntry::make('reviewed_at')
+                                TextInput::make('reviewed_at')
                                     ->label('Review Date')
-                                    ->dateTime(),
+                                    ->disabled(),
                             ]),
 
-                        TextEntry::make('admin_notes')
+                        Textarea::make('admin_notes')
                             ->label('Admin Notes')
                             ->placeholder('No admin notes')
+                            ->disabled()
+                            ->rows(2)
                             ->columnSpanFull()
                             ->visible(fn () => auth()->user()->role === 'admin'),
                     ]),
@@ -168,13 +151,13 @@ class ViewReview extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextEntry::make('created_at')
+                                TextInput::make('created_at')
                                     ->label('Review Submitted')
-                                    ->dateTime(),
+                                    ->disabled(),
 
-                                TextEntry::make('updated_at')
+                                TextInput::make('updated_at')
                                     ->label('Last Updated')
-                                    ->dateTime(),
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
@@ -184,23 +167,20 @@ class ViewReview extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('helpful_votes')
+                                TextInput::make('helpful_votes')
                                     ->label('Helpful Votes')
-                                    ->state(fn () => rand(0, 25)) // Placeholder - implement actual helpful votes
-                                    ->badge()
-                                    ->color('info'),
+                                    ->default('0')
+                                    ->disabled(),
 
-                                TextEntry::make('response_provided')
+                                TextInput::make('response_provided')
                                     ->label('Owner Response')
-                                    ->state('Not yet') // Placeholder - implement owner responses
-                                    ->badge()
-                                    ->color('warning'),
+                                    ->default('Not yet')
+                                    ->disabled(),
 
-                                TextEntry::make('review_length')
+                                TextInput::make('review_length')
                                     ->label('Review Length')
-                                    ->state(fn ($record) => strlen($record->review_text) . ' characters')
-                                    ->badge()
-                                    ->color('gray'),
+                                    ->formatStateUsing(fn ($state, $record) => strlen($record->review_text) . ' characters')
+                                    ->disabled(),
                             ]),
                     ])
                     ->collapsible(),
