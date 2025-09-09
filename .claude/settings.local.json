@@ -4,7 +4,9 @@
       "Bash(vendor/bin/pest:*)",
       "Bash(rd:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
