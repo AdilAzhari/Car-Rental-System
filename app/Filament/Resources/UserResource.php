@@ -39,24 +39,44 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('app.navigation.users');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('users.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('users.plural');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.navigation.user_management');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
-                Section::make('Personal Information')
+                Section::make(__('users.sections.personal_information'))
                     ->description('Basic user details and account information')
                     ->icon('heroicon-m-user')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Full Name')
+                                    ->label(__('users.fields.name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->placeholder('Enter full name'),
 
                                 TextInput::make('email')
-                                    ->label('Email Address')
+                                    ->label(__('users.fields.email'))
                                     ->email()
                                     ->required()
                                     ->unique(ignoreRecord: true)
@@ -64,13 +84,13 @@ class UserResource extends Resource
                                     ->placeholder('user@example.com'),
 
                                 TextInput::make('phone')
-                                    ->label('Phone Number')
+                                    ->label(__('users.fields.phone'))
                                     ->tel()
                                     ->maxLength(20)
                                     ->placeholder('+1234567890'),
 
                                 DateTimePicker::make('date_of_birth')
-                                    ->label('Date of Birth')
+                                    ->label(__('users.fields.date_of_birth'))
                                     ->maxDate(now()->subYears(18))
                                     ->displayFormat('Y-m-d')
                                     ->helperText('Must be at least 18 years old'),

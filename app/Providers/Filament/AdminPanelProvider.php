@@ -19,6 +19,7 @@ use App\Filament\Widgets\RecentBookingsWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\UserStatsWidget;
 use App\Filament\Widgets\VehicleStatsWidget;
+use App\Filament\Widgets\LanguageSwitcher;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -38,6 +39,10 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->renderHook(
+                'panels::body.start',
+                fn (): string => view('filament.hooks.rtl-support')->render()
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -45,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                LanguageSwitcher::class,
                 DashboardStatsOverview::class,
                 RevenueChartWidget::class,
                 LatestActivitiesWidget::class,

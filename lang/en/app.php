@@ -1,0 +1,80 @@
+<?php
+
+return [
+    // Application
+    'app_name' => 'Car Rental System',
+    'welcome' => 'Welcome',
+    'dashboard' => 'Dashboard',
+    'language' => 'Language',
+    
+    // Navigation
+    'navigation' => [
+        'dashboard' => 'Dashboard',
+        'user_management' => 'User Management',
+        'vehicle_management' => 'Vehicle Management',
+        'booking_management' => 'Booking Management',
+        'customer_feedback' => 'Customer Feedback',
+        'system_management' => 'System Management',
+        'users' => 'Users',
+        'vehicles' => 'Vehicles',
+        'bookings' => 'Bookings',
+        'reviews' => 'Reviews',
+        'activity_logs' => 'Activity Logs',
+        'settings' => 'Settings',
+    ],
+    
+    // User Roles
+    'roles' => [
+        'admin' => 'Administrator',
+        'owner' => 'Vehicle Owner',
+        'renter' => 'Renter',
+    ],
+    
+    // Status
+    'status' => [
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'published' => 'Published',
+        'completed' => 'Completed',
+        'ongoing' => 'Ongoing',
+        'cancelled' => 'Cancelled',
+    ],
+    
+    // Common Actions
+    'actions' => [
+        'create' => 'Create',
+        'edit' => 'Edit',
+        'view' => 'View',
+        'delete' => 'Delete',
+        'save' => 'Save',
+        'cancel' => 'Cancel',
+        'submit' => 'Submit',
+        'search' => 'Search',
+        'filter' => 'Filter',
+        'reset' => 'Reset',
+        'export' => 'Export',
+        'import' => 'Import',
+    ],
+    
+    // Forms
+    'form' => [
+        'required_field' => 'This field is required',
+        'invalid_email' => 'Invalid email address',
+        'password_min_length' => 'Password must be at least :min characters',
+        'password_confirmation' => 'Password confirmation does not match',
+    ],
+    
+    // Messages
+    'messages' => [
+        'success_create' => 'Created successfully',
+        'success_update' => 'Updated successfully',
+        'success_delete' => 'Deleted successfully',
+        'error_create' => 'Error creating',
+        'error_update' => 'Error updating',
+        'error_delete' => 'Error deleting',
+        'no_records_found' => 'No records found',
+    ],
+];
