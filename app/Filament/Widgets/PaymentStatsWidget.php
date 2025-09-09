@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Filament\Widgets;
+
+use App\Enums\PaymentStatus;
+use App\Enums\UserRole;
+use App\Models\Payment;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+
+class PaymentStatsWidget extends BaseWidget
+{
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+
+        return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
+    }
+
+    protected function getStats(): array
+    {
+        $user = auth()->user();
+
+        // Base query - filter by owner's vehicles if not admin
+        $baseQuery = Payment::query();
+        if ($user && $user->role === UserRole::OWNER) {
+            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user) {
+                $query->where('owner_id', $user->id);
+            });
+        }
+
+        // Total payments
+        $totalPayments = $baseQuery->count();
+
+        // Successful payments
+        $successfulPayments = (clone $baseQuery)->where('status', PaymentStatus::CONFIRMED)->count();
+
+        // Pending payments
+        $pendingPayments = (clone $baseQuery)->where('status', PaymentStatus::PENDING)->count();
+
+        // Failed payments
+        $failedPayments = (clone $baseQuery)->where('status', PaymentStatus::FAILED)->count();
+
+        // Total revenue
+        $totalRevenue = (clone $baseQuery)
+            ->where('status', PaymentStatus::CONFIRMED)
+            ->sum('amount');
+
+        // This month's revenue
+        $monthlyRevenue = (clone $baseQuery)
+            ->where('status', PaymentStatus::CONFIRMED)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+
+        // Average payment amount
+        $averagePayment = (clone $baseQuery)
+            ->where('status', PaymentStatus::CONFIRMED)
+            ->avg('amount') ?? 0;
+
+        // Payment success rate
+        $successRate = $totalPayments > 0 ? round(($successfulPayments / $totalPayments) * 100, 1) : 0;
+
+        // Revenue trend for the last 7 days
+        $revenueTrend = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $revenue = (clone $baseQuery)
+                ->where('status', PaymentStatus::CONFIRMED)
+                ->whereDate('created_at', $date)
+                ->sum('amount');
+            $revenueTrend[] = $revenue > 0 ? $revenue : 1;
+        }
+
+        return [
+            Stat::make('Total Revenue', 'RM '.number_format($totalRevenue, 2))
+                ->description('All time revenue')
+                ->descriptionIcon('heroicon-o-currency-dollar')
+                ->color('success')
+                ->chart($revenueTrend),
+
+            Stat::make('Monthly Revenue', 'RM '.number_format($monthlyRevenue, 2))
+                ->description('Current month')
+                ->descriptionIcon('heroicon-o-chart-bar')
+                ->color('info')
+                ->chart(array_slice($revenueTrend, -5)),
+
+            Stat::make('Successful', $successfulPayments)
+                ->description('Completed payments')
+                ->descriptionIcon('heroicon-o-check-circle')
+                ->color('success')
+                ->chart(array_slice($revenueTrend, -4)),
+
+            Stat::make('Pending', $pendingPayments)
+                ->description('Awaiting processing')
+                ->descriptionIcon('heroicon-o-clock')
+                ->color($pendingPayments > 0 ? 'warning' : 'success')
+                ->chart(array_slice($revenueTrend, -4)),
+
+            Stat::make('Success Rate', $successRate.'%')
+                ->description('Payment success rate')
+                ->descriptionIcon('heroicon-o-chart-pie')
+                ->color($successRate >= 90 ? 'success' : ($successRate >= 75 ? 'warning' : 'danger'))
+                ->chart([
+                    max(1, $successRate * 0.2),
+                    max(1, $successRate * 0.4),
+                    max(1, $successRate * 0.6),
+                    max(1, $successRate * 0.8),
+                    max(1, $successRate),
+                ]),
+
+            Stat::make('Avg. Payment', 'RM '.number_format($averagePayment, 2))
+                ->description('Average transaction')
+                ->descriptionIcon('heroicon-o-calculator')
+                ->color('info')
+                ->chart([
+                    max(1, $averagePayment * 0.5),
+                    max(1, $averagePayment * 0.7),
+                    max(1, $averagePayment * 0.9),
+                    max(1, $averagePayment),
+                ]),
+        ];
+    }
+}
