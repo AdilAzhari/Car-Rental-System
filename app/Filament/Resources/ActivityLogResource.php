@@ -22,14 +22,17 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
+use BackedEnum;
+use Filament\Support\Icons\Heroicon;
 
 class ActivityLogResource extends Resource
 {
     protected static ?string $model = Activity::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $navigationGroup = 'System Management';
+    protected static UnitEnum|string|null $navigationGroup = 'System Management';
 
     protected static ?int $navigationSort = 4;
 

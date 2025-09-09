@@ -31,6 +31,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class VehicleResource extends Resource
 {
@@ -38,7 +39,7 @@ class VehicleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationGroup = 'Fleet Management';
+    protected static UnitEnum|string|null $navigationGroup = 'Fleet Management';
 
     protected static ?int $navigationSort = 2;
 

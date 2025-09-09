@@ -26,6 +26,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class UserResource extends Resource
 {
@@ -33,7 +34,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static UnitEnum|string|null $navigationGroup = 'User Management';
 
     protected static ?int $navigationSort = 1;
 

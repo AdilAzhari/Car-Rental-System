@@ -23,6 +23,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class ReviewResource extends Resource
 {
@@ -30,7 +31,7 @@ class ReviewResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
 
-    protected static ?string $navigationGroup = 'Customer Feedback';
+    protected static UnitEnum|string|null $navigationGroup = 'Customer Feedback';
 
     protected static ?int $navigationSort = 3;
 
