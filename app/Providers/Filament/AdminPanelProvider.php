@@ -12,6 +12,13 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use App\Filament\Widgets\DashboardStatsOverview;
+use App\Filament\Widgets\LatestActivitiesWidget;
+use App\Filament\Widgets\PopularVehiclesWidget;
+use App\Filament\Widgets\RecentBookingsWidget;
+use App\Filament\Widgets\RevenueChartWidget;
+use App\Filament\Widgets\UserStatsWidget;
+use App\Filament\Widgets\VehicleStatsWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -38,6 +45,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                DashboardStatsOverview::class,
+                RevenueChartWidget::class,
+                LatestActivitiesWidget::class,
+                PopularVehiclesWidget::class,
+                RecentBookingsWidget::class,
+                VehicleStatsWidget::class,
+                UserStatsWidget::class,
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
