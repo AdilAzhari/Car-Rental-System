@@ -132,8 +132,8 @@ class CarRentalSeeder extends Seeder
             'daily_rate' => 500,
             'status' => 'published',
             'fuel_type' => 'petrol',
-            'seats' => 2,
-            'description' => 'Luxury supercar with extreme performance capabilities.',
+            'oil_type' => '10W-60',
+            'policy' => 'Luxury supercar with extreme performance capabilities. Drivers must be 25+ with clean record.',
         ]);
 
         // Vehicle with minimum daily rate
@@ -145,8 +145,8 @@ class CarRentalSeeder extends Seeder
             'daily_rate' => 15,
             'status' => 'published',
             'fuel_type' => 'petrol',
-            'seats' => 5,
-            'description' => 'Budget-friendly vehicle for economical transportation.',
+            'oil_type' => '5W-30',
+            'policy' => 'Budget-friendly vehicle for economical transportation. Basic insurance included.',
         ]);
 
         // Very old vehicle
@@ -157,8 +157,9 @@ class CarRentalSeeder extends Seeder
             'year' => 2005,
             'daily_rate' => 25,
             'status' => 'approved',
-            'mileage' => 250000,
-            'description' => 'High mileage vintage vehicle.',
+            'oil_type' => '5W-40',
+            'policy' => 'High mileage vintage vehicle. Regular maintenance required.',
+            'last_oil_change' => now()->subMonths(2),
         ]);
 
         // Electric vehicle with specific requirements
@@ -170,7 +171,8 @@ class CarRentalSeeder extends Seeder
             'daily_rate' => 60,
             'status' => 'published',
             'fuel_type' => 'electric',
-            'description' => 'Eco-friendly electric vehicle with charging requirements.',
+            'oil_type' => null, // Electric vehicles don't use oil
+            'policy' => 'Eco-friendly electric vehicle with charging requirements. 200km range.',
         ]);
 
         // Vehicle with many images (edge case)

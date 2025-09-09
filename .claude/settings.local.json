@@ -9,7 +9,9 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "Bash(git branch:*)",
-      "Bash(php artisan optimize:clear:*)"
+      "Bash(php artisan optimize:clear:*)",
+      "Bash(php artisan:*)",
+      "Bash(composer show:*)"
     ],
     "deny": [],
     "ask": []

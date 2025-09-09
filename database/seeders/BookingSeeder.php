@@ -16,7 +16,7 @@ class BookingSeeder extends Seeder
     public function run(): void
     {
         $renters = User::query()->where('role', 'renter')->where('is_verified', true)->get();
-        $publishedVehicles = Vehicle::query()->where('status', 'published')->where('is_available', true)->get();
+        $publishedVehicles = Vehicle::query()->where('status', 'published')->get();
 
         if ($renters->isEmpty() || $publishedVehicles->isEmpty()) {
             $this->command->warn('No verified renters or published vehicles found. Run UserSeeder and VehicleSeeder first.');

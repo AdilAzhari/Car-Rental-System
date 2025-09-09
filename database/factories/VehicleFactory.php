@@ -31,19 +31,15 @@ class VehicleFactory extends Factory
             'make' => $make,
             'model' => $model,
             'year' => fake()->numberBetween(2015, 2024),
-            'color' => fake()->randomElement(['White', 'Black', 'Silver', 'Red', 'Blue', 'Gray', 'Green']),
             'plate_number' => fake()->bothify('???-####'),
             'vin' => fake()->bothify('1#?#?#?#?#?#?#?#?#?'),
             'fuel_type' => fake()->randomElement(['petrol', 'diesel', 'electric', 'hybrid']),
             'transmission' => fake()->randomElement(['manual', 'automatic']),
-            'seats' => fake()->numberBetween(2, 8),
             'daily_rate' => fake()->numberBetween(30, 150),
-            'description' => fake()->paragraph(3),
+            'oil_type' => fake()->randomElement(['5W-30', '5W-40', '10W-30', '10W-40', null]),
+            'last_oil_change' => fake()->optional(0.7)->dateTimeBetween('-1 year', '-1 month'),
+            'policy' => fake()->optional(0.8)->paragraph(2),
             'status' => fake()->randomElement(['pending', 'approved', 'published']),
-            'is_available' => fake()->boolean(80),
-            'location' => fake()->city(),
-            'mileage' => fake()->numberBetween(0, 200000),
-            'insurance_expiry' => fake()->dateTimeBetween('+1 month', '+2 years')->format('Y-m-d'),
         ];
     }
 
