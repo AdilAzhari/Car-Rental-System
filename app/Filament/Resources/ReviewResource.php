@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
@@ -57,9 +58,9 @@ class ReviewResource extends Resource
                                         // Booking creation form would go here
                                     ]),
 
-                                Select::make('reviewer_id')
+                                Select::make('renter_id')
                                     ->label('Reviewer')
-                                    ->relationship('reviewer', 'name')
+                                    ->relationship('renter', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -85,8 +86,8 @@ class ReviewResource extends Resource
                     ->description('Detailed feedback from the customer')
                     ->icon('heroicon-m-chat-bubble-left-ellipsis')
                     ->schema([
-                        Textarea::make('review_text')
-                            ->label('Review Text')
+                        Textarea::make('comment')
+                            ->label('Review Comment')
                             ->required()
                             ->rows(6)
                             ->maxLength(1000)
@@ -94,106 +95,12 @@ class ReviewResource extends Resource
                             ->helperText('Maximum 1000 characters')
                             ->columnSpanFull(),
 
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('title')
-                                    ->label('Review Title')
-                                    ->maxLength(200)
-                                    ->placeholder('Brief summary of the review')
-                                    ->helperText('Optional title for the review'),
-
-                                Select::make('recommendation')
-                                    ->label('Would Recommend?')
-                                    ->options([
-                                        'yes' => 'Yes, would recommend',
-                                        'no' => 'No, would not recommend',
-                                        'maybe' => 'Maybe, with conditions',
-                                    ])
-                                    ->native(false)
-                                    ->placeholder('Select recommendation status'),
-                            ]),
+                        Toggle::make('is_visible')
+                            ->label('Visible to Public')
+                            ->default(true)
+                            ->helperText('Whether this review should be visible to other users'),
                     ]),
 
-                Section::make('Review Categories')
-                    ->description('Specific aspects rated by the customer')
-                    ->icon('heroicon-m-clipboard-document-list')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextInput::make('vehicle_condition_rating')
-                                    ->label('Vehicle Condition')
-                                    ->numeric()
-                                    ->minValue(1)
-                                    ->maxValue(5)
-                                    ->step(1)
-                                    ->placeholder('1-5')
-                                    ->suffixIcon('heroicon-m-wrench-screwdriver'),
-
-                                TextInput::make('cleanliness_rating')
-                                    ->label('Cleanliness')
-                                    ->numeric()
-                                    ->minValue(1)
-                                    ->maxValue(5)
-                                    ->step(1)
-                                    ->placeholder('1-5')
-                                    ->suffixIcon('heroicon-m-sparkles'),
-
-                                TextInput::make('service_rating')
-                                    ->label('Customer Service')
-                                    ->numeric()
-                                    ->minValue(1)
-                                    ->maxValue(5)
-                                    ->step(1)
-                                    ->placeholder('1-5')
-                                    ->suffixIcon('heroicon-m-user-group'),
-                            ]),
-                    ])
-                    ->collapsible(),
-
-                Section::make('Review Status & Moderation')
-                    ->description('Admin controls for review management')
-                    ->icon('heroicon-m-shield-check')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Select::make('status')
-                                    ->label('Review Status')
-                                    ->options([
-                                        'pending' => 'Pending Review',
-                                        'approved' => 'Approved & Published',
-                                        'rejected' => 'Rejected',
-                                        'flagged' => 'Flagged for Review',
-                                    ])
-                                    ->default('pending')
-                                    ->required()
-                                    ->native(false),
-
-                                Select::make('visibility')
-                                    ->label('Visibility')
-                                    ->options([
-                                        'public' => 'Public (visible to all)',
-                                        'private' => 'Private (admin only)',
-                                        'hidden' => 'Hidden',
-                                    ])
-                                    ->default('public')
-                                    ->native(false),
-
-                                DateTimePicker::make('reviewed_at')
-                                    ->label('Review Date')
-                                    ->default(now())
-                                    ->maxDate(now())
-                                    ->displayFormat('Y-m-d H:i'),
-                            ]),
-
-                        Textarea::make('admin_notes')
-                            ->label('Admin Notes')
-                            ->rows(3)
-                            ->maxLength(500)
-                            ->placeholder('Internal notes about this review...')
-                            ->columnSpanFull()
-                            ->helperText('Private notes visible only to administrators'),
-                    ])
-                    ->collapsible(),
             ]);
     }
 
@@ -207,7 +114,7 @@ class ReviewResource extends Resource
                     ->searchable()
                     ->prefix('RV-'),
 
-                TextColumn::make('reviewer.name')
+                TextColumn::make('renter.name')
                     ->label('Reviewer')
                     ->searchable()
                     ->sortable()
@@ -223,60 +130,21 @@ class ReviewResource extends Resource
                     ->formatStateUsing(fn ($state) => str_repeat('⭐', (int) $state) . ' (' . $state . '/5)')
                     ->sortable(),
 
-                BadgeColumn::make('status')
-                    ->label('Status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'approved',
-                        'danger' => 'rejected',
-                        'info' => 'flagged',
-                    ]),
-
-                BadgeColumn::make('visibility')
+                BadgeColumn::make('is_visible')
                     ->label('Visibility')
                     ->colors([
-                        'success' => 'public',
-                        'warning' => 'private',
-                        'gray' => 'hidden',
-                    ]),
-
-                TextColumn::make('recommendation')
-                    ->label('Recommends')
-                    ->badge()
-                    ->colors([
-                        'success' => 'yes',
-                        'danger' => 'no',
-                        'warning' => 'maybe',
+                        'success' => true,
+                        'danger' => false,
                     ])
-                    ->formatStateUsing(fn ($state) => match($state) {
-                        'yes' => 'Yes',
-                        'no' => 'No',
-                        'maybe' => 'Maybe',
-                        default => 'N/A',
-                    }),
+                    ->formatStateUsing(fn ($state) => $state ? 'Visible' : 'Hidden'),
 
-                TextColumn::make('title')
-                    ->label('Title')
-                    ->limit(30)
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-                        return strlen($state) > 30 ? $state : null;
-                    })
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('review_text')
-                    ->label('Review')
+                TextColumn::make('comment')
+                    ->label('Review Comment')
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 50 ? $state : null;
                     }),
-
-                TextColumn::make('reviewed_at')
-                    ->label('Review Date')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->label('Submitted')
@@ -294,19 +162,11 @@ class ReviewResource extends Resource
                         '1' => '1 Star',
                     ]),
 
-                SelectFilter::make('status')
+                SelectFilter::make('is_visible')
+                    ->label('Visibility')
                     ->options([
-                        'pending' => 'Pending Review',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
-                        'flagged' => 'Flagged',
-                    ]),
-
-                SelectFilter::make('recommendation')
-                    ->options([
-                        'yes' => 'Recommends',
-                        'no' => 'Does Not Recommend',
-                        'maybe' => 'Maybe Recommends',
+                        1 => 'Visible',
+                        0 => 'Hidden',
                     ]),
 
                 Filter::make('high_rating')
@@ -342,12 +202,12 @@ class ReviewResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 'pending')->count() ?: null;
+        return static::getModel()::count() ?: null;
     }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        $pendingCount = static::getModel()::where('status', 'pending')->count();
-        return $pendingCount > 0 ? 'warning' : 'primary';
+        $totalCount = static::getModel()::count();
+        return $totalCount > 0 ? 'primary' : 'gray';
     }
 }
