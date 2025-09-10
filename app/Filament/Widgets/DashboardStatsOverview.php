@@ -69,32 +69,32 @@ class DashboardStatsOverview extends BaseWidget
         })->toArray();
 
         return [
-            Stat::make('Total Users', number_format($totalUsers))
-                ->description($userGrowth >= 0 ? "+{$userGrowth}% from last month" : "{$userGrowth}% from last month")
+            Stat::make(__('widgets.total_users'), number_format($totalUsers))
+                ->description($userGrowth >= 0 ? "+{$userGrowth}% " . __('widgets.growth_from_last_month') : "{$userGrowth}% " . __('widgets.growth_from_last_month'))
                 ->descriptionIcon($userGrowth >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($userGrowth >= 0 ? 'success' : 'danger')
                 ->chart($last7Days->map(fn($date) => User::whereDate('created_at', $date)->count())->toArray()),
 
-            Stat::make('Active Vehicles', number_format($availableVehicles) . ' / ' . number_format($publishedVehicles))
-                ->description('Available for rent')
+            Stat::make(__('widgets.available_vehicles'), number_format($availableVehicles) . ' / ' . number_format($publishedVehicles))
+                ->description(__('widgets.ready_for_rent'))
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('primary')
                 ->chart($last7Days->map(fn($date) => Vehicle::whereDate('created_at', $date)->count())->toArray()),
 
-            Stat::make('Active Bookings', number_format($activeBookings))
-                ->description($bookingsThisMonth . ' bookings this month')
+            Stat::make(__('widgets.active_bookings'), number_format($activeBookings))
+                ->description($bookingsThisMonth . ' ' . __('widgets.bookings') . ' ' . __('widgets.this_month'))
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info')
                 ->chart($bookingChart),
 
-            Stat::make('Monthly Revenue', 'RM ' . number_format($monthlyRevenue, 2))
-                ->description($revenueGrowth >= 0 ? "+{$revenueGrowth}% from last month" : "{$revenueGrowth}% from last month")
+            Stat::make(__('widgets.monthly_revenue'), 'RM ' . number_format($monthlyRevenue, 2))
+                ->description($revenueGrowth >= 0 ? "+{$revenueGrowth}% " . __('widgets.growth_from_last_month') : "{$revenueGrowth}% " . __('widgets.growth_from_last_month'))
                 ->descriptionIcon($revenueGrowth >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($revenueGrowth >= 0 ? 'success' : 'warning')
                 ->chart($revenueChart),
 
-            Stat::make('Customer Rating', number_format($averageRating, 1) . '/5 ⭐')
-                ->description($reviewsThisMonth . ' new reviews this month')
+            Stat::make(__('resources.rating'), number_format($averageRating, 1) . '/5 ⭐')
+                ->description($reviewsThisMonth . ' ' . __('resources.reviews') . ' ' . __('widgets.this_month'))
                 ->descriptionIcon('heroicon-m-star')
                 ->color($averageRating >= 4 ? 'success' : ($averageRating >= 3 ? 'warning' : 'danger'))
                 ->chart($last7Days->map(fn($date) => Review::whereDate('created_at', $date)->count())->toArray()),

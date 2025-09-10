@@ -33,29 +33,29 @@ class PaymentStatsWidget extends BaseWidget
         $totalPayments = $baseQuery->count();
 
         // Successful payments
-        $successfulPayments = (clone $baseQuery)->where('status', PaymentStatus::CONFIRMED)->count();
+        $successfulPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::CONFIRMED)->count();
 
         // Pending payments
-        $pendingPayments = (clone $baseQuery)->where('status', PaymentStatus::PENDING)->count();
+        $pendingPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::PENDING)->count();
 
         // Failed payments
-        $failedPayments = (clone $baseQuery)->where('status', PaymentStatus::FAILED)->count();
+        $failedPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::FAILED)->count();
 
         // Total revenue
         $totalRevenue = (clone $baseQuery)
-            ->where('status', PaymentStatus::CONFIRMED)
+            ->where('payment_status', PaymentStatus::CONFIRMED)
             ->sum('amount');
 
         // This month's revenue
         $monthlyRevenue = (clone $baseQuery)
-            ->where('status', PaymentStatus::CONFIRMED)
+            ->where('payment_status', PaymentStatus::CONFIRMED)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
 
         // Average payment amount
         $averagePayment = (clone $baseQuery)
-            ->where('status', PaymentStatus::CONFIRMED)
+            ->where('payment_status', PaymentStatus::CONFIRMED)
             ->avg('amount') ?? 0;
 
         // Payment success rate
@@ -66,39 +66,39 @@ class PaymentStatsWidget extends BaseWidget
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $revenue = (clone $baseQuery)
-                ->where('status', PaymentStatus::CONFIRMED)
+                ->where('payment_status', PaymentStatus::CONFIRMED)
                 ->whereDate('created_at', $date)
                 ->sum('amount');
             $revenueTrend[] = $revenue > 0 ? $revenue : 1;
         }
 
         return [
-            Stat::make('Total Revenue', 'RM '.number_format($totalRevenue, 2))
-                ->description('All time revenue')
+            Stat::make(__('widgets.total_revenue'), 'RM '.number_format($totalRevenue, 2))
+                ->description(__('widgets.all_time_revenue'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->chart($revenueTrend),
 
-            Stat::make('Monthly Revenue', 'RM '.number_format($monthlyRevenue, 2))
-                ->description('Current month')
+            Stat::make(__('widgets.monthly_revenue'), 'RM '.number_format($monthlyRevenue, 2))
+                ->description(__('widgets.current_month'))
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('info')
                 ->chart(array_slice($revenueTrend, -5)),
 
-            Stat::make('Successful', $successfulPayments)
-                ->description('Completed payments')
+            Stat::make(__('widgets.successful_payments'), $successfulPayments)
+                ->description(__('widgets.completed_payments'))
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success')
                 ->chart(array_slice($revenueTrend, -4)),
 
-            Stat::make('Pending', $pendingPayments)
-                ->description('Awaiting processing')
+            Stat::make(__('widgets.pending_payments'), $pendingPayments)
+                ->description(__('widgets.awaiting_processing'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($pendingPayments > 0 ? 'warning' : 'success')
                 ->chart(array_slice($revenueTrend, -4)),
 
-            Stat::make('Success Rate', $successRate.'%')
-                ->description('Payment success rate')
+            Stat::make(__('widgets.payment_success_rate'), $successRate.'%')
+                ->description(__('widgets.payment_success_rate'))
                 ->descriptionIcon('heroicon-o-chart-pie')
                 ->color($successRate >= 90 ? 'success' : ($successRate >= 75 ? 'warning' : 'danger'))
                 ->chart([
@@ -109,8 +109,8 @@ class PaymentStatsWidget extends BaseWidget
                     max(1, $successRate),
                 ]),
 
-            Stat::make('Avg. Payment', 'RM '.number_format($averagePayment, 2))
-                ->description('Average transaction')
+            Stat::make(__('widgets.average_payment'), 'RM '.number_format($averagePayment, 2))
+                ->description(__('widgets.average_transaction'))
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info')
                 ->chart([

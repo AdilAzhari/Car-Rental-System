@@ -5,7 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
@@ -13,19 +19,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 use BackedEnum;
 
@@ -41,22 +40,22 @@ class UserResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('app.navigation.users');
+        return __('resources.users');
     }
 
     public static function getModelLabel(): string
     {
-        return __('users.singular');
+        return __('resources.user');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('users.plural');
+        return __('resources.users');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __('app.navigation.user_management');
+        return __('resources.user_management');
     }
 
     public static function form(Schema $schema): Schema
@@ -64,7 +63,7 @@ class UserResource extends Resource
         return $schema
             ->schema([
                 Section::make(__('users.sections.personal_information'))
-                    ->description('Basic user details and account information')
+                    ->description(__('resources.user_details_description'))
                     ->icon('heroicon-m-user')
                     ->schema([
                         Grid::make(2)
@@ -73,7 +72,7 @@ class UserResource extends Resource
                                     ->label(__('users.fields.name'))
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Enter full name'),
+                                    ->placeholder(__('resources.enter_full_name')),
 
                                 TextInput::make('email')
                                     ->label(__('users.fields.email'))
@@ -81,125 +80,125 @@ class UserResource extends Resource
                                     ->required()
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(255)
-                                    ->placeholder('user@example.com'),
+                                    ->placeholder(__('resources.email_placeholder')),
 
                                 TextInput::make('phone')
                                     ->label(__('users.fields.phone'))
                                     ->tel()
                                     ->maxLength(20)
-                                    ->placeholder('+1234567890'),
+                                    ->placeholder(__('resources.phone_placeholder')),
 
                                 DateTimePicker::make('date_of_birth')
                                     ->label(__('users.fields.date_of_birth'))
                                     ->maxDate(now()->subYears(18))
                                     ->displayFormat('Y-m-d')
-                                    ->helperText('Must be at least 18 years old'),
+                                    ->helperText(__('resources.age_requirement')),
                             ]),
                     ]),
 
-                Section::make('Account Settings')
-                    ->description('User role and account status')
+                Section::make(__('resources.account_settings'))
+                    ->description(__('resources.account_settings_description'))
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 Select::make('role')
-                                    ->label('User Role')
+                                    ->label(__('resources.user_role'))
                                     ->options([
-                                        'admin' => 'Administrator',
-                                        'owner' => 'Vehicle Owner',
-                                        'renter' => 'Customer/Renter',
+                                        'admin' => __('enums.user_role.admin'),
+                                        'owner' => __('enums.user_role.owner'),
+                                        'renter' => __('enums.user_role.customer'),
                                     ])
                                     ->default('renter')
                                     ->required()
                                     ->native(false),
 
                                 Toggle::make('is_verified')
-                                    ->label('Account Verified')
-                                    ->helperText('Verified users can make bookings')
+                                    ->label(__('resources.account_verified'))
+                                    ->helperText(__('resources.verified_users_helper'))
                                     ->default(false),
 
                                 Toggle::make('is_active')
-                                    ->label('Account Active')
-                                    ->helperText('Inactive accounts cannot log in')
+                                    ->label(__('resources.account_active'))
+                                    ->helperText(__('resources.inactive_accounts_helper'))
                                     ->default(true),
                             ]),
                     ]),
 
-                Section::make('Address Information')
-                    ->description('User location and contact details')
+                Section::make(__('resources.address_information'))
+                    ->description(__('resources.address_information_description'))
                     ->icon('heroicon-m-map-pin')
                     ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('address')
-                                    ->label('Street Address')
+                                    ->label(__('resources.street_address'))
                                     ->maxLength(255)
                                     ->columnSpanFull(),
 
                                 TextInput::make('city')
-                                    ->label('City')
+                                    ->label(__('resources.city'))
                                     ->maxLength(100),
 
                                 TextInput::make('state')
-                                    ->label('State/Province')
+                                    ->label(__('resources.state_province'))
                                     ->maxLength(100),
 
                                 TextInput::make('postal_code')
-                                    ->label('Postal Code')
+                                    ->label(__('resources.postal_code'))
                                     ->maxLength(20),
 
                                 TextInput::make('country')
-                                    ->label('Country')
+                                    ->label(__('resources.country'))
                                     ->maxLength(100)
-                                    ->default('Malaysia'),
+                                    ->default(__('resources.malaysia')),
                             ]),
                     ]),
 
-                Section::make('Additional Information')
-                    ->description('License and preferences')
+                Section::make(__('resources.additional_information'))
+                    ->description(__('resources.license_preferences_description'))
                     ->icon('heroicon-m-document-text')
                     ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('driver_license_number')
-                                    ->label('Driver License Number')
+                                    ->label(__('resources.driver_license_number'))
                                     ->maxLength(50)
-                                    ->helperText('Required for vehicle rentals'),
+                                    ->helperText(__('resources.license_required_helper')),
 
                                 DateTimePicker::make('license_expiry_date')
-                                    ->label('License Expiry Date')
+                                    ->label(__('resources.license_expiry_date'))
                                     ->minDate(now())
                                     ->displayFormat('Y-m-d'),
 
                                 Select::make('preferred_language')
-                                    ->label('Preferred Language')
+                                    ->label(__('resources.preferred_language'))
                                     ->options([
-                                        'en' => 'English',
-                                        'ms' => 'Bahasa Malaysia',
+                                        'en' => __('resources.english'),
+                                        'ms' => __('resources.bahasa_malaysia'),
                                     ])
                                     ->default('en')
                                     ->native(false),
 
                                 Select::make('notification_preferences')
-                                    ->label('Notifications')
+                                    ->label(__('resources.notifications'))
                                     ->options([
-                                        'all' => 'All Notifications',
-                                        'important' => 'Important Only',
-                                        'none' => 'No Notifications',
+                                        'all' => __('resources.all_notifications'),
+                                        'important' => __('resources.important_only'),
+                                        'none' => __('resources.no_notifications'),
                                     ])
                                     ->default('all')
                                     ->native(false),
                             ]),
 
                         Textarea::make('notes')
-                            ->label('Admin Notes')
+                            ->label(__('resources.admin_notes'))
                             ->rows(3)
                             ->maxLength(1000)
                             ->columnSpanFull()
-                            ->placeholder('Internal notes about this user...'),
+                            ->placeholder(__('resources.admin_notes_placeholder')),
                     ]),
             ]);
     }
@@ -209,20 +208,20 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('resources.name'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('resources.email'))
                     ->searchable()
                     ->sortable()
                     ->copyable()
                     ->icon('heroicon-m-envelope'),
 
                 BadgeColumn::make('role')
-                    ->label('Role')
+                    ->label(__('resources.role'))
                     ->colors([
                         'danger' => 'admin',
                         'warning' => 'owner',
@@ -235,70 +234,71 @@ class UserResource extends Resource
                     ]),
 
                 BooleanColumn::make('is_verified')
-                    ->label('Verified')
+                    ->label(__('resources.verified'))
                     ->trueIcon('heroicon-o-check-badge')
                     ->falseIcon('heroicon-o-x-mark')
                     ->trueColor('success')
                     ->falseColor('danger'),
 
                 BooleanColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('resources.active'))
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('gray'),
 
                 TextColumn::make('phone')
-                    ->label('Phone')
+                    ->label(__('resources.phone'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('city')
-                    ->label('City')
+                    ->label(__('resources.city'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('bookings_count')
-                    ->label('Bookings')
+                    ->label(__('resources.bookings'))
                     ->counts('bookings')
                     ->sortable()
                     ->badge()
                     ->color('info'),
 
                 TextColumn::make('created_at')
-                    ->label('Joined')
+                    ->label(__('resources.joined'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('role')
+                    ->label(__('resources.role'))
                     ->options([
-                        'admin' => 'Administrator',
-                        'owner' => 'Vehicle Owner',
-                        'renter' => 'Customer/Renter',
+                        'admin' => __('enums.user_role.admin'),
+                        'owner' => __('enums.user_role.owner'),
+                        'renter' => __('enums.user_role.customer'),
                     ]),
 
                 SelectFilter::make('is_verified')
-                    ->label('Verification Status')
+                    ->label(__('resources.verification_status'))
                     ->options([
-                        '1' => 'Verified',
-                        '0' => 'Unverified',
+                        '1' => __('resources.verified'),
+                        '0' => __('resources.unverified'),
                     ]),
 
                 SelectFilter::make('is_active')
-                    ->label('Account Status')
+                    ->label(__('resources.account_status'))
                     ->options([
-                        '1' => 'Active',
-                        '0' => 'Inactive',
+                        '1' => __('resources.active'),
+                        '0' => __('resources.inactive'),
                     ]),
 
                 Filter::make('created_at')
                     ->form([
                         DateTimePicker::make('created_from')
-                            ->label('Joined from'),
+                            ->label(__('resources.joined_from')),
                         DateTimePicker::make('created_until')
-                            ->label('Joined until'),
+                            ->label(__('resources.joined_until')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

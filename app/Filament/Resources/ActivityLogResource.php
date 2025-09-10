@@ -3,6 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ActivityLogResource\Pages;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Spatie\Activitylog\Models\Activity;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -10,17 +15,12 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 use BackedEnum;
@@ -36,87 +36,103 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    protected static ?string $label = 'Activity Log';
+    public static function getNavigationLabel(): string
+    {
+        return __('resources.activity_logs');
+    }
 
-    protected static ?string $pluralLabel = 'Activity Logs';
+    public static function getModelLabel(): string
+    {
+        return __('resources.activity_log');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resources.activity_logs');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.system_management');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
-                Section::make('Activity Information')
-                    ->description('System activity and audit trail details')
+                Section::make(__('resources.activity_information'))
+                    ->description(__('resources.activity_information_description'))
                     ->icon('heroicon-m-clipboard-document-list')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('log_name')
-                                    ->label('Log Name')
-                                    ->placeholder('default')
+                                    ->label(__('resources.log_name'))
+                                    ->placeholder(__('resources.log_name_placeholder'))
                                     ->maxLength(255),
 
                                 TextInput::make('description')
-                                    ->label('Description')
+                                    ->label(__('resources.description'))
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Describe what happened'),
+                                    ->placeholder(__('resources.activity_description_placeholder')),
                             ]),
 
                         Grid::make(2)
                             ->schema([
                                 Select::make('subject_type')
-                                    ->label('Subject Type')
+                                    ->label(__('resources.subject_type'))
                                     ->options([
-                                        'App\\Models\\User' => 'User',
-                                        'App\\Models\\Vehicle' => 'Vehicle',
-                                        'App\\Models\\Booking' => 'Booking',
-                                        'App\\Models\\Review' => 'Review',
-                                        'App\\Models\\Payment' => 'Payment',
+                                        'App\\Models\\User' => __('resources.user'),
+                                        'App\\Models\\Vehicle' => __('resources.vehicle'),
+                                        'App\\Models\\Booking' => __('resources.booking'),
+                                        'App\\Models\\Review' => __('resources.review'),
+                                        'App\\Models\\Payment' => __('resources.payment'),
                                     ])
                                     ->searchable()
-                                    ->placeholder('Select model type'),
+                                    ->placeholder(__('resources.select_model_type')),
 
                                 TextInput::make('subject_id')
-                                    ->label('Subject ID')
+                                    ->label(__('resources.subject_id'))
                                     ->numeric()
-                                    ->placeholder('Record ID'),
+                                    ->placeholder(__('resources.record_id_placeholder')),
                             ]),
 
                         Grid::make(2)
                             ->schema([
                                 Select::make('causer_type')
-                                    ->label('Causer Type')
+                                    ->label(__('resources.causer_type'))
                                     ->options([
-                                        'App\\Models\\User' => 'User',
+                                        'App\\Models\\User' => __('resources.user'),
                                     ])
                                     ->default('App\\Models\\User'),
 
                                 TextInput::make('causer_id')
-                                    ->label('Causer ID')
+                                    ->label(__('resources.causer_id'))
                                     ->numeric()
-                                    ->placeholder('User ID who performed the action'),
+                                    ->placeholder(__('resources.causer_id_placeholder')),
                             ]),
 
                         DateTimePicker::make('created_at')
-                            ->label('Timestamp')
+                            ->label(__('resources.timestamp'))
                             ->default(now())
                             ->required(),
                     ]),
 
-                Section::make('Activity Properties')
-                    ->description('Detailed information about the activity')
+                Section::make(__('resources.activity_properties'))
+                    ->description(__('resources.activity_properties_description'))
                     ->icon('heroicon-m-information-circle')
                     ->schema([
                         KeyValue::make('properties')
-                            ->label('Properties')
-                            ->keyLabel('Attribute')
-                            ->valueLabel('Value')
+                            ->label(__('resources.properties'))
+                            ->keyLabel(__('resources.attribute'))
+                            ->valueLabel(__('resources.value'))
                             ->columnSpanFull(),
 
                         Textarea::make('event')
-                            ->label('Event Type')
+                            ->label(__('resources.event_type'))
                             ->rows(2)
-                            ->placeholder('created, updated, deleted, etc.')
+                            ->placeholder(__('resources.event_type_placeholder'))
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
@@ -128,12 +144,12 @@ class ActivityLogResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID')
+                    ->label(__('resources.id'))
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('log_name')
-                    ->label('Log')
+                    ->label(__('resources.log_name'))
                     ->badge()
                     ->color('info')
                     ->sortable()
@@ -141,7 +157,7 @@ class ActivityLogResource extends Resource
                     ->toggleable(),
 
                 TextColumn::make('description')
-                    ->label('Activity')
+                    ->label(__('resources.activity'))
                     ->searchable()
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
@@ -150,7 +166,7 @@ class ActivityLogResource extends Resource
                     }),
 
                 BadgeColumn::make('event')
-                    ->label('Event')
+                    ->label(__('resources.event'))
                     ->colors([
                         'success' => 'created',
                         'warning' => 'updated',
@@ -161,25 +177,25 @@ class ActivityLogResource extends Resource
                     ]),
 
                 TextColumn::make('subject_type')
-                    ->label('Subject')
-                    ->formatStateUsing(fn ($state) => $state ? class_basename($state) : 'System')
+                    ->label(__('resources.subject'))
+                    ->formatStateUsing(fn ($state) => $state ? class_basename($state) : __('resources.system'))
                     ->badge()
                     ->color('secondary')
                     ->sortable(),
 
                 TextColumn::make('subject_id')
-                    ->label('Subject ID')
+                    ->label(__('resources.subject_id'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('causer.name')
-                    ->label('User')
+                    ->label(__('resources.user'))
                     ->searchable()
                     ->sortable()
-                    ->placeholder('System'),
+                    ->placeholder(__('resources.system')),
 
                 TextColumn::make('causer.role')
-                    ->label('Role')
+                    ->label(__('resources.role'))
                     ->badge()
                     ->colors([
                         'danger' => 'admin',
@@ -189,52 +205,55 @@ class ActivityLogResource extends Resource
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label('Timestamp')
+                    ->label(__('resources.timestamp'))
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at->format('Y-m-d H:i:s')),
 
                 TextColumn::make('properties')
-                    ->label('Properties')
-                    ->formatStateUsing(fn ($state) => $state ? count($state) . ' items' : 'None')
+                    ->label(__('resources.properties'))
+                    ->formatStateUsing(fn ($state) => $state ? count($state) . ' ' . __('resources.items') : __('resources.none'))
                     ->badge()
                     ->color('gray')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('log_name')
-                    ->label('Log Type')
-                    ->options(function () {
-                        return Activity::distinct()
-                            ->pluck('log_name', 'log_name')
-                            ->filter()
-                            ->sort();
-                    }),
+                    ->label(__('resources.log_type'))
+                    ->options([
+                        'default' => __('resources.log_name_placeholder'),
+                        'user' => __('resources.user'),
+                        'vehicle' => __('resources.vehicle'),
+                        'booking' => __('resources.booking'),
+                        'review' => __('resources.review'),
+                        'payment' => __('resources.payment'),
+                        'system' => __('resources.system'),
+                    ]),
 
                 SelectFilter::make('event')
-                    ->label('Event Type')
+                    ->label(__('resources.event_type'))
                     ->options([
-                        'created' => 'Created',
-                        'updated' => 'Updated',
-                        'deleted' => 'Deleted',
-                        'viewed' => 'Viewed',
-                        'logged_in' => 'Logged In',
-                        'logged_out' => 'Logged Out',
+                        'created' => __('resources.created'),
+                        'updated' => __('resources.updated'),
+                        'deleted' => __('resources.deleted'),
+                        'viewed' => __('resources.viewed'),
+                        'logged_in' => __('resources.logged_in'),
+                        'logged_out' => __('resources.logged_out'),
                     ]),
 
                 SelectFilter::make('subject_type')
-                    ->label('Subject Type')
+                    ->label(__('resources.subject_type'))
                     ->options([
-                        'App\\Models\\User' => 'User',
-                        'App\\Models\\Vehicle' => 'Vehicle',
-                        'App\\Models\\Booking' => 'Booking',
-                        'App\\Models\\Review' => 'Review',
-                        'App\\Models\\Payment' => 'Payment',
+                        'App\\Models\\User' => __('resources.user'),
+                        'App\\Models\\Vehicle' => __('resources.vehicle'),
+                        'App\\Models\\Booking' => __('resources.booking'),
+                        'App\\Models\\Review' => __('resources.review'),
+                        'App\\Models\\Payment' => __('resources.payment'),
                     ]),
 
                 SelectFilter::make('causer_id')
-                    ->label('User')
+                    ->label(__('resources.user'))
                     ->relationship('causer', 'name')
                     ->searchable()
                     ->preload(),
@@ -242,9 +261,9 @@ class ActivityLogResource extends Resource
                 Filter::make('created_at')
                     ->form([
                         DateTimePicker::make('created_from')
-                            ->label('From'),
+                            ->label(__('resources.from')),
                         DateTimePicker::make('created_until')
-                            ->label('Until'),
+                            ->label(__('resources.until')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -259,11 +278,11 @@ class ActivityLogResource extends Resource
                     }),
 
                 Filter::make('today')
-                    ->label('Today\'s Activities')
+                    ->label(__('resources.todays_activities'))
                     ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())),
 
                 Filter::make('this_week')
-                    ->label('This Week')
+                    ->label(__('resources.this_week'))
                     ->query(fn (Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
             ])
             ->actions([
@@ -272,9 +291,9 @@ class ActivityLogResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Archive Selected')
-                        ->modalHeading('Archive Activity Logs')
-                        ->modalDescription('Are you sure you want to archive these activity logs? This action cannot be undone.'),
+                        ->label(__('resources.archive_selected'))
+                        ->modalHeading(__('resources.archive_activity_logs'))
+                        ->modalDescription(__('resources.archive_activity_logs_confirmation')),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
@@ -298,11 +317,11 @@ class ActivityLogResource extends Resource
     public static function getNavigationBadgeColor(): string|array|null
     {
         $todayCount = static::getModel()::whereDate('created_at', today())->count();
-        
+
         if ($todayCount > 100) return 'danger';
         if ($todayCount > 50) return 'warning';
         if ($todayCount > 10) return 'info';
-        
+
         return 'primary';
     }
 

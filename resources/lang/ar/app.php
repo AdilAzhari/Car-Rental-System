@@ -6,6 +6,7 @@ return [
     'welcome' => 'مرحباً',
     'dashboard' => 'لوحة التحكم',
     'language' => 'اللغة',
+    'switch_to' => 'التبديل إلى',
     
     // Navigation
     'navigation' => [

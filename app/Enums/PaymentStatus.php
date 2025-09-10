@@ -13,6 +13,7 @@ enum PaymentStatus: string
     case CANCELLED = 'cancelled';
     case PROCESSING = 'processing';
 
+    case UNPAID = 'unpaid';
     /**
      * Get all enum values
      */
@@ -27,12 +28,13 @@ enum PaymentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::CONFIRMED => 'Confirmed',
-            self::FAILED => 'Failed',
-            self::REFUNDED => 'Refunded',
-            self::CANCELLED => 'Cancelled',
-            self::PROCESSING => 'Processing',
+            self::PENDING => __('enums.payment_status.pending'),
+            self::CONFIRMED => __('enums.payment_status.confirmed'),
+            self::FAILED => __('enums.payment_status.failed'),
+            self::REFUNDED => __('enums.payment_status.refunded'),
+            self::CANCELLED => __('enums.payment_status.cancelled'),
+            self::PROCESSING => __('enums.payment_status.processing'),
+            self::UNPAID => __('enums.payment_status.unpaid'),
         };
     }
 
@@ -47,7 +49,7 @@ enum PaymentStatus: string
             self::FAILED => 'danger',
             self::REFUNDED => 'info',
             self::CANCELLED => 'secondary',
-            self::PROCESSING => 'primary',
+            self::PROCESSING, self::UNPAID => 'primary',
         };
     }
 
@@ -84,6 +86,7 @@ enum PaymentStatus: string
             self::REFUNDED => 'arrow-path',
             self::CANCELLED => 'minus-circle',
             self::PROCESSING => 'arrows-right-left',
+            self::UNPAID => 'arrows-right-right',
         };
     }
 }

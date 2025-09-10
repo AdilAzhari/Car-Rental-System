@@ -5,12 +5,13 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 
 class ViewUser extends ViewRecord
 {
@@ -19,6 +20,13 @@ class ViewUser extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('view_profile')
+                ->label(__('resources.view_user_profile'))
+                ->icon('heroicon-m-user-circle')
+                ->color('info')
+                ->url(fn () => $this->getRecord()->id === auth()->id() ? '/admin/profile' : null)
+                ->visible(fn () => $this->getRecord()->id === auth()->id())
+                ->openUrlInNewTab(false),
             EditAction::make(),
             DeleteAction::make(),
         ];
@@ -28,25 +36,37 @@ class ViewUser extends ViewRecord
     {
         return $schema
             ->schema([
-                Section::make('Personal Information')
+                Section::make(__('resources.personal_information'))
                     ->icon('heroicon-m-user')
+                    ->description(fn () => $this->getRecord()->id === auth()->id() ? 
+                        __('resources.view_own_profile_description') : 
+                        __('resources.view_user_profile_description'))
+                    ->headerActions([
+                        Action::make('edit_profile')
+                            ->label(__('resources.edit_profile'))
+                            ->icon('heroicon-m-pencil-square')
+                            ->color('primary')
+                            ->size('sm')
+                            ->url('/admin/profile')
+                            ->visible(fn () => $this->getRecord()->id === auth()->id()),
+                    ])
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Full Name')
+                                    ->label(__('resources.name'))
                                     ->disabled(),
 
                                 TextInput::make('email')
-                                    ->label('Email Address')
+                                    ->label(__('resources.email'))
                                     ->disabled(),
 
                                 TextInput::make('phone')
-                                    ->label('Phone Number')
+                                    ->label(__('resources.phone'))
                                     ->disabled(),
 
                                 TextInput::make('date_of_birth')
-                                    ->label('Date of Birth')
+                                    ->label(__('resources.date_of_birth'))
                                     ->disabled(),
                             ]),
                     ]),

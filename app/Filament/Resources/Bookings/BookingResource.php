@@ -30,6 +30,26 @@ class BookingResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Bookings';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('resources.bookings');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('resources.booking');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resources.bookings');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.booking_management');
+    }
+
     /**
      * @throws Exception
      */
@@ -38,11 +58,17 @@ class BookingResource extends Resource
         return BookingForm::configure($schema);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function infolist(Schema $schema): Schema
     {
         return BookingInfolist::configure($schema);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return BookingsTable::configure($table);

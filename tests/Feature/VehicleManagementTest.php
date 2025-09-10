@@ -47,11 +47,20 @@ describe('Vehicle Management', function () {
                 'make' => 'Toyota',
                 'model' => 'Camry',
                 'year' => 2023,
+                'color' => 'White',
                 'plate_number' => 'ABC-1234',
+                'vin' => '1HGCM82633A123456',
                 'fuel_type' => 'petrol',
                 'transmission' => 'automatic',
+                'seats' => 5,
                 'daily_rate' => 100.00,
-                'status' => VehicleStatus::PUBLISHED->value
+                'description' => 'Test vehicle',
+                'status' => VehicleStatus::PUBLISHED->value,
+                'is_available' => true,
+                'location' => 'Kuala Lumpur',
+                'mileage' => 50000,
+                'insurance_expiry' => now()->addMonths(12)->format('Y-m-d'),
+                'owner_id' => $this->admin->id
             ];
             
             $this->actingAs($this->admin)
@@ -70,11 +79,19 @@ describe('Vehicle Management', function () {
                 'make' => 'Honda',
                 'model' => 'Civic',
                 'year' => 2023,
+                'color' => 'Black',
                 'plate_number' => 'XYZ-5678',
+                'vin' => '1HGCM82633A123457',
                 'fuel_type' => 'petrol',
                 'transmission' => 'manual',
+                'seats' => 5,
                 'daily_rate' => 85.00,
-                'status' => VehicleStatus::PUBLISHED->value
+                'description' => 'Test civic',
+                'status' => VehicleStatus::PUBLISHED->value,
+                'is_available' => true,
+                'location' => 'Kuala Lumpur',
+                'mileage' => 30000,
+                'insurance_expiry' => now()->addMonths(12)->format('Y-m-d')
             ];
             
             $this->actingAs($this->owner)

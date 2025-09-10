@@ -6,12 +6,12 @@ use App\Filament\Resources\VehicleResource;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 
 class ViewVehicle extends ViewRecord

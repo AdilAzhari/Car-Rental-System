@@ -68,9 +68,13 @@ describe('Vehicle Model', function () {
 
     it('has correct fillable attributes', function () {
         $fillable = [
-            'owner_id', 'make', 'model', 'year', 'plate_number', 'vin',
-            'fuel_type', 'transmission', 'daily_rate', 'oil_type',
-            'last_oil_change', 'policy', 'status'
+            'owner_id', 'make', 'model', 'year', 'color', 'plate_number', 'vin',
+            'fuel_type', 'transmission', 'seats', 'daily_rate', 'description',
+            'status', 'is_available', 'location', 'mileage', 'insurance_expiry',
+            'oil_type', 'last_oil_change', 'policy', 'category', 'doors',
+            'engine_size', 'pickup_location', 'insurance_included',
+            'featured_image', 'gallery_images', 'documents', 'features',
+            'terms_and_conditions'
         ];
         
         expect($this->vehicle->getFillable())->toEqual($fillable);
@@ -86,11 +90,19 @@ describe('Vehicle Model', function () {
             'make' => 'Honda',
             'model' => 'Civic',
             'year' => 2023,
+            'color' => 'Blue',
             'plate_number' => 'ABC-1234',
+            'vin' => '1HGCM82633A123456',
             'fuel_type' => VehicleFuelType::PETROL->value,
             'transmission' => VehicleTransmission::AUTOMATIC->value,
+            'seats' => 5,
             'daily_rate' => 85.00,
-            'status' => VehicleStatus::PUBLISHED->value
+            'description' => 'Test Honda Civic',
+            'status' => VehicleStatus::PUBLISHED->value,
+            'is_available' => true,
+            'location' => 'Kuala Lumpur',
+            'mileage' => 25000,
+            'insurance_expiry' => now()->addMonths(12)->format('Y-m-d')
         ];
         
         $vehicle = Vehicle::create($vehicleData);

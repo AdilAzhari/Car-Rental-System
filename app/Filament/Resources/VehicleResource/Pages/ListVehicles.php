@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\VehicleResource\Pages;
 
 use App\Filament\Resources\VehicleResource;
+use App\Enums\VehicleStatus;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListVehicles extends ListRecords
@@ -24,33 +25,38 @@ class ListVehicles extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All Vehicles')
+            'all' => Tab::make(__('resources.all_vehicles'))
                 ->badge(fn () => $this->getResource()::getModel()::count()),
 
-            'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'published'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'published')->count())
+            'published' => Tab::make(__('resources.published'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PUBLISHED))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PUBLISHED)->count())
                 ->icon('heroicon-m-check-circle'),
 
-            'available' => Tab::make('Available')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'published')->where('is_available', true))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'published')->where('is_available', true)->count())
+            'available' => Tab::make(__('resources.available'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PUBLISHED)->where('is_available', true))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PUBLISHED)->where('is_available', true)->count())
                 ->icon('heroicon-m-hand-thumb-up'),
 
-            'draft' => Tab::make('Draft')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'draft'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'draft')->count())
-                ->icon('heroicon-m-document'),
+            'pending' => Tab::make(__('resources.pending'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PENDING))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PENDING)->count())
+                ->icon('heroicon-m-clock'),
 
-            'maintenance' => Tab::make('Maintenance')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'maintenance'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'maintenance')->count())
+            'approved' => Tab::make(__('resources.approved'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::APPROVED))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::APPROVED)->count())
+                ->icon('heroicon-m-check-badge'),
+
+            'rejected' => Tab::make(__('resources.rejected'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::REJECTED))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::REJECTED)->count())
+                ->icon('heroicon-m-x-circle'),
+
+            'maintenance' => Tab::make(__('resources.maintenance'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::MAINTENANCE))
+                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::MAINTENANCE)->count())
                 ->icon('heroicon-m-wrench-screwdriver'),
-
-            'luxury' => Tab::make('Luxury')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('category', 'luxury'))
-                ->badge(fn () => $this->getResource()::getModel()::where('category', 'luxury')->count())
-                ->icon('heroicon-m-star'),
         ];
     }
 }

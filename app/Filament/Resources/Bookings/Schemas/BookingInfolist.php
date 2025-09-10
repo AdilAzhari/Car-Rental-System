@@ -66,11 +66,10 @@ class BookingInfolist
                                     ->color(fn ($state): string => match ($state instanceof PaymentStatus ? $state : PaymentStatus::from($state)) {
                                         PaymentStatus::PENDING => 'warning',
                                         PaymentStatus::CONFIRMED => 'success',
-                                        PaymentStatus::FAILED => 'danger',
+                                        PaymentStatus::FAILED, PaymentStatus::UNPAID => 'danger',
                                         PaymentStatus::REFUNDED => 'info',
                                         PaymentStatus::CANCELLED => 'secondary',
                                         PaymentStatus::PROCESSING => 'primary',
-                                        PaymentStatus::UNPAID => 'danger',
                                         default => 'gray',
                                     }),
 
@@ -199,7 +198,7 @@ class BookingInfolist
 
                 // Location & Special Requests Section
                 Section::make('Additional Information')
-                    ->description('Pickup, dropoff, and special requests')
+                    ->description('Pickup, drop off, and special requests')
                     ->icon('heroicon-m-map-pin')
                     ->schema([
                         Grid::make(['default' => 1, 'md' => 2])
@@ -210,7 +209,7 @@ class BookingInfolist
                                     ->placeholder('Not specified'),
 
                                 TextEntry::make('dropoff_location')
-                                    ->label('Dropoff Location')
+                                    ->label('Drop off Location')
                                     ->icon('heroicon-m-flag')
                                     ->placeholder('Not specified'),
                             ]),

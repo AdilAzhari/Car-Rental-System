@@ -15,9 +15,12 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Hamcrest\Core\Set;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Carbon;
 
 class BookingForm
@@ -29,104 +32,216 @@ class BookingForm
     {
         return $schema
             ->schema([
-                Tabs::make('Booking Details')
-                    ->tabs([
-                        Tabs\Tab::make('Basic Information')
-                            ->icon(Heroicon::OutlinedInformationCircle)
-                            ->schema([
-                                Section::make('Rental Details')
-                                    ->description('Select the customer and vehicle for this booking')
-                                    ->icon(Heroicon::OutlinedUser)
-                                    ->collapsible()
-                                    ->schema([
-                                        Grid::make()
-                                            ->schema([
-                                                Select::make('renter_id')
-                                                    ->label('Customer')
-                                                    ->relationship(
-                                                        name: 'renter',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'renter'))
-                                                    )
-                                                    ->searchable(['name', 'email'])
-                                                    ->preload()
-                                                    ->required()
-                                                    ->createOptionForm([
-                                                        TextInput::make('name')
-                                                            ->required()
-                                                            ->maxLength(255),
-                                                        TextInput::make('email')
-                                                            ->email()
-                                                            ->required()
-                                                            ->maxLength(255),
-                                                    ])
-                                                    ->live()
-                                                    ->afterStateUpdated(function (Set $set, $state) {
-                                                        if ($state) {
-                                                            $customer = User::query()->find($state);
-                                                            if ($customer) {
-                                                                $set('customer_info', $customer->email);
-                                                            }
+                Wizard::make([
+                    Step::make('customer-vehicle')
+                        ->label(__('resources.customer_vehicle'))
+                        ->description(__('resources.select_customer_and_vehicle'))
+                        ->icon('heroicon-o-users')
+                        ->schema([
+                            // Enhanced Customer & Vehicle Selection
+                            Section::make(__('resources.customer_selection'))
+                                ->description(__('resources.choose_customer_description'))
+                                ->icon('heroicon-m-user-circle')
+                                ->aside()
+                                ->schema([
+                                    Grid::make(1)
+                                        ->schema([
+                                            Select::make('renter_id')
+                                                ->label(__('resources.customer'))
+                                                ->relationship(
+                                                    name: 'renter',
+                                                    titleAttribute: 'name',
+                                                    modifyQueryUsing: fn ($query) => $query->where('role', 'renter')
+                                                )
+                                                ->getOptionLabelFromRecordUsing(function (User $record) {
+                                                    return "$record->name - $record->email";
+                                                })
+                                                ->searchable(['name', 'email', 'phone'])
+                                                ->preload()
+                                                ->required()
+                                                ->createOptionForm([
+                                                    Grid::make()
+                                                        ->schema([
+                                                            TextInput::make('name')
+                                                                ->label(__('resources.full_name'))
+                                                                ->required()
+                                                                ->maxLength(255)
+                                                                ->placeholder(__('resources.enter_customer_name')),
+
+                                                            TextInput::make('email')
+                                                                ->label(__('resources.email'))
+                                                                ->email()
+                                                                ->required()
+                                                                ->maxLength(255)
+                                                                ->placeholder(__('resources.customer_email_placeholder')),
+                                                        ]),
+
+                                                    TextInput::make('phone')
+                                                        ->label(__('resources.phone_number'))
+                                                        ->tel()
+                                                        ->maxLength(20)
+                                                        ->placeholder(__('resources.phone_placeholder')),
+                                                ])
+                                                ->live()
+                                                ->suffixIcon('heroicon-m-user')
+                                                ->helperText(__('resources.customer_selection_helper')),
+
+                                            // Customer Info Display
+                                            View::make('filament.components.customer-info-card')
+                                                ->viewData(function (Get $get) {
+                                                    $renterId = $get('renter_id');
+                                                    if ($renterId) {
+                                                        $customer = User::query()->find($renterId);
+                                                        return ['customer' => $customer];
+                                                    }
+                                                    return ['customer' => null];
+                                                })
+                                                ->visible(fn (Get $get) => filled($get('renter_id'))),
+                                        ]),
+                                ]),
+
+                            Section::make(__('resources.vehicle_selection'))
+                                ->description(__('resources.choose_vehicle_description'))
+                                ->icon('heroicon-m-truck')
+                                ->aside()
+                                ->schema([
+                                    Grid::make(1)
+                                        ->schema([
+                                            Select::make('vehicle_id')
+                                                ->label(__('resources.vehicle'))
+                                                ->relationship(
+                                                    name: 'vehicle',
+                                                    titleAttribute: 'plate_number',
+                                                    modifyQueryUsing: fn ($query) => $query->where('status', 'published')->where('is_available', true)
+                                                )
+                                                ->getOptionLabelFromRecordUsing(function (Vehicle $record) {
+                                                    return "$record->make $record->model ($record->year) - $record->plate_number";
+                                                })
+                                                ->searchable(['plate_number', 'make', 'model', 'year'])
+                                                ->preload()
+                                                ->required()
+                                                ->live()
+                                                ->suffixIcon('heroicon-m-truck')
+                                                ->helperText(__('resources.vehicle_selection_helper'))
+                                                ->afterStateUpdated(function (Set $set, $state) {
+                                                    if ($state) {
+                                                        $vehicle = Vehicle::query()->find($state);
+                                                        if ($vehicle) {
+                                                            $set('daily_rate', $vehicle->daily_rate);
+                                                            $set('pickup_location', $vehicle->location ?? '');
                                                         }
-                                                    }),
+                                                    }
+                                                }),
 
-                                                Placeholder::make('customer_info')
-                                                    ->label('Customer Email')
-                                                    ->content(function (Get $get): string {
-                                                        if ($renterId = $get('renter_id')) {
-                                                            $customer = User::query()->find($renterId);
+                                            // Vehicle Info Display
+                                            View::make('filament.components.vehicle-info-card')
+                                                ->viewData(function (Get $get) {
+                                                    $vehicleId = $get('vehicle_id');
+                                                    if ($vehicleId) {
+                                                        $vehicle = Vehicle::query()->find($vehicleId);
+                                                        return ['vehicle' => $vehicle];
+                                                    }
+                                                    return ['vehicle' => null];
+                                                })
+                                                ->visible(fn (Get $get) => filled($get('vehicle_id'))),
+                                        ]),
+                                ]),
+                        ]),
 
-                                                            return $customer?->email ?? 'No email found';
+                    Wizard\Step::make('dates-location')
+                        ->label(__('resources.dates_location'))
+                        ->description(__('resources.set_rental_period_locations'))
+                        ->icon('heroicon-o-calendar-days')
+                        ->schema([
+                            // Enhanced Date Selection with Visual Calendar
+                            Section::make(__('resources.rental_period'))
+                                ->description(__('resources.rental_period_description'))
+                                ->icon('heroicon-m-calendar-days')
+                                ->aside()
+                                ->schema([
+                                    Grid::make(3)
+                                        ->schema([
+                                            DatePicker::make('start_date')
+                                                ->label(__('resources.start_date'))
+                                                ->required()
+                                                ->native(false)
+                                                ->displayFormat('d M Y')
+                                                ->format('Y-m-d')
+                                                ->minDate(now())
+                                                ->maxDate(now()->addMonths(6))
+                                                ->suffixIcon('heroicon-m-calendar')
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                                    self::calculateTotalAmount($set, $get);
+                                                    // Auto-set minimum end date
+                                                    if ($startDate = $get('start_date')) {
+                                                        if (!$get('end_date') || $get('end_date') < $startDate) {
+                                                            $set('end_date', $startDate);
                                                         }
+                                                    }
+                                                }),
 
-                                                        return 'Select a customer first';
-                                                    })
-                                                    ->visible(function (Get $get): bool {
-                                                        return filled($get('renter_id'));
-                                                    }),
-                                            ]),
+                                            DatePicker::make('end_date')
+                                                ->label(__('resources.end_date'))
+                                                ->required()
+                                                ->native(false)
+                                                ->displayFormat('d M Y')
+                                                ->format('Y-m-d')
+                                                ->after('start_date')
+                                                ->minDate(fn (Get $get) => $get('start_date') ?: now())
+                                                ->maxDate(now()->addMonths(6))
+                                                ->suffixIcon('heroicon-m-calendar')
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                                    self::calculateTotalAmount($set, $get);
+                                                }),
 
-                                        Grid::make()
-                                            ->schema([
-                                                Select::make('vehicle_id')
-                                                    ->label('Vehicle')
-                                                    ->relationship(
-                                                        name: 'vehicle',
-                                                        titleAttribute: 'plate_number',
-                                                        modifyQueryUsing: fn ($query) => $query->where('status', 'available')
-                                                    )
-                                                    ->getOptionLabelFromRecordUsing(function (Vehicle $record) {
-                                                        return "$record->plate_number - $record->make $record->model ($record->year)";
-                                                    })
-                                                    ->searchable(['plate_number', 'make', 'model'])
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(function (Set $set, $state) {
-                                                        if ($state) {
-                                                            $vehicle = Vehicle::query()->find($state);
-                                                            if ($vehicle) {
-                                                                $set('daily_rate', $vehicle->daily_rate);
-                                                            }
-                                                        }
-                                                    }),
+                                            // Rental Summary Card
+                                            View::make('filament.components.rental-summary-card')
+                                                ->viewData(function (Get $get) {
+                                                    return [
+                                                        'start_date' => $get('start_date'),
+                                                        'end_date' => $get('end_date'),
+                                                        'vehicle_id' => $get('vehicle_id'),
+                                                        'total_amount' => $get('total_amount'),
+                                                    ];
+                                                })
+                                                ->visible(fn (Get $get) => filled($get('start_date')) && filled($get('end_date'))),
+                                        ]),
+                                ]),
 
-                                                Placeholder::make('vehicle_info')
-                                                    ->label('Daily Rate')
-                                                    ->content(function (Get $get): string {
-                                                        if ($vehicleId = $get('vehicle_id')) {
-                                                            $vehicle = Vehicle::query()->find($vehicleId);
+                            // Enhanced Location Selection
+                            Section::make(__('resources.pickup_dropoff_locations'))
+                                ->description(__('resources.location_details_description'))
+                                ->icon('heroicon-m-map-pin')
+                                ->aside()
+                                ->schema([
+                                    Grid::make(2)
+                                        ->schema([
+                                            TextInput::make('pickup_location')
+                                                ->label(__('resources.pickup_location'))
+                                                ->required()
+                                                ->placeholder(__('resources.pickup_location_placeholder'))
+                                                ->suffixIcon('heroicon-m-map-pin')
+                                                ->maxLength(255)
+                                                ->helperText(__('resources.pickup_location_helper')),
 
-                                                            return $vehicle ? '$'.number_format($vehicle->daily_rate, 2).'/day' : 'Rate not found';
-                                                        }
+                                            TextInput::make('dropoff_location')
+                                                ->label(__('resources.dropoff_location'))
+                                                ->required()
+                                                ->placeholder(__('resources.dropoff_location_placeholder'))
+                                                ->suffixIcon('heroicon-m-flag')
+                                                ->maxLength(255)
+                                                ->helperText(__('resources.dropoff_location_helper')),
+                                        ]),
+                                ]),
+                        ]),
 
-                                                        return 'Select a vehicle first';
-                                                    })
-                                                    ->visible(function (Get $get): bool {
-                                                        return filled($get('vehicle_id'));
-                                                    }),
-                                            ]),
-                                    ]),
+                    Wizard\Step::make('pricing-payment')
+                        ->label(__('resources.pricing_payment'))
+                        ->description(__('resources.configure_pricing_payment'))
+                        ->icon('heroicon-o-currency-dollar')
+                        ->schema([
 
                                 Section::make('Rental Period')
                                     ->description('Set the rental start and end dates')
@@ -174,15 +289,17 @@ class BookingForm
                                     ]),
                             ]),
 
-                        Tabs\Tab::make('Location & Pricing')
-                            ->icon(Heroicon::OutlinedMapPin)
+                            // Enhanced Pricing Section with Visual Breakdown
+                            Section::make(__('resources.pricing_details'))
+                                ->description(__('resources.pricing_breakdown_description'))
+                                ->icon('heroicon-m-currency-dollar')
                             ->schema([
                                 Section::make('Pickup & Dropoff')
                                     ->description('Specify pickup and drop off locations')
                                     ->icon(Heroicon::OutlinedMapPin)
                                     ->collapsible()
                                     ->schema([
-                                        Grid::make()
+                                        Grid::make(2)
                                             ->schema([
                                                 TextInput::make('pickup_location')
                                                     ->label('Pickup Location')
@@ -211,7 +328,7 @@ class BookingForm
                                                     ->label('Total Amount')
                                                     ->required()
                                                     ->numeric()
-                                                    ->prefix('$')
+                                                    ->prefix('MYR')
                                                     ->step(0.01)
                                                     ->live()
                                                     ->dehydrated(),
@@ -219,7 +336,7 @@ class BookingForm
                                                 TextInput::make('deposit_amount')
                                                     ->label('Security Deposit')
                                                     ->numeric()
-                                                    ->prefix('$')
+                                                    ->prefix('MYR')
                                                     ->step(0.01)
                                                     ->default(0.0)
                                                     ->helperText('Refundable security deposit'),
@@ -227,7 +344,7 @@ class BookingForm
                                                 TextInput::make('commission_amount')
                                                     ->label('Commission')
                                                     ->numeric()
-                                                    ->prefix('$')
+                                                    ->prefix('MYR')
                                                     ->step(0.01)
                                                     ->default(0.0)
                                                     ->helperText('Platform commission'),
@@ -243,10 +360,10 @@ class BookingForm
                                                         $commission = (float) $get('commission_amount') ?: 0;
                                                         $net = $total - $commission;
 
-                                                        return 'Total: $'.number_format($total, 2).' | '.
-                                                               'Deposit: $'.number_format($deposit, 2).' | '.
-                                                               'Commission: $'.number_format($commission, 2).' | '.
-                                                               'Net: $'.number_format($net, 2);
+                                                        return 'Total: MYR '.number_format($total, 2).' | '.
+                                                               'Deposit: MYR '.number_format($deposit, 2).' | '.
+                                                               'Commission: MYR '.number_format($commission, 2).' | '.
+                                                               'Net: MYR '.number_format($net, 2);
                                                     })
                                                     ->visible(function (Get $get): bool {
                                                         return filled($get('total_amount'));
@@ -282,7 +399,7 @@ class BookingForm
                                     ->icon(Heroicon::OutlinedCreditCard)
                                     ->collapsible()
                                     ->schema([
-                                        Grid::make()
+                                        Grid::make(2)
                                             ->schema([
                                                 Select::make('payment_status')
                                                     ->label('Payment Status')

@@ -8,14 +8,15 @@ enum VehicleStatus: string
     case APPROVED = 'approved';
     case REJECTED = 'rejected';
     case PUBLISHED = 'published';
-
+    case MAINTENANCE  = 'maintenance';
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending Approval',
-            self::APPROVED => 'Approved',
-            self::REJECTED => 'Rejected',
-            self::PUBLISHED => 'Published',
+            self::PENDING => __('enums.vehicle_status.pending'),
+            self::APPROVED => __('enums.vehicle_status.approved'),
+            self::REJECTED => __('enums.vehicle_status.rejected'),
+            self::PUBLISHED => __('enums.vehicle_status.published'),
+            self::MAINTENANCE => __('enums.vehicle_status.maintenance'),
         };
     }
 
@@ -26,11 +27,12 @@ enum VehicleStatus: string
             self::APPROVED => 'info',
             self::REJECTED => 'danger',
             self::PUBLISHED => 'success',
+            self::MAINTENANCE => 'primary',
         };
     }
 
     public static function values(): array
     {
-        return array_map(fn (\App\Enums\VehicleStatus $case) => $case->value, self::cases());
+        return array_map(fn (VehicleStatus $case) => $case->value, self::cases());
     }
 }

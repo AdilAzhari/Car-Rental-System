@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Bookings\Tables;
 
 use App\Enums\BookingStatus;
-use App\Enums\PaymentStatus;
+use App\Models\Booking;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -11,6 +11,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,21 +34,21 @@ class BookingsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(fn () => \App\Models\Booking::query()->with(['renter', 'vehicle', 'payment']))
+            ->query(fn () => Booking::query()->with(['renter', 'vehicle', 'payment']))
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID')
+                    ->label(__('resources.id'))
                     ->prefix('#')
                     ->sortable()
                     ->size('sm')
                     ->weight('bold')
                     ->color('primary')
                     ->copyable()
-                    ->copyMessage('Booking ID copied!')
-                    ->tooltip('Click to copy'),
+                    ->copyMessage(__('resources.booking_id_copied'))
+                    ->tooltip(__('resources.click_to_copy')),
 
                 TextColumn::make('renter.name')
-                    ->label('Customer')
+                    ->label(__('resources.customer'))
                     ->searchable(['name', 'email'])
                     ->sortable()
                     ->weight('medium')
@@ -56,10 +57,10 @@ class BookingsTable
                     ->wrap(),
 
                 TextColumn::make('vehicle.make')
-                    ->label('Vehicle')
+                    ->label(__('resources.vehicle'))
                     ->formatStateUsing(fn ($record) => $record->vehicle
                         ? "{$record->vehicle->make} {$record->vehicle->model} ({$record->vehicle->year})"
-                        : 'N/A')
+                        : __('resources.na'))
                     ->searchable(['make', 'model', 'plate_number'])
                     ->sortable(['make', 'model'])
                     ->description(fn ($record) => $record->vehicle?->plate_number)
@@ -68,13 +69,13 @@ class BookingsTable
                     ->wrap(),
 
                 TextColumn::make('booking_period')
-                    ->label('Rental Period')
+                    ->label(__('resources.rental_period'))
                     ->formatStateUsing(function ($record) {
                         $start = Carbon::parse($record->start_date);
                         $end = Carbon::parse($record->end_date);
                         $days = $end->diffInDays($start) + 1;
 
-                        return $start->format('M j') . ' - ' . $end->format('M j, Y') . " ({$days}d)";
+                        return $start->format('M j') . ' - ' . $end->format('M j, Y') . " ($days" . __('resources.days_short') . ")";
                     })
                     ->description(fn ($record) => Carbon::parse($record->start_date)->diffForHumans())
                     ->sortable('start_date')
@@ -82,17 +83,17 @@ class BookingsTable
                     ->wrap(),
 
                 TextColumn::make('total_amount')
-                    ->label('Amount')
+                    ->label(__('resources.amount'))
                     ->money('MYR')
                     ->sortable()
                     ->weight('bold')
                     ->color('success')
                     ->description(fn ($record) => $record->deposit_amount
-                        ? 'Deposit: RM ' . number_format($record->deposit_amount, 2)
+                        ? __('resources.deposit') . ': RM ' . number_format($record->deposit_amount, 2)
                         : null),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->badge()
                     ->formatStateUsing(fn ($state): string => $state instanceof BookingStatus
                         ? $state->label()
@@ -102,8 +103,7 @@ class BookingsTable
                         BookingStatus::CONFIRMED => 'info',
                         BookingStatus::ONGOING => 'primary',
                         BookingStatus::COMPLETED => 'success',
-                        BookingStatus::CANCELLED => 'danger',
-                        default => 'gray',
+                        BookingStatus::CANCELLED => 'danger'
                     })
                     ->icon(fn ($state): string => match ($state instanceof BookingStatus ? $state : BookingStatus::from($state)) {
                         BookingStatus::PENDING => 'heroicon-m-clock',
@@ -111,43 +111,37 @@ class BookingsTable
                         BookingStatus::ONGOING => 'heroicon-m-play',
                         BookingStatus::COMPLETED => 'heroicon-m-check-badge',
                         BookingStatus::CANCELLED => 'heroicon-m-x-circle',
-                        default => 'heroicon-m-question-mark-circle',
                     })
                     ->sortable(),
 
                 TextColumn::make('payment_status')
-                    ->label('Payment')
+                    ->label(__('resources.payment'))
                     ->badge()
-                    ->formatStateUsing(fn ($state): string => $state instanceof PaymentStatus
-                        ? $state->label()
-                        : PaymentStatus::from($state)->label())
-                    ->color(fn ($state): string => match ($state instanceof PaymentStatus ? $state : PaymentStatus::from($state)) {
-                        PaymentStatus::PENDING => 'warning',
-                        PaymentStatus::CONFIRMED => 'success',
-                        PaymentStatus::FAILED => 'danger',
-                        PaymentStatus::REFUNDED => 'info',
-                        PaymentStatus::CANCELLED => 'secondary',
-                        PaymentStatus::PROCESSING => 'primary',
-                        PaymentStatus::UNPAID => 'danger',
+                    ->formatStateUsing(fn ($state): string => match ($state) {
+                        'unpaid' => __('resources.unpaid'),
+                        'paid' => __('resources.paid'),
+                        'refunded' => __('resources.refunded'),
+                        default => ucfirst($state),
+                    })
+                    ->color(fn ($state): string => match ($state) {
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
+                        'refunded' => 'info',
                         default => 'gray',
                     })
-                    ->icon(fn ($state): string => match ($state instanceof PaymentStatus ? $state : PaymentStatus::from($state)) {
-                        PaymentStatus::PENDING => 'heroicon-m-clock',
-                        PaymentStatus::CONFIRMED => 'heroicon-m-check-circle',
-                        PaymentStatus::FAILED => 'heroicon-m-x-circle',
-                        PaymentStatus::REFUNDED => 'heroicon-m-arrow-uturn-left',
-                        PaymentStatus::CANCELLED => 'heroicon-m-minus-circle',
-                        PaymentStatus::PROCESSING => 'heroicon-m-arrow-path',
-                        PaymentStatus::UNPAID => 'heroicon-m-exclamation-circle',
+                    ->icon(fn ($state): string => match ($state) {
+                        'unpaid' => 'heroicon-m-exclamation-circle',
+                        'paid' => 'heroicon-m-check-circle',
+                        'refunded' => 'heroicon-m-arrow-uturn-left',
                         default => 'heroicon-m-question-mark-circle',
                     })
                     ->sortable()
                     ->description(fn ($record) => $record->payment_method
-                        ? ucwords(str_replace('_', ' ', $record->payment_method))
-                        : 'No method'),
+                        ? __('enums.payment_method.' . $record->payment_method)
+                        : __('resources.no_method')),
 
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('resources.created'))
                     ->dateTime('M j, H:i')
                     ->sortable()
                     ->since()
@@ -157,28 +151,32 @@ class BookingsTable
             ->filters([
                 // Quick Status Filters
                 SelectFilter::make('status')
-                    ->label('Booking Status')
+                    ->label(__('resources.booking_status'))
                     ->options(BookingStatus::class)
                     ->multiple()
                     ->preload(),
 
                 SelectFilter::make('payment_status')
-                    ->label('Payment Status')
-                    ->options(PaymentStatus::class)
+                    ->label(__('resources.payment_status'))
+                    ->options([
+                        'unpaid' => __('resources.unpaid'),
+                        'paid' => __('resources.paid'),
+                        'refunded' => __('resources.refunded'),
+                    ])
                     ->multiple()
                     ->preload(),
 
                 // Advanced Date Filters
                 Filter::make('date_range')
                     ->form([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 DatePicker::make('start_date_from')
-                                    ->label('Rental Starts From')
-                                    ->placeholder('Select start date'),
+                                    ->label(__('resources.rental_starts_from'))
+                                    ->placeholder(__('resources.select_start_date')),
                                 DatePicker::make('start_date_to')
-                                    ->label('Rental Starts To')
-                                    ->placeholder('Select end date'),
+                                    ->label(__('resources.rental_starts_to'))
+                                    ->placeholder(__('resources.select_end_date')),
                             ]),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -196,12 +194,12 @@ class BookingsTable
                         $indicators = [];
 
                         if ($data['start_date_from'] ?? null) {
-                            $indicators[] = Indicator::make('Rentals from: ' . Carbon::parse($data['start_date_from'])->format('M j, Y'))
+                            $indicators[] = Indicator::make(__('resources.rentals_from') . ': ' . Carbon::parse($data['start_date_from'])->format('M j, Y'))
                                 ->removeField('start_date_from');
                         }
 
                         if ($data['start_date_to'] ?? null) {
-                            $indicators[] = Indicator::make('Rentals to: ' . Carbon::parse($data['start_date_to'])->format('M j, Y'))
+                            $indicators[] = Indicator::make(__('resources.rentals_to') . ': ' . Carbon::parse($data['start_date_to'])->format('M j, Y'))
                                 ->removeField('start_date_to');
                         }
 
@@ -211,17 +209,17 @@ class BookingsTable
                 // Financial Filters
                 Filter::make('amount_range')
                     ->form([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('min_amount')
-                                    ->label('Min Amount')
+                                    ->label(__('resources.min_amount'))
                                     ->numeric()
-                                    ->prefix('$')
+                                    ->prefix('RM')
                                     ->placeholder('0.00'),
                                 TextInput::make('max_amount')
-                                    ->label('Max Amount')
+                                    ->label(__('resources.max_amount'))
                                     ->numeric()
-                                    ->prefix('$')
+                                    ->prefix('RM')
                                     ->placeholder('999.99'),
                             ]),
                     ])
@@ -240,12 +238,12 @@ class BookingsTable
                         $indicators = [];
 
                         if ($data['min_amount'] ?? null) {
-                            $indicators[] = Indicator::make('Min: RM ' . number_format($data['min_amount'], 2))
+                            $indicators[] = Indicator::make(__('resources.min') . ': RM ' . number_format($data['min_amount'], 2))
                                 ->removeField('min_amount');
                         }
 
                         if ($data['max_amount'] ?? null) {
-                            $indicators[] = Indicator::make('Max: RM ' . number_format($data['max_amount'], 2))
+                            $indicators[] = Indicator::make(__('resources.max') . ': RM ' . number_format($data['max_amount'], 2))
                                 ->removeField('max_amount');
                         }
 
@@ -254,24 +252,24 @@ class BookingsTable
 
                 // Additional Filters
                 SelectFilter::make('payment_method')
-                    ->label('Payment Method')
+                    ->label(__('resources.payment_method'))
                     ->options([
-                        'cash' => 'Cash',
-                        'credit_card' => 'Credit Card',
-                        'debit_card' => 'Debit Card',
-                        'bank_transfer' => 'Bank Transfer',
-                        'e_wallet' => 'E-Wallet',
-                        'paypal' => 'PayPal',
-                        'stripe' => 'Stripe',
+                        'cash' => __('enums.payment_method.cash'),
+                        'credit_card' => __('enums.payment_method.credit_card'),
+                        'debit_card' => __('enums.payment_method.debit_card'),
+                        'bank_transfer' => __('enums.payment_method.bank_transfer'),
+                        'e_wallet' => __('enums.payment_method.e_wallet'),
+                        'paypal' => __('enums.payment_method.paypal'),
+                        'stripe' => __('enums.payment_method.stripe'),
                     ])
                     ->multiple()
                     ->preload(),
 
                 TernaryFilter::make('has_special_requests')
-                    ->label('Has Special Requests')
-                    ->placeholder('All bookings')
-                    ->trueLabel('With special requests')
-                    ->falseLabel('Without special requests')
+                    ->label(__('resources.has_special_requests'))
+                    ->placeholder(__('resources.all_bookings'))
+                    ->trueLabel(__('resources.with_special_requests'))
+                    ->falseLabel(__('resources.without_special_requests'))
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('special_requests')->where('special_requests', '!=', ''),
                         false: fn (Builder $query) => $query->whereNull('special_requests')->orWhere('special_requests', '=', ''),
@@ -279,7 +277,7 @@ class BookingsTable
 
                 Filter::make('created_this_month')
                     ->query(fn (Builder $query): Builder => $query->whereMonth('created_at', now()->month))
-                    ->label('Created This Month'),
+                    ->label(__('resources.created_this_month')),
 
                 TrashedFilter::make(),
             ])
@@ -288,24 +286,24 @@ class BookingsTable
             ->persistFiltersInSession()
             ->recordActions([
                 ViewAction::make()
-                    ->label('View')
+                    ->label(__('forms.actions.view'))
                     ->icon('heroicon-m-eye')
-                    ->tooltip('View booking details'),
+                    ->tooltip(__('resources.view_booking_details')),
 
                 EditAction::make()
-                    ->label('Edit')
+                    ->label(__('forms.actions.edit'))
                     ->icon('heroicon-m-pencil-square')
-                    ->tooltip('Edit booking'),
+                    ->tooltip(__('resources.edit_booking')),
 
                 Action::make('confirm')
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Confirm Booking')
-                    ->modalSubheading('This will mark the booking as confirmed. The customer will be notified.')
+                    ->modalHeading(__('resources.confirm_booking'))
+                    ->modalSubheading(__('resources.confirm_booking_description'))
                     ->visible(fn ($record): bool => $record->status === BookingStatus::PENDING)
                     ->action(fn ($record) => $record->update(['status' => BookingStatus::CONFIRMED]))
-                    ->after(fn ($record) => \Filament\Notifications\Notification::make()
+                    ->after(fn ($record) => Notification::make()
                         ->title('Booking confirmed successfully')
                         ->success()
                         ->send()),
@@ -314,8 +312,8 @@ class BookingsTable
                     ->icon('heroicon-m-play')
                     ->color('primary')
                     ->requiresConfirmation()
-                    ->modalHeading('Start Rental')
-                    ->modalSubheading('This will mark the booking as ongoing. The rental period begins now.')
+                    ->modalHeading(__('resources.start_rental'))
+                    ->modalSubheading(__('resources.start_rental_description'))
                     ->visible(fn ($record): bool => $record->status === BookingStatus::CONFIRMED)
                     ->action(fn ($record) => $record->update(['status' => BookingStatus::ONGOING])),
 
@@ -323,8 +321,8 @@ class BookingsTable
                     ->icon('heroicon-m-check-badge')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Complete Rental')
-                    ->modalSubheading('This will mark the booking as completed. The vehicle has been returned.')
+                    ->modalHeading(__('resources.complete_rental'))
+                    ->modalSubheading(__('resources.complete_rental_description'))
                     ->visible(fn ($record): bool => $record->status === BookingStatus::ONGOING)
                     ->action(fn ($record) => $record->update(['status' => BookingStatus::COMPLETED])),
 
@@ -332,51 +330,51 @@ class BookingsTable
                     ->icon('heroicon-m-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading('Cancel Booking')
-                    ->modalSubheading('This will cancel the booking. This action may affect payments and should be done carefully.')
+                    ->modalHeading(__('resources.cancel_booking'))
+                    ->modalSubheading(__('resources.cancel_booking_description'))
                     ->visible(fn ($record): bool => in_array($record->status, [BookingStatus::PENDING, BookingStatus::CONFIRMED]))
                     ->action(fn ($record) => $record->update(['status' => BookingStatus::CANCELLED])),
 
                 DeleteAction::make()
                     ->requiresConfirmation()
-                    ->modalHeading('Delete Booking')
-                    ->modalSubheading('Are you sure you want to delete this booking? This action cannot be undone.')
+                    ->modalHeading(__('resources.delete_booking'))
+                    ->modalSubheading(__('resources.delete_booking_description'))
                     ->modalIcon('heroicon-o-trash'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     BulkAction::make('confirm_multiple')
-                        ->label('Confirm Selected')
+                        ->label(__('resources.confirm_selected'))
                         ->icon('heroicon-m-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->modalHeading('Confirm Multiple Bookings')
-                        ->modalSubheading('This will confirm all selected pending bookings.')
+                        ->modalHeading(__('resources.confirm_multiple_bookings'))
+                        ->modalSubheading(__('resources.confirm_multiple_bookings_description'))
                         ->deselectRecordsAfterCompletion()
                         ->action(function (Collection $records) {
                             $confirmed = $records->where('status', BookingStatus::PENDING)->count();
                             $records->where('status', BookingStatus::PENDING)->each(fn ($record) => $record->update(['status' => BookingStatus::CONFIRMED]));
 
-                            \Filament\Notifications\Notification::make()
-                                ->title("Confirmed {$confirmed} bookings")
+                            Notification::make()
+                                ->title("Confirmed $confirmed bookings")
                                 ->success()
                                 ->send();
                         }),
 
                     BulkAction::make('cancel_multiple')
-                        ->label('Cancel Selected')
+                        ->label(__('resources.cancel_selected'))
                         ->icon('heroicon-m-x-circle')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->modalHeading('Cancel Multiple Bookings')
-                        ->modalSubheading('This will cancel all selected bookings. Be careful with this action.')
+                        ->modalHeading(__('resources.cancel_multiple_bookings'))
+                        ->modalSubheading(__('resources.cancel_multiple_bookings_description'))
                         ->deselectRecordsAfterCompletion()
                         ->action(function (Collection $records) {
                             $cancelled = $records->whereIn('status', [BookingStatus::PENDING, BookingStatus::CONFIRMED])->count();
                             $records->whereIn('status', [BookingStatus::PENDING, BookingStatus::CONFIRMED])->each(fn ($record) => $record->update(['status' => BookingStatus::CANCELLED]));
 
-                            \Filament\Notifications\Notification::make()
-                                ->title("Cancelled {$cancelled} bookings")
+                            Notification::make()
+                                ->title("Cancelled $cancelled bookings")
                                 ->warning()
                                 ->send();
                         }),

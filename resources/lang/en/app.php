@@ -6,6 +6,7 @@ return [
     'welcome' => 'Welcome',
     'dashboard' => 'Dashboard',
     'language' => 'Language',
+    'switch_to' => 'Switch to',
     
     // Navigation
     'navigation' => [

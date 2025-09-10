@@ -12,7 +12,9 @@
       "Bash(php artisan optimize:clear:*)",
       "Bash(php artisan:*)",
       "Bash(composer show:*)",
-      "Bash(composer:*)"
+      "Bash(composer:*)",
+      "Bash(php:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

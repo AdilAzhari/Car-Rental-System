@@ -5,7 +5,7 @@ namespace App\Filament\Resources\ReviewResource\Pages;
 use App\Filament\Resources\ReviewResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListReviews extends ListRecords
@@ -24,35 +24,35 @@ class ListReviews extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All Reviews')
+            'all' => Tab::make(__('resources.all_reviews'))
                 ->badge(fn () => $this->getResource()::getModel()::count()),
 
-            'pending' => Tab::make('Pending')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'pending')->count())
-                ->icon('heroicon-m-clock'),
+            'visible' => Tab::make(__('resources.visible'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_visible', true))
+                ->badge(fn () => $this->getResource()::getModel()::where('is_visible', true)->count())
+                ->icon('heroicon-m-eye'),
 
-            'approved' => Tab::make('Approved')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'approved'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'approved')->count())
-                ->icon('heroicon-m-check-circle'),
+            'hidden' => Tab::make(__('resources.hidden'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_visible', false))
+                ->badge(fn () => $this->getResource()::getModel()::where('is_visible', false)->count())
+                ->icon('heroicon-m-eye-slash'),
 
-            'high_rating' => Tab::make('5 Stars')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', 5)->where('status', 'approved'))
-                ->badge(fn () => $this->getResource()::getModel()::where('rating', 5)->where('status', 'approved')->count())
+            'high_rating' => Tab::make(__('resources.5_stars'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', 5))
+                ->badge(fn () => $this->getResource()::getModel()::where('rating', 5)->count())
                 ->icon('heroicon-m-star'),
 
-            'low_rating' => Tab::make('Low Ratings')
+            'good_rating' => Tab::make(__('resources.4_plus_stars'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', '>=', 4))
+                ->badge(fn () => $this->getResource()::getModel()::where('rating', '>=', 4)->count())
+                ->icon('heroicon-m-hand-thumb-up'),
+
+            'low_rating' => Tab::make(__('resources.low_ratings'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', '<=', 2))
                 ->badge(fn () => $this->getResource()::getModel()::where('rating', '<=', 2)->count())
                 ->icon('heroicon-m-exclamation-triangle'),
 
-            'flagged' => Tab::make('Flagged')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'flagged'))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', 'flagged')->count())
-                ->icon('heroicon-m-flag'),
-
-            'recent' => Tab::make('Recent (7 days)')
+            'recent' => Tab::make(__('resources.recent_7_days'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('created_at', '>=', now()->subDays(7)))
                 ->badge(fn () => $this->getResource()::getModel()::where('created_at', '>=', now()->subDays(7))->count())
                 ->icon('heroicon-m-calendar-days'),

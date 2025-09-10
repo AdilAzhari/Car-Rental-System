@@ -5,8 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Filament\Resources\VehicleResource\RelationManagers;
 use App\Models\Vehicle;
-use App\Models\User;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
@@ -14,23 +20,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\ViewField;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 use BackedEnum;
 
@@ -44,96 +43,116 @@ class VehicleResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('resources.vehicles');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('resources.vehicle');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resources.vehicles');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.vehicle_management');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
-                Section::make('Vehicle Information')
-                    ->description('Basic vehicle details and specifications')
+                Section::make(__('resources.vehicle_information'))
+                    ->description(__('resources.basic_information'))
                     ->icon('heroicon-m-information-circle')
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('make')
-                                    ->label('Make')
+                                    ->label(__('resources.make'))
                                     ->required()
                                     ->maxLength(100)
-                                    ->placeholder('Toyota, Honda, BMW...'),
+                                    ->placeholder(__('resources.make_placeholder')),
 
                                 TextInput::make('model')
-                                    ->label('Model')
+                                    ->label(__('resources.model'))
                                     ->required()
                                     ->maxLength(100)
-                                    ->placeholder('Camry, Civic, X5...'),
+                                    ->placeholder(__('resources.model_placeholder')),
 
                                 TextInput::make('year')
-                                    ->label('Year')
+                                    ->label(__('resources.year'))
                                     ->required()
                                     ->numeric()
                                     ->minValue(1990)
                                     ->maxValue(now()->year + 1)
-                                    ->placeholder('2023'),
+                                    ->placeholder(__('resources.year_placeholder')),
                             ]),
 
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('license_plate')
-                                    ->label('License Plate')
+                                TextInput::make('plate_number')
+                                    ->label(__('resources.license_plate'))
                                     ->required()
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(20)
-                                    ->placeholder('ABC-1234')
+                                    ->placeholder(__('resources.license_plate_placeholder'))
                                     ->suffixIcon('heroicon-m-identification'),
 
                                 TextInput::make('vin')
-                                    ->label('VIN Number')
+                                    ->label(__('resources.vin_number'))
                                     ->maxLength(17)
-                                    ->placeholder('1HGBH41JXMN109186')
-                                    ->helperText('Vehicle Identification Number'),
+                                    ->placeholder(__('resources.vin_placeholder'))
+                                    ->helperText(__('resources.vin_helper')),
                             ]),
                     ]),
 
-                Section::make('Vehicle Categories')
-                    ->description('Classification and type information')
+                Section::make(__('resources.vehicle_categories'))
+                    ->description(__('resources.vehicle_categories_description'))
                     ->icon('heroicon-m-tag')
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 Select::make('category')
-                                    ->label('Category')
+                                    ->label(__('resources.category'))
                                     ->options([
-                                        'economy' => 'Economy',
-                                        'compact' => 'Compact',
-                                        'midsize' => 'Midsize',
-                                        'fullsize' => 'Full-size',
-                                        'luxury' => 'Luxury',
-                                        'suv' => 'SUV',
-                                        'minivan' => 'Minivan',
-                                        'pickup' => 'Pickup Truck',
-                                        'convertible' => 'Convertible',
-                                        'sports' => 'Sports Car',
+                                        'economy' => __('enums.vehicle_category.economy'),
+                                        'compact' => __('enums.vehicle_category.compact'),
+                                        'midsize' => __('enums.vehicle_category.midsize'),
+                                        'fullsize' => __('enums.vehicle_category.fullsize'),
+                                        'luxury' => __('enums.vehicle_category.luxury'),
+                                        'suv' => __('enums.vehicle_category.suv'),
+                                        'minivan' => __('enums.vehicle_category.minivan'),
+                                        'pickup' => __('enums.vehicle_category.pickup'),
+                                        'convertible' => __('enums.vehicle_category.convertible'),
+                                        'sports' => __('enums.vehicle_category.sports'),
                                     ])
                                     ->required()
                                     ->native(false),
 
                                 Select::make('transmission')
-                                    ->label('Transmission')
+                                    ->label(__('resources.transmission'))
                                     ->options([
-                                        'automatic' => 'Automatic',
-                                        'manual' => 'Manual',
-                                        'cvt' => 'CVT',
+                                        'automatic' => __('enums.transmission.automatic'),
+                                        'manual' => __('enums.transmission.manual'),
+                                        'cvt' => __('enums.transmission.cvt'),
                                     ])
                                     ->required()
                                     ->native(false),
 
                                 Select::make('fuel_type')
-                                    ->label('Fuel Type')
+                                    ->label(__('resources.fuel_type'))
                                     ->options([
-                                        'petrol' => 'Petrol',
-                                        'diesel' => 'Diesel',
-                                        'hybrid' => 'Hybrid',
-                                        'electric' => 'Electric',
-                                        'lpg' => 'LPG',
+                                        'petrol' => __('enums.fuel_type.petrol'),
+                                        'diesel' => __('enums.fuel_type.diesel'),
+                                        'hybrid' => __('enums.fuel_type.hybrid'),
+                                        'electric' => __('enums.fuel_type.electric'),
+                                        'lpg' => __('enums.fuel_type.lpg'),
                                     ])
                                     ->required()
                                     ->native(false),
@@ -141,8 +160,8 @@ class VehicleResource extends Resource
 
                         Grid::make(4)
                             ->schema([
-                                TextInput::make('seating_capacity')
-                                    ->label('Seats')
+                                TextInput::make('seats')
+                                    ->label(__('resources.seats'))
                                     ->required()
                                     ->numeric()
                                     ->minValue(1)
@@ -150,36 +169,35 @@ class VehicleResource extends Resource
                                     ->default(5)
                                     ->suffixIcon('heroicon-m-user-group'),
 
-                                TextInput::make('doors')
-                                    ->label('Doors')
-                                    ->numeric()
-                                    ->minValue(2)
-                                    ->maxValue(6)
-                                    ->default(4),
+                                TextInput::make('color')
+                                    ->label(__('resources.color'))
+                                    ->required()
+                                    ->maxLength(50)
+                                    ->placeholder(__('resources.color_placeholder')),
 
                                 TextInput::make('engine_size')
-                                    ->label('Engine Size (L)')
+                                    ->label(__('resources.engine_size'))
                                     ->numeric()
                                     ->step(0.1)
                                     ->minValue(0.1)
-                                    ->placeholder('2.0'),
+                                    ->placeholder(__('resources.engine_size_placeholder')),
 
                                 TextInput::make('mileage')
-                                    ->label('Mileage (km)')
+                                    ->label(__('resources.mileage_km'))
                                     ->numeric()
                                     ->minValue(0)
-                                    ->placeholder('50000'),
+                                    ->placeholder(__('resources.mileage_placeholder')),
                             ]),
                     ]),
 
-                Section::make('Ownership & Pricing')
-                    ->description('Owner details and rental pricing')
+                Section::make(__('resources.ownership_pricing'))
+                    ->description(__('resources.ownership_pricing_description'))
                     ->icon('heroicon-m-currency-dollar')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 Select::make('owner_id')
-                                    ->label('Vehicle Owner')
+                                    ->label(__('resources.vehicle_owner'))
                                     ->relationship('owner', 'name')
                                     ->searchable()
                                     ->preload()
@@ -187,70 +205,77 @@ class VehicleResource extends Resource
                                     ->createOptionForm([
                                         TextInput::make('name')->required(),
                                         TextInput::make('email')->email()->required(),
-                                        Select::make('role')->options(['owner' => 'Owner'])->default('owner'),
+                                        Select::make('role')->options(['owner' => __('resources.owner')])->default('owner'),
                                     ])
-                                    ->placeholder('Select or create owner'),
+                                    ->placeholder(__('resources.select_or_create_owner')),
 
                                 TextInput::make('daily_rate')
-                                    ->label('Daily Rate (MYR)')
+                                    ->label(__('resources.daily_rate'))
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('RM')
                                     ->step(0.01)
-                                    ->placeholder('150.00'),
+                                    ->placeholder(__('resources.daily_rate_placeholder')),
                             ]),
                     ]),
 
-                Section::make('Vehicle Status & Location')
-                    ->description('Current status and location information')
+                Section::make(__('resources.vehicle_status_location'))
+                    ->description(__('resources.vehicle_status_location_description'))
                     ->icon('heroicon-m-map-pin')
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 Select::make('status')
-                                    ->label('Status')
+                                    ->label(__('resources.status'))
                                     ->options([
-                                        'draft' => 'Draft',
-                                        'published' => 'Published',
-                                        'maintenance' => 'Under Maintenance',
-                                        'archived' => 'Archived',
+                                        'draft' => __('resources.draft'),
+                                        'published' => __('resources.published'),
+                                        'maintenance' => __('resources.under_maintenance'),
+                                        'archived' => __('resources.archived'),
                                     ])
                                     ->default('draft')
                                     ->required()
                                     ->native(false),
 
                                 Toggle::make('is_available')
-                                    ->label('Available for Rent')
+                                    ->label(__('resources.available_for_rent'))
                                     ->default(true)
-                                    ->helperText('Can customers book this vehicle?'),
+                                    ->helperText(__('resources.can_customers_book')),
 
                                 Toggle::make('insurance_included')
-                                    ->label('Insurance Included')
+                                    ->label(__('resources.insurance_included'))
                                     ->default(true)
-                                    ->helperText('Does rental include insurance?'),
+                                    ->helperText(__('resources.does_rental_include_insurance')),
                             ]),
 
-                        Grid::make(2)
+                        Grid::make(3)
                             ->schema([
                                 TextInput::make('location')
-                                    ->label('Current Location')
+                                    ->label(__('resources.current_location'))
+                                    ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Kuala Lumpur, Malaysia'),
+                                    ->placeholder(__('resources.location_placeholder')),
 
                                 TextInput::make('pickup_location')
-                                    ->label('Pickup Location')
+                                    ->label(__('resources.pickup_location'))
                                     ->maxLength(255)
-                                    ->placeholder('Airport, Hotel, etc.'),
+                                    ->placeholder(__('resources.pickup_location_placeholder')),
+
+                                DatePicker::make('insurance_expiry')
+                                    ->label(__('resources.insurance_expiry'))
+                                    ->required()
+                                    ->minDate(now())
+                                    ->placeholder(__('resources.insurance_expiry_placeholder')),
                             ]),
                     ]),
 
-                Section::make('Images & Media')
-                    ->description('Vehicle photos and documentation')
+                Section::make(__('resources.images_media'))
+                    ->description(__('resources.images_media_description'))
                     ->icon('heroicon-m-photo')
                     ->schema([
                         FileUpload::make('featured_image')
-                            ->label('Featured Image')
+                            ->label(__('resources.featured_image'))
                             ->image()
                             ->directory('vehicles/featured')
                             ->maxSize(5120)
@@ -259,7 +284,7 @@ class VehicleResource extends Resource
                             ->imageResizeTargetHeight(600),
 
                         FileUpload::make('gallery_images')
-                            ->label('Gallery Images')
+                            ->label(__('resources.gallery_images'))
                             ->multiple()
                             ->image()
                             ->directory('vehicles/gallery')
@@ -268,47 +293,110 @@ class VehicleResource extends Resource
                             ->imageResizeMode('cover')
                             ->imageResizeTargetWidth(800)
                             ->imageResizeTargetHeight(600)
-                            ->helperText('Add up to 10 additional photos'),
+                            ->helperText(__('resources.gallery_images_helper')),
 
                         FileUpload::make('documents')
-                            ->label('Documents')
+                            ->label(__('resources.documents'))
                             ->multiple()
                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
                             ->directory('vehicles/documents')
                             ->maxFiles(5)
-                            ->helperText('Upload registration, insurance, etc.'),
+                            ->helperText(__('resources.documents_helper')),
                     ])
                     ->collapsible(),
 
-                Section::make('Features & Specifications')
-                    ->description('Vehicle features and additional specifications')
+                Section::make(__('resources.features_specifications'))
+                    ->description(__('resources.features_specifications_description'))
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
                         KeyValue::make('features')
-                            ->label('Vehicle Features')
-                            ->keyLabel('Feature')
-                            ->valueLabel('Details')
+                            ->label(__('resources.vehicle_features'))
+                            ->keyLabel(__('resources.feature'))
+                            ->valueLabel(__('resources.details'))
                             ->default([
-                                'Air Conditioning' => 'Yes',
-                                'Bluetooth' => 'Yes',
-                                'GPS Navigation' => 'Yes',
+                                __('resources.air_conditioning') => __('resources.yes'),
+                                __('resources.bluetooth') => __('resources.yes'),
+                                __('resources.gps_navigation') => __('resources.yes'),
                             ]),
 
                         Textarea::make('description')
-                            ->label('Description')
+                            ->label(__('resources.description'))
                             ->rows(4)
                             ->maxLength(1000)
-                            ->placeholder('Describe the vehicle, its condition, special features, etc.')
+                            ->placeholder(__('resources.description_placeholder'))
                             ->columnSpanFull(),
 
                         Textarea::make('terms_and_conditions')
-                            ->label('Terms & Conditions')
+                            ->label(__('resources.terms_conditions'))
                             ->rows(3)
                             ->maxLength(500)
-                            ->placeholder('Any specific terms for this vehicle...')
+                            ->placeholder(__('resources.terms_conditions_placeholder'))
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
+
+                Section::make(__('resources.traffic_violations'))
+                    ->description(__('resources.traffic_violations_description'))
+                    ->icon('heroicon-m-exclamation-triangle')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Toggle::make('has_pending_violations')
+                                    ->label(__('resources.has_pending_violations'))
+                                    ->helperText(__('resources.pending_violations_helper'))
+                                    ->disabled()
+                                    ->dehydrated(false),
+
+                                TextInput::make('total_violations_count')
+                                    ->label(__('resources.total_violations_count'))
+                                    ->numeric()
+                                    ->default(0)
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->suffixIcon('heroicon-m-exclamation-circle'),
+                            ]),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('total_fines_amount')
+                                    ->label(__('resources.total_fines_amount'))
+                                    ->numeric()
+                                    ->prefix('RM')
+                                    ->step(0.01)
+                                    ->default(0.00)
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->suffixIcon('heroicon-m-currency-dollar'),
+
+                                DateTimePicker::make('violations_last_checked')
+                                    ->label(__('resources.last_checked'))
+                                    ->displayFormat('d M Y H:i')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->suffixIcon('heroicon-m-clock'),
+                            ]),
+
+                        // Traffic Violations Details View
+                        ViewField::make('traffic_violations_display')
+                            ->label(__('resources.violation_details'))
+                            ->view('filament.components.traffic-violations-display')
+                            ->visible(fn ($record) => $record && $record->traffic_violations && count($record->traffic_violations) > 0)
+                            ->columnSpanFull(),
+
+                        // API Integration Actions
+                        Grid::make(1)
+                            ->schema([
+                                Placeholder::make('api_integration_info')
+                                    ->label(__('resources.api_integration'))
+                                    ->content(fn (): string => __('resources.api_integration_description'))
+                                    ->extraAttributes([
+                                        'class' => 'text-sm p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800'
+                                    ]),
+                            ])
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 
@@ -317,33 +405,33 @@ class VehicleResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('featured_image')
-                    ->label('Image')
+                    ->label(__('resources.image'))
                     ->circular()
                     ->defaultImageUrl(url('/images/car-placeholder.jpg')),
 
                 TextColumn::make('make')
-                    ->label('Make')
+                    ->label(__('resources.make'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
                 TextColumn::make('model')
-                    ->label('Model')
+                    ->label(__('resources.model'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('year')
-                    ->label('Year')
+                    ->label(__('resources.year'))
                     ->sortable(),
 
-                TextColumn::make('license_plate')
-                    ->label('License')
+                TextColumn::make('plate_number')
+                    ->label(__('resources.license'))
                     ->searchable()
                     ->fontFamily('mono')
                     ->copyable(),
 
                 BadgeColumn::make('category')
-                    ->label('Category')
+                    ->label(__('resources.category'))
                     ->colors([
                         'success' => 'economy',
                         'info' => 'compact',
@@ -354,7 +442,7 @@ class VehicleResource extends Resource
                     ]),
 
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->colors([
                         'success' => 'published',
                         'warning' => 'draft',
@@ -363,28 +451,28 @@ class VehicleResource extends Resource
                     ]),
 
                 BooleanColumn::make('is_available')
-                    ->label('Available')
+                    ->label(__('resources.available'))
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle'),
 
                 TextColumn::make('daily_rate')
-                    ->label('Daily Rate')
+                    ->label(__('resources.daily_rate'))
                     ->money('MYR')
                     ->sortable(),
 
                 TextColumn::make('owner.name')
-                    ->label('Owner')
+                    ->label(__('resources.owner'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('bookings_count')
-                    ->label('Bookings')
+                    ->label(__('resources.bookings'))
                     ->counts('bookings')
                     ->badge()
                     ->color('info'),
 
                 TextColumn::make('created_at')
-                    ->label('Added')
+                    ->label(__('resources.added'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

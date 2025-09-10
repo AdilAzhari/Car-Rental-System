@@ -10,6 +10,11 @@ class CreateBooking extends CreateRecord
 {
     protected static string $resource = BookingResource::class;
 
+    public function getView(): string
+    {
+        return 'filament.resources.bookings.pages.create-booking';
+    }
+
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()

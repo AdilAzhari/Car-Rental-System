@@ -29,6 +29,10 @@ class User extends Authenticatable
         'is_verified',
         'date_of_birth',
         'address',
+        'is_new_user',
+        'has_changed_default_password',
+        'last_login_at',
+        'password_changed_at',
     ];
 
     protected $hidden = [
@@ -45,6 +49,10 @@ class User extends Authenticatable
             'date_of_birth' => 'date',
             'role' => UserRole::class,
             'status' => UserStatus::class,
+            'is_new_user' => 'boolean',
+            'has_changed_default_password' => 'boolean',
+            'last_login_at' => 'datetime',
+            'password_changed_at' => 'datetime',
         ];
     }
 
@@ -61,5 +69,10 @@ class User extends Authenticatable
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'renter_id');
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'renter_id');
     }
 }

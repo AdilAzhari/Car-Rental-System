@@ -19,13 +19,14 @@ use App\Filament\Widgets\RecentBookingsWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\UserStatsWidget;
 use App\Filament\Widgets\VehicleStatsWidget;
-use App\Filament\Widgets\LanguageSwitcher;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\LocalizationMiddleware;
+use App\Http\Middleware\NewUserNotificationMiddleware;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,14 +44,28 @@ class AdminPanelProvider extends PanelProvider
                 'panels::body.start',
                 fn (): string => view('filament.hooks.rtl-support')->render()
             )
+            ->renderHook(
+                'panels::topbar.end',
+                fn (): string => 
+                    view('filament.hooks.notification-bell')->render() . 
+                    view('filament.hooks.language-switcher')->render()
+            )
+            ->renderHook(
+                'panels::head.end',
+                fn (): string => '<link rel="stylesheet" href="' . asset('css/admin-fixes.css') . '?v=' . time() . '">'
+            )
+            ->renderHook(
+                'panels::user-menu.start',
+                fn (): string => view('filament.hooks.user-menu')->render()
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
             ])
+            ->sidebarCollapsibleOnDesktop()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                LanguageSwitcher::class,
                 DashboardStatsOverview::class,
                 RevenueChartWidget::class,
                 LatestActivitiesWidget::class,
@@ -70,6 +85,8 @@ class AdminPanelProvider extends PanelProvider
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
+                LocalizationMiddleware::class,
+                NewUserNotificationMiddleware::class,
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
