@@ -21,7 +21,7 @@ return [
     'error' => 'Error',
     'warning' => 'Warning',
     'info' => 'Information',
-    
+
     // Users
     'users' => 'Users',
     'user' => 'User',
@@ -46,7 +46,7 @@ return [
     'admin' => 'Administrator',
     'customer' => 'Customer',
     'owner' => 'Vehicle Owner',
-    
+
     // Vehicles
     'vehicles' => 'Vehicles',
     'vehicle' => 'Vehicle',
@@ -122,7 +122,7 @@ return [
     'image' => 'Image',
     'license' => 'License',
     'added' => 'Added',
-    
+
     // Booking-specific translations
     'id' => 'ID',
     'booking_id_copied' => 'Booking ID copied!',
@@ -173,7 +173,7 @@ return [
     'cancel_selected' => 'Cancel Selected',
     'cancel_multiple_bookings' => 'Cancel Multiple Bookings',
     'cancel_multiple_bookings_description' => 'This will cancel all selected bookings. Be careful with this action.',
-    
+
     // User-specific translations
     'user_details_description' => 'Basic user details and account information',
     'enter_full_name' => 'Enter full name',
@@ -227,7 +227,7 @@ return [
     'approved' => 'Approved',
     'rejected' => 'Rejected',
     'maintenance' => 'Maintenance',
-    
+
     // Bookings
     'bookings' => 'Bookings',
     'booking' => 'Booking',
@@ -250,7 +250,7 @@ return [
     'paid' => 'Paid',
     'unpaid' => 'Unpaid',
     'refunded' => 'Refunded',
-    
+
     // Reviews
     'reviews' => 'Reviews',
     'review' => 'Review',
@@ -266,7 +266,7 @@ return [
     'high_rating' => 'High Rating',
     'low_rating' => 'Low Rating',
     'recent' => 'Recent',
-    
+
     // Activity Logs
     'activity_logs' => 'Activity Logs',
     'activity_log' => 'Activity Log',
@@ -277,7 +277,7 @@ return [
     'causer' => 'User',
     'properties' => 'Properties',
     'log_name' => 'Log Name',
-    
+
     // Payments
     'payments' => 'Payments',
     'payment' => 'Payment',
@@ -285,7 +285,7 @@ return [
     'transaction_id' => 'Transaction ID',
     'processed_at' => 'Processed At',
     'refund_amount' => 'Refund Amount',
-    
+
     // Filters and Tabs
     'all' => 'All',
     'today' => 'Today',
@@ -294,7 +294,7 @@ return [
     'last_7_days' => 'Last 7 Days',
     'last_30_days' => 'Last 30 Days',
     'recent_7_days' => 'Recent (7 days)',
-    
+
     // Status Colors
     'success_color' => 'Success',
     'warning_color' => 'Warning',
@@ -302,7 +302,7 @@ return [
     'info_color' => 'Info',
     'primary_color' => 'Primary',
     'secondary_color' => 'Secondary',
-    
+
     // Navigation Groups
     'user_management' => 'User Management',
     'vehicle_management' => 'Vehicle Management',
@@ -310,7 +310,10 @@ return [
     'customer_feedback' => 'Customer Feedback',
     'system_management' => 'System Management',
     'fleet_management' => 'Fleet Management',
-    
+    'transactions' => 'Transactions',
+    'car_rental' => 'Car Rental',
+    'account_settings' => 'Account Settings',
+
     // Resource Navigation Labels (for tabs)
     'all_vehicles' => 'All Vehicles',
     'all_users' => 'All Users',
@@ -326,7 +329,7 @@ return [
     '4_plus_stars' => '4+ Stars',
     'low_ratings' => 'Low Ratings',
     'good_rating' => 'Good Rating',
-    
+
     // Review-specific translations
     'review_id' => 'Review #',
     'reviewer' => 'Reviewer',
@@ -348,7 +351,7 @@ return [
     '3_stars' => '3 Stars',
     '2_stars' => '2 Stars',
     '1_star' => '1 Star',
-    
+
     // Activity Log specific translations
     'activity_information' => 'Activity Information',
     'activity_information_description' => 'System activity and audit trail details',
@@ -386,7 +389,7 @@ return [
     'archive_selected' => 'Archive Selected',
     'archive_activity_logs' => 'Archive Activity Logs',
     'archive_activity_logs_confirmation' => 'Are you sure you want to archive these activity logs? This action cannot be undone.',
-    
+
     // Profile specific translations
     'my_profile' => 'My Profile',
     'personal_information' => 'Personal Information',
@@ -408,7 +411,7 @@ return [
     'password_changed_login_required' => 'Password changed successfully. Please log in again.',
     'arabic' => 'Arabic',
     'city' => 'City',
-    
+
     // Enhanced Profile specific translations
     'personal_information_description' => 'Your basic personal information and contact details',
     'name_helper' => 'Enter your full legal name as it appears on your ID',
@@ -442,7 +445,7 @@ return [
     'create_new_booking' => 'Create New Booking',
     'fill_booking_form_details' => 'Fill out the form below to create a new booking',
     'dashboard' => 'Dashboard',
-    
+
     // Traffic Violations
     'traffic_violations' => 'Traffic Violations',
     'traffic_violations_description' => 'Traffic violation records from government database',
@@ -458,4 +461,114 @@ return [
     'due_date' => 'Due Date',
     'no_violations' => 'No Violations Found',
     'no_violations_description' => 'This vehicle has a clean traffic record with no pending violations.',
+
+    // Navigation Groups
+    'fleet_management' => 'Fleet Management',
+    'browse_vehicles' => 'Browse Vehicles',
+
+    // Labels for forms and views
+    'availability' => 'Availability',
+    'book_now' => 'Book Now',
+    'customer' => 'Customer',
+    'duration' => 'Duration',
+    'booked_on' => 'Booked On',
+    'renter' => 'Renter',
+    'vehicle' => 'Vehicle',
+    'days' => 'Days',
+    'created' => 'Created',
+    'payment_notes' => 'Payment Notes',
+    'update_status' => 'Update Status',
+    'view_payments' => 'View Payments',
+    'confirm_payment' => 'Confirm Payment',
+    'log_id' => 'Log ID',
+    'log_name' => 'Log Name',
+    'event_type' => 'Event Type',
+    'subject_type' => 'Subject Type',
+    'subject_id' => 'Subject ID',
+    'user_id' => 'User ID',
+    'timestamp' => 'Timestamp',
+    'properties' => 'Properties',
+    'featured_image' => 'Featured Image',
+    'gallery' => 'Gallery',
+    'make' => 'Make',
+    'model' => 'Model',
+    'year' => 'Year',
+    'license_plate' => 'License Plate',
+    'vin_number' => 'VIN Number',
+    'category' => 'Category',
+    'transmission' => 'Transmission',
+    'fuel_type' => 'Fuel Type',
+    'seats' => 'Seats',
+    'doors' => 'Doors',
+    'daily_rate' => 'Daily Rate',
+    'status' => 'Status',
+    'available_for_rent' => 'Available for Rent',
+    'insurance_included' => 'Insurance Included',
+    'current_location' => 'Current Location',
+    'pickup_location' => 'Pickup Location',
+    'vehicle_features' => 'Vehicle Features',
+    'description' => 'Description',
+    'add_vehicle' => 'Add Vehicle',
+    'booking_id' => 'Booking ID',
+    'payment_status' => 'Payment Status',
+    'total_amount' => 'Total Amount',
+    'renter_email' => 'Renter Email',
+    'booking_created' => 'Booking Created',
+    'last_updated' => 'Last Updated',
+    'deposit' => 'Deposit',
+    'commission' => 'Commission',
+    'payment_method' => 'Payment Method',
+    'drop_off_location' => 'Drop off Location',
+    'special_requests' => 'Special Requests',
+    'edit_booking' => 'Edit Booking',
+    'view_payment' => 'View Payment',
+    'publish' => 'Publish',
+    'mark_for_maintenance' => 'Mark for Maintenance',
+    'archive' => 'Archive',
+    'renter' => 'Renter',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'number_of_days' => 'Number of Days',
+    'subtotal' => 'Subtotal',
+    'insurance_fee' => 'Insurance Fee',
+    'tax_amount' => 'Tax Amount',
+    'booking_status' => 'Booking Status',
+    'rating' => 'Rating',
+    'review' => 'Review',
+    'amount' => 'Amount',
+    'transaction_id' => 'Transaction ID',
+    'processed_at' => 'Processed At',
+    'refund_amount' => 'Refund Amount',
+    'refunded_at' => 'Refunded At',
+    'gateway_response' => 'Gateway Response',
+    'image' => 'Image',
+    'bookings' => 'Bookings',
+    'added' => 'Added',
+    'review_id' => 'Review ID',
+    'overall_rating' => 'Overall Rating',
+    'recommends' => 'Recommends',
+    'customer_name' => 'Customer Name',
+    'customer_email' => 'Customer Email',
+    'submitted_on' => 'Submitted On',
+    'review_text' => 'Review Text',
+    'visibility' => 'Visibility',
+    'vehicle_make_model' => 'Vehicle Make Model',
+    'show_review' => 'Show Review',
+    'payment_id' => 'Payment ID',
+
+    // Static dropdowns and options that need translation
+    'economy' => 'Economy',
+    'compact' => 'Compact',
+    'midsize' => 'Midsize',
+    'luxury' => 'Luxury',
+    'suv' => 'SUV',
+    'automatic' => 'Automatic',
+    'manual' => 'Manual',
+    'cvt' => 'CVT',
+    'available' => 'Available',
+    'not_available' => 'Not Available',
+    'under_maintenance' => 'Under Maintenance',
+    'published' => 'Published',
+    'draft' => 'Draft',
+    'archived' => 'Archived',
 ];

@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Filament\Facades\Filament;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class FilamentLocalizationProvider extends ServiceProvider
 {
@@ -22,18 +22,18 @@ class FilamentLocalizationProvider extends ServiceProvider
     public function boot(): void
     {
         // Add RTL support for Arabic
-        View::composer('filament::*', function ($view) {
+        View::composer('filament::*', function ($view): void {
             $currentLocale = app()->getLocale();
             $isRtl = in_array($currentLocale, ['ar', 'he', 'fa', 'ur']);
-            
+
             $view->with('isRtl', $isRtl);
             $view->with('currentLocale', $currentLocale);
         });
 
         // Configure Filament for RTL languages
-        Filament::serving(function () {
+        Filament::serving(function (): void {
             $currentLocale = app()->getLocale();
-            
+
             if (in_array($currentLocale, ['ar', 'he', 'fa', 'ur'])) {
                 // Add RTL CSS classes
                 View::share('filamentRtl', true);

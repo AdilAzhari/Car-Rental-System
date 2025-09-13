@@ -1,28 +1,27 @@
 <?php
 
+use App\Models\Booking;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Models\VehicleImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 
 uses(RefreshDatabase::class);
 
-describe('Vehicle Management Browser Tests', function () {
-    beforeEach(function () {
+describe('Vehicle Management Browser Tests', function (): void {
+    beforeEach(function (): void {
         $this->admin = User::factory()->admin()->create();
         $this->owner = User::factory()->owner()->create();
         $this->renter = User::factory()->renter()->create();
     });
 
-    describe('Vehicle Listing and Search', function () {
-        it('displays vehicle list correctly', function () {
+    describe('Vehicle Listing and Search', function (): void {
+        it('displays vehicle list correctly', function (): void {
             Vehicle::factory(5)->create([
                 'owner_id' => $this->owner->id,
-                'status' => 'published'
+                'status' => 'published',
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->assertSee('Vehicle Management')
@@ -32,19 +31,19 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can search vehicles by make and model', function () {
+        it('can search vehicles by make and model', function (): void {
             Vehicle::factory()->create([
                 'make' => 'Toyota',
                 'model' => 'Camry',
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
             Vehicle::factory()->create([
                 'make' => 'Honda',
                 'model' => 'Civic',
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->type('[data-testid="search-input"]', 'Toyota')
@@ -59,12 +58,12 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can filter vehicles by status', function () {
+        it('can filter vehicles by status', function (): void {
             Vehicle::factory()->published()->create(['owner_id' => $this->owner->id]);
             Vehicle::factory()->draft()->create(['owner_id' => $this->owner->id]);
             Vehicle::factory()->archived()->create(['owner_id' => $this->owner->id]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->select('[data-testid="status-filter"]', 'published')
@@ -76,19 +75,19 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can sort vehicles by different criteria', function () {
+        it('can sort vehicles by different criteria', function (): void {
             Vehicle::factory()->create([
                 'make' => 'BMW',
                 'daily_rate' => 150,
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
             Vehicle::factory()->create([
                 'make' => 'Audi',
                 'daily_rate' => 200,
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->select('[data-testid="sort-by"]', 'price_asc')
@@ -101,9 +100,9 @@ describe('Vehicle Management Browser Tests', function () {
         });
     });
 
-    describe('Vehicle Creation', function () {
-        it('can create a new vehicle with all details', function () {
-            browse(function ($browser) {
+    describe('Vehicle Creation', function (): void {
+        it('can create a new vehicle with all details', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->click('[data-testid="add-vehicle-btn"]')
@@ -126,8 +125,8 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('validates required fields during vehicle creation', function () {
-            browse(function ($browser) {
+        it('validates required fields during vehicle creation', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles/create')
                     ->click('[data-testid="submit-btn"]')
@@ -139,8 +138,8 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can upload vehicle images during creation', function () {
-            browse(function ($browser) {
+        it('can upload vehicle images during creation', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles/create')
                     ->type('[data-testid="make-input"]', 'BMW')
@@ -151,8 +150,8 @@ describe('Vehicle Management Browser Tests', function () {
                     ->type('[data-testid="daily-rate-input"]', '180')
                     ->select('[data-testid="owner-select"]', $this->owner->id)
                     ->attach('[data-testid="images-input"]', [
-                        __DIR__ . '/../fixtures/test-car-1.jpg',
-                        __DIR__ . '/../fixtures/test-car-2.jpg'
+                        __DIR__.'/../fixtures/test-car-1.jpg',
+                        __DIR__.'/../fixtures/test-car-2.jpg',
                     ])
                     ->pause(2000)
                     ->assertSee('2 images selected')
@@ -163,19 +162,19 @@ describe('Vehicle Management Browser Tests', function () {
         });
     });
 
-    describe('Vehicle Editing and Updates', function () {
-        it('can edit existing vehicle details', function () {
+    describe('Vehicle Editing and Updates', function (): void {
+        it('can edit existing vehicle details', function (): void {
             $vehicle = Vehicle::factory()->create([
                 'make' => 'Toyota',
                 'model' => 'Camry',
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) use ($vehicle) {
+            browse(function ($browser) use ($vehicle): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
-                    ->click("[data-testid='edit-vehicle-{$vehicle->id}']")
-                    ->assertPathIs("/admin/vehicles/{$vehicle->id}/edit")
+                    ->click("[data-testid='edit-vehicle-$vehicle->id']")
+                    ->assertPathIs("/admin/vehicles/$vehicle->id/edit")
                     ->assertInputValue('[data-testid="make-input"]', 'Toyota')
                     ->clear('[data-testid="make-input"]')
                     ->type('[data-testid="make-input"]', 'Lexus')
@@ -188,14 +187,14 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can update vehicle status', function () {
+        it('can update vehicle status', function (): void {
             $vehicle = Vehicle::factory()->draft()->create([
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) use ($vehicle) {
+            browse(function ($browser) use ($vehicle): void {
                 $browser->loginAs($this->admin)
-                    ->visit("/admin/vehicles/{$vehicle->id}/edit")
+                    ->visit("/admin/vehicles/$vehicle->id/edit")
                     ->select('[data-testid="status-select"]', 'published')
                     ->click('[data-testid="update-btn"]')
                     ->pause(2000)
@@ -207,14 +206,14 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can add and remove vehicle images', function () {
+        it('can add and remove vehicle images', function (): void {
             $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
 
-            browse(function ($browser) use ($vehicle) {
+            browse(function ($browser) use ($vehicle): void {
                 $browser->loginAs($this->admin)
-                    ->visit("/admin/vehicles/{$vehicle->id}/edit")
+                    ->visit("/admin/vehicles/$vehicle->id/edit")
                     ->attach('[data-testid="images-input"]', [
-                        __DIR__ . '/../fixtures/test-car-1.jpg'
+                        __DIR__.'/../fixtures/test-car-1.jpg',
                     ])
                     ->pause(2000)
                     ->assertSee('1 new image selected')
@@ -235,8 +234,8 @@ describe('Vehicle Management Browser Tests', function () {
         });
     });
 
-    describe('Vehicle Details and View', function () {
-        it('displays vehicle details correctly', function () {
+    describe('Vehicle Details and View', function (): void {
+        it('displays vehicle details correctly', function (): void {
             $vehicle = Vehicle::factory()->create([
                 'make' => 'Mercedes',
                 'model' => 'C-Class',
@@ -246,12 +245,12 @@ describe('Vehicle Management Browser Tests', function () {
                 'seating_capacity' => 5,
                 'daily_rate' => 200,
                 'description' => 'Luxury sedan with premium features',
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) use ($vehicle) {
+            browse(function ($browser) use ($vehicle): void {
                 $browser->loginAs($this->admin)
-                    ->visit("/admin/vehicles/{$vehicle->id}")
+                    ->visit("/admin/vehicles/$vehicle->id")
                     ->assertSee('Mercedes C-Class')
                     ->assertSee('2023')
                     ->assertSee('Petrol')
@@ -263,31 +262,31 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('shows vehicle booking history', function () {
+        it('shows vehicle booking history', function (): void {
             $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
-            
+
             // Create some bookings for this vehicle
-            \App\Models\Booking::factory(3)->create([
+            Booking::factory(3)->create([
                 'vehicle_id' => $vehicle->id,
-                'renter_id' => $this->renter->id
+                'renter_id' => $this->renter->id,
             ]);
 
-            browse(function ($browser) use ($vehicle) {
+            browse(function ($browser) use ($vehicle): void {
                 $browser->loginAs($this->admin)
-                    ->visit("/admin/vehicles/{$vehicle->id}")
+                    ->visit("/admin/vehicles/$vehicle->id")
                     ->assertSee('Booking History')
                     ->assertElementCount('[data-testid="booking-item"]', 3);
             });
         });
     });
 
-    describe('Bulk Operations', function () {
-        it('can perform bulk status updates', function () {
+    describe('Bulk Operations', function (): void {
+        it('can perform bulk status updates', function (): void {
             $vehicles = Vehicle::factory(3)->draft()->create([
-                'owner_id' => $this->owner->id
+                'owner_id' => $this->owner->id,
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->check('[data-testid="select-all-checkbox"]')
@@ -299,10 +298,10 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('can bulk delete vehicles', function () {
+        it('can bulk delete vehicles', function (): void {
             Vehicle::factory(5)->create(['owner_id' => $this->owner->id]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->check('[data-testid="vehicle-checkbox"]:first')
@@ -319,9 +318,9 @@ describe('Vehicle Management Browser Tests', function () {
         });
     });
 
-    describe('Access Control and Permissions', function () {
-        it('restricts vehicle creation to authorized users', function () {
-            browse(function ($browser) {
+    describe('Access Control and Permissions', function (): void {
+        it('restricts vehicle creation to authorized users', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->renter)
                     ->visit('/admin/vehicles/create')
                     ->assertSee('Unauthorized')
@@ -329,13 +328,13 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('allows owners to edit only their vehicles', function () {
+        it('allows owners to edit only their vehicles', function (): void {
             $ownVehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
             $otherVehicle = Vehicle::factory()->create();
 
-            browse(function ($browser) use ($ownVehicle, $otherVehicle) {
+            browse(function ($browser) use ($ownVehicle, $otherVehicle): void {
                 $browser->loginAs($this->owner)
-                    ->visit("/admin/vehicles/{$ownVehicle->id}/edit")
+                    ->visit("/admin/vehicles/$ownVehicle->id/edit")
                     ->assertSee('Edit Vehicle')
                     ->visit("/admin/vehicles/{$otherVehicle->id}/edit")
                     ->assertSee('Unauthorized');
@@ -343,13 +342,13 @@ describe('Vehicle Management Browser Tests', function () {
         });
     });
 
-    describe('Performance and User Experience', function () {
-        it('loads vehicle list quickly with many vehicles', function () {
+    describe('Performance and User Experience', function (): void {
+        it('loads vehicle list quickly with many vehicles', function (): void {
             Vehicle::factory(100)->create();
 
             $startTime = microtime(true);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles')
                     ->assertSee('Vehicle Management');
@@ -359,12 +358,12 @@ describe('Vehicle Management Browser Tests', function () {
             expect($loadTime)->toBeLessThan(3.0);
         });
 
-        it('handles image upload progress correctly', function () {
-            browse(function ($browser) {
+        it('handles image upload progress correctly', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles/create')
                     ->attach('[data-testid="images-input"]', [
-                        __DIR__ . '/../fixtures/large-image.jpg'
+                        __DIR__.'/../fixtures/large-image.jpg',
                     ])
                     ->pause(1000)
                     ->assertPresent('[data-testid="upload-progress"]')
@@ -373,8 +372,8 @@ describe('Vehicle Management Browser Tests', function () {
             });
         });
 
-        it('provides real-time validation feedback', function () {
-            browse(function ($browser) {
+        it('provides real-time validation feedback', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/vehicles/create')
                     ->type('[data-testid="make-input"]', 'T')

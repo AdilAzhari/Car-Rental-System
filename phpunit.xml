@@ -6,6 +6,11 @@
          processIsolation="false"
          stopOnFailure="false"
          cacheDirectory=".phpunit.cache"
+         executionOrder="random"
+         resolveDependencies="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
 >
     <testsuites>
         <testsuite name="Unit">

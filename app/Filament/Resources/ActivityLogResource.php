@@ -3,28 +3,27 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ActivityLogResource\Pages;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Spatie\Activitylog\Models\Activity;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
-use Illuminate\Database\Eloquent\Builder;
-use UnitEnum;
-use BackedEnum;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogResource extends Resource
 {
@@ -32,9 +31,20 @@ class ActivityLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static UnitEnum|string|null $navigationGroup = 'System Management';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.system_management');
+    }
 
     protected static ?int $navigationSort = 4;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Only admins can see activity logs
+        $user = auth()->user();
+
+        return $user && $user->role === 'admin';
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -49,11 +59,6 @@ class ActivityLogResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('resources.activity_logs');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('resources.system_management');
     }
 
     public static function form(Schema $schema): Schema
@@ -83,11 +88,11 @@ class ActivityLogResource extends Resource
                                 Select::make('subject_type')
                                     ->label(__('resources.subject_type'))
                                     ->options([
-                                        'App\\Models\\User' => __('resources.user'),
-                                        'App\\Models\\Vehicle' => __('resources.vehicle'),
-                                        'App\\Models\\Booking' => __('resources.booking'),
-                                        'App\\Models\\Review' => __('resources.review'),
-                                        'App\\Models\\Payment' => __('resources.payment'),
+                                        \App\Models\User::class => __('resources.user'),
+                                        \App\Models\Vehicle::class => __('resources.vehicle'),
+                                        \App\Models\Booking::class => __('resources.booking'),
+                                        \App\Models\Review::class => __('resources.review'),
+                                        \App\Models\Payment::class => __('resources.payment'),
                                     ])
                                     ->searchable()
                                     ->placeholder(__('resources.select_model_type')),
@@ -103,9 +108,9 @@ class ActivityLogResource extends Resource
                                 Select::make('causer_type')
                                     ->label(__('resources.causer_type'))
                                     ->options([
-                                        'App\\Models\\User' => __('resources.user'),
+                                        \App\Models\User::class => __('resources.user'),
                                     ])
-                                    ->default('App\\Models\\User'),
+                                    ->default(\App\Models\User::class),
 
                                 TextInput::make('causer_id')
                                     ->label(__('resources.causer_id'))
@@ -162,6 +167,7 @@ class ActivityLogResource extends Resource
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
+
                         return strlen($state) > 50 ? $state : null;
                     }),
 
@@ -172,13 +178,13 @@ class ActivityLogResource extends Resource
                         'warning' => 'updated',
                         'danger' => 'deleted',
                         'info' => 'viewed',
-                        'primary' => fn ($state) => in_array($state, ['logged_in', 'logged_out']),
+                        'primary' => fn ($state): bool => in_array($state, ['logged_in', 'logged_out']),
                         'gray' => 'default',
                     ]),
 
                 TextColumn::make('subject_type')
                     ->label(__('resources.subject'))
-                    ->formatStateUsing(fn ($state) => $state ? class_basename($state) : __('resources.system'))
+                    ->formatStateUsing(fn ($state): string|array|null => $state ? class_basename($state) : __('resources.system'))
                     ->badge()
                     ->color('secondary')
                     ->sortable(),
@@ -213,7 +219,7 @@ class ActivityLogResource extends Resource
 
                 TextColumn::make('properties')
                     ->label(__('resources.properties'))
-                    ->formatStateUsing(fn ($state) => $state ? count($state) . ' ' . __('resources.items') : __('resources.none'))
+                    ->formatStateUsing(fn ($state) => $state ? count($state).' '.__('resources.items') : __('resources.none'))
                     ->badge()
                     ->color('gray')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -245,11 +251,11 @@ class ActivityLogResource extends Resource
                 SelectFilter::make('subject_type')
                     ->label(__('resources.subject_type'))
                     ->options([
-                        'App\\Models\\User' => __('resources.user'),
-                        'App\\Models\\Vehicle' => __('resources.vehicle'),
-                        'App\\Models\\Booking' => __('resources.booking'),
-                        'App\\Models\\Review' => __('resources.review'),
-                        'App\\Models\\Payment' => __('resources.payment'),
+                        \App\Models\User::class => __('resources.user'),
+                        \App\Models\Vehicle::class => __('resources.vehicle'),
+                        \App\Models\Booking::class => __('resources.booking'),
+                        \App\Models\Review::class => __('resources.review'),
+                        \App\Models\Payment::class => __('resources.payment'),
                     ]),
 
                 SelectFilter::make('causer_id')
@@ -265,17 +271,15 @@ class ActivityLogResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.until')),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
+                    ->query(fn(Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        )),
 
                 Filter::make('today')
                     ->label(__('resources.todays_activities'))
@@ -311,6 +315,7 @@ class ActivityLogResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $todayCount = static::getModel()::whereDate('created_at', today())->count();
+
         return $todayCount > 0 ? (string) $todayCount : null;
     }
 
@@ -318,9 +323,15 @@ class ActivityLogResource extends Resource
     {
         $todayCount = static::getModel()::whereDate('created_at', today())->count();
 
-        if ($todayCount > 100) return 'danger';
-        if ($todayCount > 50) return 'warning';
-        if ($todayCount > 10) return 'info';
+        if ($todayCount > 100) {
+            return 'danger';
+        }
+        if ($todayCount > 50) {
+            return 'warning';
+        }
+        if ($todayCount > 10) {
+            return 'info';
+        }
 
         return 'primary';
     }

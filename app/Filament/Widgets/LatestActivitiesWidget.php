@@ -3,16 +3,16 @@
 namespace App\Filament\Widgets;
 
 use Filament\Actions\Action;
-use Spatie\Activitylog\Models\Activity;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Spatie\Activitylog\Models\Activity;
 
 class LatestActivitiesWidget extends BaseWidget
 {
     protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
@@ -25,6 +25,7 @@ class LatestActivitiesWidget extends BaseWidget
                     ->limit(50)
                     ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
                         $state = $column->getState();
+
                         return strlen($state) > 50 ? $state : null;
                     }),
 
@@ -35,13 +36,13 @@ class LatestActivitiesWidget extends BaseWidget
                         'warning' => 'updated',
                         'danger' => 'deleted',
                         'info' => 'viewed',
-                        'primary' => fn ($state) => in_array($state, ['logged_in', 'logged_out']),
+                        'primary' => fn ($state): bool => in_array($state, ['logged_in', 'logged_out']),
                         'gray' => 'default',
                     ]),
 
                 Tables\Columns\TextColumn::make('subject_type')
                     ->label('Subject')
-                    ->formatStateUsing(fn ($state) => $state ? class_basename($state) : 'System')
+                    ->formatStateUsing(fn ($state): string => $state ? class_basename($state) : 'System')
                     ->badge()
                     ->color('secondary'),
 
@@ -69,12 +70,11 @@ class LatestActivitiesWidget extends BaseWidget
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Activity $record): string =>
-                        route('filament.admin.resources.activity-logs.view', $record)
+                    ->url(fn (Activity $record): string => route('filament.admin.resources.activity-logs.view', $record)
                     ),
             ])
             ->poll('30s')
-            ->heading('Latest System Activities')
-            ->description('Real-time activity feed from across the platform');
+            ->heading(__('widgets.latest_activities'))
+            ->description(__('widgets.recent_system_activities_desc'));
     }
 }

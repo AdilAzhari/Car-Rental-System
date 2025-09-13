@@ -37,7 +37,7 @@ class PaymentInfolist
                             ->label('Payment Status')
                             ->formatStateUsing(fn ($state) => PaymentStatus::tryFrom($state)?->label() ?? $state)
                             ->badge()
-                            ->color(fn ($state) => match ($state) {
+                            ->color(fn ($state): string => match ($state) {
                                 'pending' => 'warning',
                                 'confirmed' => 'success',
                                 'failed' => 'danger',

@@ -6,12 +6,14 @@ enum VehicleTransmission: string
 {
     case MANUAL = 'manual';
     case AUTOMATIC = 'automatic';
+    case CVT = 'cvt';
 
     public function label(): string
     {
         return match ($this) {
             self::MANUAL => 'Manual',
             self::AUTOMATIC => 'Automatic',
+            self::CVT => 'CVT',
         };
     }
 

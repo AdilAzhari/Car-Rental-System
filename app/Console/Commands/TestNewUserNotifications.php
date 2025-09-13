@@ -13,7 +13,7 @@ class TestNewUserNotifications extends Command
 
     protected $description = 'Test the new user notification system';
 
-    public function handle()
+    public function handle(): int
     {
         $userId = $this->argument('user_id') ?? 1;
         

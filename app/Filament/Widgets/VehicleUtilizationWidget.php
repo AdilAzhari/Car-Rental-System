@@ -9,9 +9,14 @@ use Filament\Widgets\ChartWidget;
 
 class VehicleUtilizationWidget extends ChartWidget
 {
-    protected ?string $heading = 'Vehicle Status Distribution';
+    public function getHeading(): string
+    {
+        return __('widgets.vehicle_status_distribution');
+    }
 
     protected static ?int $sort = 3;
+
+    protected int|string|array $columnSpan = 2;
 
     public static function canView(): bool
     {

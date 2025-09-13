@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\ActivityLogResource\Pages;
 
 use App\Filament\Resources\ActivityLogResource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 
 class ViewActivityLog extends ViewRecord
 {
@@ -24,20 +24,20 @@ class ViewActivityLog extends ViewRecord
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('id')
-                                    ->label('Log ID')
+                                    ->label(__('resources.log_id'))
                                     ->disabled(),
 
                                 TextInput::make('log_name')
-                                    ->label('Log Name')
+                                    ->label(__('resources.log_name'))
                                     ->disabled(),
 
                                 TextInput::make('event')
-                                    ->label('Event Type')
+                                    ->label(__('resources.event_type'))
                                     ->disabled(),
                             ]),
 
                         Textarea::make('description')
-                            ->label('Description')
+                            ->label(__('resources.description'))
                             ->disabled()
                             ->rows(2)
                             ->columnSpanFull(),
@@ -49,11 +49,11 @@ class ViewActivityLog extends ViewRecord
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('subject_type')
-                                    ->label('Subject Type')
+                                    ->label(__('resources.subject_type'))
                                     ->disabled(),
 
                                 TextInput::make('subject_id')
-                                    ->label('Subject ID')
+                                    ->label(__('resources.subject_id'))
                                     ->disabled(),
                             ]),
                     ]),
@@ -64,11 +64,11 @@ class ViewActivityLog extends ViewRecord
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('causer_id')
-                                    ->label('User ID')
+                                    ->label(__('resources.user_id'))
                                     ->disabled(),
 
                                 TextInput::make('created_at')
-                                    ->label('Timestamp')
+                                    ->label(__('resources.timestamp'))
                                     ->disabled(),
                             ]),
                     ]),
@@ -77,7 +77,7 @@ class ViewActivityLog extends ViewRecord
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
                         Textarea::make('properties')
-                            ->label('Properties')
+                            ->label(__('resources.properties'))
                             ->disabled()
                             ->rows(4)
                             ->columnSpanFull()

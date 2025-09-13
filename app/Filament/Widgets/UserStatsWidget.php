@@ -9,6 +9,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class UserStatsWidget extends BaseWidget
 {
+    protected int|string|array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 4;
+    }
+
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -22,7 +29,7 @@ class UserStatsWidget extends BaseWidget
         $totalUsers = User::query()->count();
 
         // Users by role
-        $adminCount = User::query()->where('role', UserRole::ADMIN)->count();
+        User::query()->where('role', UserRole::ADMIN)->count();
         $ownerCount = User::query()->where('role', UserRole::OWNER)->count();
         $renterCount = User::query()->where('role', UserRole::RENTER)->count();
 
@@ -33,7 +40,7 @@ class UserStatsWidget extends BaseWidget
         $verifiedUsers = User::query()->whereNotNull('email_verified_at')->count();
 
         // Active users (users with bookings in last 30 days)
-        $activeUsers = User::query()->whereHas('rentals', function ($query) {
+        $activeUsers = User::query()->whereHas('rentals', function ($query): void {
             $query->where('created_at', '>=', now()->subDays(30));
         })->count();
 

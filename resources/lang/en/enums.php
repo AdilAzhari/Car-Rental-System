@@ -5,10 +5,12 @@ return [
         'pending' => 'Pending Approval',
         'approved' => 'Approved',
         'rejected' => 'Rejected',
+        'draft' => 'Draft',
         'published' => 'Published',
         'maintenance' => 'Maintenance',
+        'archived' => 'Archived',
     ],
-    
+
     'payment_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',
@@ -17,7 +19,7 @@ return [
         'cancelled' => 'Cancelled',
         'processing' => 'Processing',
     ],
-    
+
     'booking_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',
@@ -25,14 +27,14 @@ return [
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
     ],
-    
+
     'user_role' => [
         'admin' => 'Administrator',
         'owner' => 'Vehicle Owner',
         'customer' => 'Customer/Renter',
         'renter' => 'Customer/Renter',
     ],
-    
+
     'fuel_type' => [
         'petrol' => 'Petrol',
         'diesel' => 'Diesel',
@@ -40,13 +42,13 @@ return [
         'electric' => 'Electric',
         'lpg' => 'LPG',
     ],
-    
+
     'transmission' => [
         'manual' => 'Manual',
         'automatic' => 'Automatic',
         'cvt' => 'CVT',
     ],
-    
+
     'payment_method' => [
         'cash' => 'Cash',
         'credit_card' => 'Credit Card',
@@ -56,7 +58,7 @@ return [
         'paypal' => 'PayPal',
         'stripe' => 'Stripe',
     ],
-    
+
     'vehicle_category' => [
         'economy' => 'Economy',
         'compact' => 'Compact',

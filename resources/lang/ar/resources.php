@@ -21,16 +21,14 @@ return [
     'error' => 'خطأ',
     'warning' => 'تحذير',
     'info' => 'معلومات',
-    
+
     // Users
     'users' => 'المستخدمون',
     'user' => 'مستخدم',
     'add_user' => 'إضافة مستخدم',
-    'user_management' => 'إدارة المستخدمين',
     'user_information' => 'معلومات المستخدم',
     'personal_details' => 'التفاصيل الشخصية',
     'contact_information' => 'معلومات الاتصال',
-    'account_settings' => 'إعدادات الحساب',
     'name' => 'الاسم',
     'email' => 'البريد الإلكتروني',
     'phone' => 'الهاتف',
@@ -46,17 +44,15 @@ return [
     'admin' => 'مدير',
     'customer' => 'عميل',
     'owner' => 'مالك مركبة',
-    
+
     // Vehicles
     'vehicles' => 'المركبات',
     'vehicle' => 'مركبة',
     'add_vehicle' => 'إضافة مركبة',
-    'vehicle_management' => 'إدارة المركبات',
     'vehicle_information' => 'معلومات المركبة',
     'basic_information' => 'المعلومات الأساسية',
     'specifications' => 'المواصفات',
     'pricing' => 'التسعير',
-    'availability' => 'التوفر',
     'make' => 'الماركة',
     'make_placeholder' => 'تويوتا، هوندا، بي إم دبليو...',
     'model' => 'الطراز',
@@ -69,15 +65,10 @@ return [
     'plate_number' => 'رقم اللوحة',
     'vin' => 'رقم الهيكل',
     'vin_number' => 'رقم تعريف المركبة',
-    'vin_placeholder' => '1HGBH41JXMN109186',
+    'vin_placeholder' => '1GMBH41XMING109186',
     'vin_helper' => 'رقم تعريف المركبة',
     'vehicle_categories' => 'فئات المركبات',
     'vehicle_categories_description' => 'معلومات التصنيف والنوع',
-    'category' => 'الفئة',
-    'fuel_type' => 'نوع الوقود',
-    'transmission' => 'ناقل الحركة',
-    'seats' => 'المقاعد',
-    'doors' => 'الأبواب',
     'engine_size' => 'حجم المحرك (لتر)',
     'engine_size_placeholder' => '2.0',
     'mileage_km' => 'المسافة المقطوعة (كم)',
@@ -119,10 +110,8 @@ return [
     'description_placeholder' => 'وصف المركبة وحالتها وميزاتها الخاصة، إلخ',
     'terms_conditions' => 'الشروط والأحكام',
     'terms_conditions_placeholder' => 'أي شروط خاصة لهذه المركبة...',
-    'image' => 'الصورة',
     'license' => 'الرخصة',
-    'added' => 'أضيف',
-    
+
     // Booking-specific translations
     'id' => 'المعرف',
     'booking_id_copied' => 'تم نسخ معرف الحجز!',
@@ -130,16 +119,12 @@ return [
     'na' => 'غير متاح',
     'rental_period' => 'فترة الإيجار',
     'days_short' => 'ي',
-    'amount' => 'المبلغ',
-    'deposit' => 'العربون',
-    'payment' => 'الدفع',
     'unpaid' => 'غير مدفوع',
     'paid' => 'مدفوع',
     'refunded' => 'مسترد',
     'no_method' => 'لا توجد طريقة',
     'created' => 'أنشئ',
     'booking_status' => 'حالة الحجز',
-    'payment_status' => 'حالة الدفع',
     'rental_starts_from' => 'يبدأ الإيجار من',
     'select_start_date' => 'اختر تاريخ البدء',
     'rental_starts_to' => 'يبدأ الإيجار إلى',
@@ -151,7 +136,6 @@ return [
     'min' => 'الحد الأدنى',
     'max' => 'الحد الأقصى',
     'has_special_requests' => 'لديه طلبات خاصة',
-    'all_bookings' => 'جميع الحجوزات',
     'with_special_requests' => 'مع طلبات خاصة',
     'without_special_requests' => 'بدون طلبات خاصة',
     'created_this_month' => 'أنشئ هذا الشهر',
@@ -173,7 +157,7 @@ return [
     'cancel_selected' => 'إلغاء المحدد',
     'cancel_multiple_bookings' => 'إلغاء حجوزات متعددة',
     'cancel_multiple_bookings_description' => 'سيتم إلغاء جميع الحجوزات المحددة. كن حذراً مع هذا الإجراء.',
-    
+
     // User-specific translations
     'user_details_description' => 'تفاصيل المستخدم الأساسية ومعلومات الحساب',
     'enter_full_name' => 'أدخل الاسم الكامل',
@@ -220,19 +204,12 @@ return [
     'location' => 'الموقع',
     'mileage' => 'المسافة المقطوعة',
     'insurance_expiry' => 'انتهاء التأمين',
-    'available' => 'متاح',
     'unavailable' => 'غير متاح',
-    'published' => 'منشور',
-    'pending' => 'معلق',
-    'approved' => 'موافق عليه',
-    'rejected' => 'مرفوض',
-    'maintenance' => 'صيانة',
-    
+
     // Bookings
     'bookings' => 'الحجوزات',
     'booking' => 'حجز',
     'add_booking' => 'إضافة حجز',
-    'booking_management' => 'إدارة الحجوزات',
     'booking_information' => 'معلومات الحجز',
     'rental_details' => 'تفاصيل الإيجار',
     'payment_information' => 'معلومات الدفع',
@@ -247,37 +224,28 @@ return [
     'ongoing' => 'جاري',
     'completed' => 'مكتمل',
     'cancelled' => 'ملغي',
-    'paid' => 'مدفوع',
-    'unpaid' => 'غير مدفوع',
-    'refunded' => 'مسترد',
-    
+
     // Reviews
     'reviews' => 'المراجعات',
     'review' => 'مراجعة',
     'add_review' => 'إضافة مراجعة',
     'review_management' => 'إدارة المراجعات',
     'review_information' => 'معلومات المراجعة',
-    'customer_feedback' => 'تعليقات العملاء',
     'rating' => 'التقييم',
     'comment' => 'التعليق',
-    'reviewer' => 'المراجع',
-    'visible' => 'مرئي',
-    'hidden' => 'مخفي',
     'high_rating' => 'تقييم عالي',
     'low_rating' => 'تقييم منخفض',
     'recent' => 'حديث',
-    
+
     // Activity Logs
     'activity_logs' => 'سجلات النشاط',
     'activity_log' => 'سجل النشاط',
     'system_activities' => 'أنشطة النظام',
     'audit_trail' => 'مسار التدقيق',
-    'activity' => 'النشاط',
-    'subject' => 'الموضوع',
     'causer' => 'المستخدم',
     'properties' => 'الخصائص',
     'log_name' => 'اسم السجل',
-    
+
     // Payments
     'payments' => 'المدفوعات',
     'payment' => 'دفعة',
@@ -285,7 +253,7 @@ return [
     'transaction_id' => 'معرف المعاملة',
     'processed_at' => 'تاريخ المعالجة',
     'refund_amount' => 'مبلغ الاسترداد',
-    
+
     // Filters and Tabs
     'all' => 'الكل',
     'today' => 'اليوم',
@@ -294,7 +262,7 @@ return [
     'last_7_days' => 'آخر 7 أيام',
     'last_30_days' => 'آخر 30 يوماً',
     'recent_7_days' => 'حديث (7 أيام)',
-    
+
     // Status Colors
     'success_color' => 'نجح',
     'warning_color' => 'تحذير',
@@ -302,7 +270,7 @@ return [
     'info_color' => 'معلومات',
     'primary_color' => 'أساسي',
     'secondary_color' => 'ثانوي',
-    
+
     // Navigation Groups
     'user_management' => 'إدارة المستخدمين',
     'vehicle_management' => 'إدارة المركبات',
@@ -310,23 +278,19 @@ return [
     'customer_feedback' => 'تعليقات العملاء',
     'system_management' => 'إدارة النظام',
     'fleet_management' => 'إدارة الأسطول',
-    
+    'transactions' => 'المعاملات',
+    'car_rental' => 'تأجير السيارات',
+    'account_settings' => 'إعدادات الحساب',
+
     // Resource Navigation Labels (for tabs)
     'all_vehicles' => 'جميع المركبات',
     'all_users' => 'جميع المستخدمين',
     'all_bookings' => 'جميع الحجوزات',
     'all_reviews' => 'جميع المراجعات',
-    'published' => 'منشور',
-    'available' => 'متاح',
-    'pending' => 'معلق',
-    'approved' => 'موافق عليه',
-    'rejected' => 'مرفوض',
-    'maintenance' => 'صيانة',
-    '5_stars' => '5 نجوم',
     '4_plus_stars' => '4+ نجوم',
     'low_ratings' => 'تقييمات منخفضة',
     'good_rating' => 'تقييم جيد',
-    
+
     // Review-specific translations
     'review_id' => 'رقم المراجعة #',
     'reviewer' => 'المراجع',
@@ -340,15 +304,13 @@ return [
     'visible_to_public' => 'مرئي للعامة',
     'review_visibility_helper' => 'ما إذا كانت هذه المراجعة يجب أن تكون مرئية للمستخدمين الآخرين',
     'visibility' => 'الرؤية',
-    'visible' => 'مرئي',
-    'hidden' => 'مخفي',
     'submitted' => 'مُرسل',
     '5_stars' => '5 نجوم',
     '4_stars' => '4 نجوم',
     '3_stars' => '3 نجوم',
     '2_stars' => 'نجمتان',
     '1_star' => 'نجمة واحدة',
-    
+
     // Activity Log specific translations
     'activity_information' => 'معلومات النشاط',
     'activity_information_description' => 'تفاصيل نشاط النظام ومسار التدقيق',
@@ -386,7 +348,7 @@ return [
     'archive_selected' => 'أرشفة المحدد',
     'archive_activity_logs' => 'أرشفة سجلات النشاط',
     'archive_activity_logs_confirmation' => 'هل أنت متأكد من أنك تريد أرشفة سجلات النشاط هذه؟ لا يمكن التراجع عن هذا الإجراء.',
-    
+
     // Profile specific translations
     'my_profile' => 'ملفي الشخصي',
     'personal_information' => 'المعلومات الشخصية',
@@ -408,7 +370,7 @@ return [
     'password_changed_login_required' => 'تم تغيير كلمة المرور بنجاح. يرجى تسجيل الدخول مرة أخرى.',
     'arabic' => 'العربية',
     'city' => 'المدينة',
-    
+
     // Enhanced Profile specific translations
     'personal_information_description' => 'معلوماتك الشخصية الأساسية وتفاصيل الاتصال',
     'name_helper' => 'أدخل اسمك الكامل كما يظهر في الهوية',
@@ -424,7 +386,6 @@ return [
     'verification_admin_only' => 'يتم إدارة التحقق من الحساب من قبل المديرين',
     'current_password_helper' => 'أدخل كلمة المرور الحالية لإجراء تغييرات',
     'password_requirements' => 'الحد الأدنى 8 أحرف مع حروف وأرقام',
-    'account_status' => 'حالة الحساب',
     'account_status_description' => 'عرض معلومات حسابك وسجل النشاط',
     'member_since' => 'عضو منذ',
     'last_login' => 'آخر تسجيل دخول',
@@ -442,7 +403,7 @@ return [
     'create_new_booking' => 'إنشاء حجز جديد',
     'fill_booking_form_details' => 'املأ النموذج أدناه لإنشاء حجز جديد',
     'dashboard' => 'لوحة التحكم',
-    
+
     // Traffic Violations
     'traffic_violations' => 'مخالفات المرور',
     'traffic_violations_description' => 'سجلات مخالفات المرور من قاعدة بيانات الحكومة',
@@ -458,4 +419,66 @@ return [
     'due_date' => 'تاريخ الاستحقاق',
     'no_violations' => 'لا توجد مخالفات',
     'no_violations_description' => 'هذه المركبة لديها سجل مروري نظيف بدون مخالفات معلقة.',
+
+    // Navigation Groups
+    'browse_vehicles' => 'تصفح المركبات',
+
+    // Labels for forms and views
+    'availability' => 'التوفر',
+    'book_now' => 'احجز الآن',
+    'duration' => 'المدة',
+    'booked_on' => 'تاريخ الحجز',
+    'renter' => 'المستأجر',
+    'days' => 'أيام',
+    'payment_notes' => 'ملاحظات الدفع',
+    'update_status' => 'تحديث الحالة',
+    'view_payments' => 'عرض المدفوعات',
+    'confirm_payment' => 'تأكيد الدفع',
+    'log_id' => 'معرف السجل',
+    'user_id' => 'معرف المستخدم',
+    'gallery' => 'المعرض',
+    'category' => 'الفئة',
+    'transmission' => 'ناقل الحركة',
+    'fuel_type' => 'نوع الوقود',
+    'seats' => 'المقاعد',
+    'doors' => 'الأبواب',
+    'booking_id' => 'معرف الحجز',
+    'renter_email' => 'بريد المستأجر',
+    'booking_created' => 'تاريخ إنشاء الحجز',
+    'last_updated' => 'آخر تحديث',
+    'deposit' => 'العربون',
+    'commission' => 'العمولة',
+    'drop_off_location' => 'موقع الإرجاع',
+    'view_payment' => 'عرض الدفع',
+    'publish' => 'نشر',
+    'mark_for_maintenance' => 'تحديد للصيانة',
+    'archive' => 'أرشفة',
+    'number_of_days' => 'عدد الأيام',
+    'subtotal' => 'المجموع الفرعي',
+    'insurance_fee' => 'رسوم التأمين',
+    'tax_amount' => 'مبلغ الضريبة',
+    'refunded_at' => 'تاريخ الاسترداد',
+    'gateway_response' => 'استجابة البوابة',
+    'image' => 'الصورة',
+    'added' => 'أضيف',
+    'overall_rating' => 'التقييم الإجمالي',
+    'recommends' => 'يوصي',
+    'customer_name' => 'اسم العميل',
+    'customer_email' => 'بريد العميل',
+    'submitted_on' => 'تاريخ الإرسال',
+    'review_text' => 'نص المراجعة',
+    'vehicle_make_model' => 'ماركة وطراز المركبة',
+    'show_review' => 'إظهار المراجعة',
+    'payment_id' => 'معرف الدفع',
+
+    // Static dropdowns and options that need translation
+    'economy' => 'اقتصادي',
+    'compact' => 'صغير الحجم',
+    'midsize' => 'متوسط الحجم',
+    'luxury' => 'فاخر',
+    'suv' => 'دفع رباعي',
+    'automatic' => 'أوتوماتيكي',
+    'manual' => 'يدوي',
+    'cvt' => 'CVT',
+    'not_available' => 'غير متاح',
 ];

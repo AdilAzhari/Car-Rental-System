@@ -41,27 +41,27 @@ class BookingsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('Booking ID')
+                    ->label(__('resources.booking_id'))
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('vehicle.make')
-                    ->label('Vehicle')
-                    ->formatStateUsing(fn ($record) => "{$record->vehicle->make} {$record->vehicle->model}")
+                    ->label(__('resources.vehicle'))
+                    ->formatStateUsing(fn ($record): string => "{$record->vehicle->make} {$record->vehicle->model}")
                     ->searchable(),
 
                 TextColumn::make('start_date')
-                    ->label('Start Date')
+                    ->label(__('resources.start_date'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('end_date')
-                    ->label('End Date')
+                    ->label(__('resources.end_date'))
                     ->dateTime()
                     ->sortable(),
 
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'confirmed',
@@ -72,12 +72,12 @@ class BookingsRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => BookingStatus::tryFrom($state)?->label() ?? $state),
 
                 TextColumn::make('total_amount')
-                    ->label('Amount')
+                    ->label(__('resources.amount'))
                     ->money('MYR')
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label('Booked On')
+                    ->label(__('resources.booked_on'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -87,7 +87,7 @@ class BookingsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->url(fn (): string => route('filament.admin.resources.bookings.create', [
-                        'renter_id' => $this->ownerRecord->id
+                        'renter_id' => $this->ownerRecord->id,
                     ])),
             ])
             ->recordActions([

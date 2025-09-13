@@ -9,6 +9,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ReviewStatsWidget extends BaseWidget
 {
+    protected int|string|array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 4;
+    }
+
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -23,7 +30,7 @@ class ReviewStatsWidget extends BaseWidget
         // Base query - filter by owner's vehicles if not admin
         $baseQuery = Review::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user) {
+            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user): void {
                 $query->where('owner_id', $user->id);
             });
         }

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\ReviewResource\Pages;
 
 use App\Filament\Resources\ReviewResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Colors\Color;
@@ -18,26 +18,26 @@ class EditReview extends EditRecord
     {
         return [
             ViewAction::make(),
-            
+
             Action::make('approve')
                 ->label('Approve Review')
                 ->icon('heroicon-m-check-circle')
                 ->color(Color::Emerald)
-                ->visible(fn () => $this->record->status !== 'approved')
+                ->visible(fn (): bool => $this->record->status !== 'approved')
                 ->requiresConfirmation()
                 ->modalHeading('Approve Review')
                 ->modalDescription('This will make the review visible to the public.')
-                ->action(function () {
+                ->action(function (): void {
                     $this->record->update([
                         'status' => 'approved',
                         'visibility' => 'public',
                     ]);
-                    
+
                     activity()
                         ->performedOn($this->record)
                         ->causedBy(auth()->user())
                         ->log('Review approved and published');
-                    
+
                     Notification::make()
                         ->success()
                         ->title('Review Approved')
@@ -49,21 +49,21 @@ class EditReview extends EditRecord
                 ->label('Reject Review')
                 ->icon('heroicon-m-x-circle')
                 ->color(Color::Red)
-                ->visible(fn () => $this->record->status !== 'rejected')
+                ->visible(fn (): bool => $this->record->status !== 'rejected')
                 ->requiresConfirmation()
                 ->modalHeading('Reject Review')
                 ->modalDescription('This will reject the review and hide it from public view.')
-                ->action(function () {
+                ->action(function (): void {
                     $this->record->update([
                         'status' => 'rejected',
                         'visibility' => 'hidden',
                     ]);
-                    
+
                     activity()
                         ->performedOn($this->record)
                         ->causedBy(auth()->user())
                         ->log('Review rejected');
-                    
+
                     Notification::make()
                         ->warning()
                         ->title('Review Rejected')
@@ -75,21 +75,21 @@ class EditReview extends EditRecord
                 ->label('Flag for Review')
                 ->icon('heroicon-m-flag')
                 ->color(Color::Orange)
-                ->visible(fn () => $this->record->status !== 'flagged')
+                ->visible(fn (): bool => $this->record->status !== 'flagged')
                 ->requiresConfirmation()
                 ->modalHeading('Flag Review')
                 ->modalDescription('This will flag the review for further investigation.')
-                ->action(function () {
+                ->action(function (): void {
                     $this->record->update([
                         'status' => 'flagged',
                         'visibility' => 'private',
                     ]);
-                    
+
                     activity()
                         ->performedOn($this->record)
                         ->causedBy(auth()->user())
                         ->log('Review flagged for investigation');
-                    
+
                     Notification::make()
                         ->info()
                         ->title('Review Flagged')
@@ -101,8 +101,8 @@ class EditReview extends EditRecord
                 ->label('Feature Review')
                 ->icon('heroicon-m-star')
                 ->color(Color::Yellow)
-                ->visible(fn () => $this->record->rating >= 4 && $this->record->status === 'approved')
-                ->action(function () {
+                ->visible(fn (): bool => $this->record->rating >= 4 && $this->record->status === 'approved')
+                ->action(function (): void {
                     // TODO: Implement featured review functionality
                     Notification::make()
                         ->info()
@@ -110,7 +110,7 @@ class EditReview extends EditRecord
                         ->body('Featured reviews functionality will be available soon.')
                         ->send();
                 }),
-            
+
             DeleteAction::make(),
         ];
     }

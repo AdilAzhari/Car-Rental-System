@@ -47,30 +47,31 @@ class BookingsRelationManager extends RelationManager
                     ->prefix('BK-'),
 
                 TextColumn::make('renter.name')
-                    ->label('Customer')
+                    ->label(__('resources.customer'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('start_date')
-                    ->label('Start Date')
+                    ->label(__('resources.start_date'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('end_date')
-                    ->label('End Date')
+                    ->label(__('resources.end_date'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('duration')
-                    ->label('Duration')
-                    ->state(function ($record) {
+                    ->label(__('resources.duration'))
+                    ->state(function ($record): string {
                         $days = \Carbon\Carbon::parse($record->start_date)
                             ->diffInDays(\Carbon\Carbon::parse($record->end_date)) + 1;
-                        return $days . ' day' . ($days !== 1 ? 's' : '');
+
+                        return $days.' day'.($days !== 1 ? 's' : '');
                     }),
 
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'confirmed',
@@ -81,12 +82,12 @@ class BookingsRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => BookingStatus::tryFrom($state)?->label() ?? $state),
 
                 TextColumn::make('total_amount')
-                    ->label('Amount')
+                    ->label(__('resources.amount'))
                     ->money('MYR')
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label('Booked On')
+                    ->label(__('resources.booked_on'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -97,7 +98,7 @@ class BookingsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->url(fn (): string => route('filament.admin.resources.bookings.create', [
-                        'vehicle_id' => $this->ownerRecord->id
+                        'vehicle_id' => $this->ownerRecord->id,
                     ])),
             ])
             ->recordActions([

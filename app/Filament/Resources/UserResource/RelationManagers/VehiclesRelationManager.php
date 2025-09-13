@@ -41,32 +41,32 @@ class VehiclesRelationManager extends RelationManager
         return $table
             ->columns([
                 ImageColumn::make('featured_image')
-                    ->label('Image')
+                    ->label(__('resources.image'))
                     ->circular()
                     ->defaultImageUrl(url('/images/car-placeholder.jpg'))
                     ->size(50),
 
                 TextColumn::make('make')
-                    ->label('Make')
+                    ->label(__('resources.make'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('model')
-                    ->label('Model')
+                    ->label(__('resources.model'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('year')
-                    ->label('Year')
+                    ->label(__('resources.year'))
                     ->sortable(),
 
                 TextColumn::make('license_plate')
-                    ->label('License Plate')
+                    ->label(__('resources.license_plate'))
                     ->searchable()
                     ->fontFamily('mono'),
 
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->colors([
                         'success' => 'published',
                         'warning' => 'draft',
@@ -75,18 +75,18 @@ class VehiclesRelationManager extends RelationManager
                     ]),
 
                 TextColumn::make('daily_rate')
-                    ->label('Daily Rate')
+                    ->label(__('resources.daily_rate'))
                     ->money('MYR')
                     ->sortable(),
 
                 TextColumn::make('bookings_count')
-                    ->label('Bookings')
+                    ->label(__('resources.bookings'))
                     ->counts('bookings')
                     ->badge()
                     ->color('info'),
 
                 TextColumn::make('created_at')
-                    ->label('Added')
+                    ->label(__('resources.added'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -97,7 +97,7 @@ class VehiclesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->url(fn (): string => route('filament.admin.resources.vehicles.create', [
-                        'owner_id' => $this->ownerRecord->id
+                        'owner_id' => $this->ownerRecord->id,
                     ])),
             ])
             ->recordActions([

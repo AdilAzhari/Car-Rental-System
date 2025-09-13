@@ -10,6 +10,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class PaymentStatsWidget extends BaseWidget
 {
+    protected int|string|array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 4;
+    }
+
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -24,7 +31,7 @@ class PaymentStatsWidget extends BaseWidget
         // Base query - filter by owner's vehicles if not admin
         $baseQuery = Payment::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user) {
+            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user): void {
                 $query->where('owner_id', $user->id);
             });
         }
@@ -39,7 +46,7 @@ class PaymentStatsWidget extends BaseWidget
         $pendingPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::PENDING)->count();
 
         // Failed payments
-        $failedPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::FAILED)->count();
+        (clone $baseQuery)->where('payment_status', PaymentStatus::FAILED)->count();
 
         // Total revenue
         $totalRevenue = (clone $baseQuery)
@@ -52,6 +59,8 @@ class PaymentStatsWidget extends BaseWidget
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
+
+
 
         // Average payment amount
         $averagePayment = (clone $baseQuery)

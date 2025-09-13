@@ -70,4 +70,18 @@ return [
     'no_change' => 'no change',
     'up_from_yesterday' => 'up from yesterday',
     'down_from_yesterday' => 'down from yesterday',
+
+    // Booking Statistics
+    'total_bookings' => 'Total Bookings',
+    'all_time_bookings' => 'All time bookings',
+    'pending' => 'Pending',
+    'awaiting_confirmation' => 'Awaiting confirmation',
+    'confirmed' => 'Confirmed',
+    'active_reservations' => 'Active reservations',
+    'current_month_bookings' => 'Current month bookings',
+    'from_completed_bookings' => 'From completed bookings',
+    'avg_duration' => 'Avg. Duration',
+    'average_booking_duration' => 'Average booking duration',
+    'days' => 'days',
+    'hours' => 'hours',
 ];

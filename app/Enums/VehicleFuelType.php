@@ -8,6 +8,7 @@ enum VehicleFuelType: string
     case DIESEL = 'diesel';
     case ELECTRIC = 'electric';
     case HYBRID = 'hybrid';
+    case LPG = 'lpg';
 
     public function label(): string
     {
@@ -16,6 +17,7 @@ enum VehicleFuelType: string
             self::DIESEL => 'Diesel',
             self::ELECTRIC => 'Electric',
             self::HYBRID => 'Hybrid',
+            self::LPG => 'LPG',
         };
     }
 

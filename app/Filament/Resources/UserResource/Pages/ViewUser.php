@@ -3,15 +3,15 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 
 class ViewUser extends ViewRecord
 {
@@ -24,8 +24,8 @@ class ViewUser extends ViewRecord
                 ->label(__('resources.view_user_profile'))
                 ->icon('heroicon-m-user-circle')
                 ->color('info')
-                ->url(fn () => $this->getRecord()->id === auth()->id() ? '/admin/profile' : null)
-                ->visible(fn () => $this->getRecord()->id === auth()->id())
+                ->url(fn (): ?string => $this->getRecord()->id === auth()->id() ? '/admin/profile' : null)
+                ->visible(fn (): bool => $this->getRecord()->id === auth()->id())
                 ->openUrlInNewTab(false),
             EditAction::make(),
             DeleteAction::make(),
@@ -38,8 +38,8 @@ class ViewUser extends ViewRecord
             ->schema([
                 Section::make(__('resources.personal_information'))
                     ->icon('heroicon-m-user')
-                    ->description(fn () => $this->getRecord()->id === auth()->id() ? 
-                        __('resources.view_own_profile_description') : 
+                    ->description(fn (): string|array|null => $this->getRecord()->id === auth()->id() ?
+                        __('resources.view_own_profile_description') :
                         __('resources.view_user_profile_description'))
                     ->headerActions([
                         Action::make('edit_profile')
@@ -48,26 +48,24 @@ class ViewUser extends ViewRecord
                             ->color('primary')
                             ->size('sm')
                             ->url('/admin/profile')
-                            ->visible(fn () => $this->getRecord()->id === auth()->id()),
+                            ->visible(fn (): bool => $this->getRecord()->id === auth()->id()),
                     ])
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('name')
-                                    ->label(__('resources.name'))
-                                    ->disabled(),
+                                TextEntry::make('name')
+                                    ->label(__('resources.name')),
 
-                                TextInput::make('email')
+                                TextEntry::make('email')
                                     ->label(__('resources.email'))
-                                    ->disabled(),
+                                    ->copyable(),
 
-                                TextInput::make('phone')
-                                    ->label(__('resources.phone'))
-                                    ->disabled(),
+                                TextEntry::make('phone')
+                                    ->label(__('resources.phone')),
 
-                                TextInput::make('date_of_birth')
+                                TextEntry::make('date_of_birth')
                                     ->label(__('resources.date_of_birth'))
-                                    ->disabled(),
+                                    ->date(),
                             ]),
                     ]),
 
@@ -76,28 +74,28 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextInput::make('role')
+                                TextEntry::make('role')
                                     ->label('User Role')
-                                    ->disabled(),
+                                    ->badge(),
 
-                                Toggle::make('is_verified')
+                                IconEntry::make('is_verified')
                                     ->label('Account Verified')
-                                    ->disabled(),
+                                    ->boolean(),
 
-                                Toggle::make('is_active')
+                                IconEntry::make('is_active')
                                     ->label('Account Active')
-                                    ->disabled(),
+                                    ->boolean(),
                             ]),
 
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('email_verified_at')
+                                TextEntry::make('email_verified_at')
                                     ->label('Email Verified At')
-                                    ->disabled(),
+                                    ->dateTime(),
 
-                                TextInput::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label('Account Created')
-                                    ->disabled(),
+                                    ->dateTime(),
                             ]),
                     ]),
 
@@ -106,26 +104,21 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('address')
+                                TextEntry::make('address')
                                     ->label('Street Address')
-                                    ->disabled()
                                     ->columnSpanFull(),
 
-                                TextInput::make('city')
-                                    ->label('City')
-                                    ->disabled(),
+                                TextEntry::make('city')
+                                    ->label('City'),
 
-                                TextInput::make('state')
-                                    ->label('State/Province')
-                                    ->disabled(),
+                                TextEntry::make('state')
+                                    ->label('State/Province'),
 
-                                TextInput::make('postal_code')
-                                    ->label('Postal Code')
-                                    ->disabled(),
+                                TextEntry::make('postal_code')
+                                    ->label('Postal Code'),
 
-                                TextInput::make('country')
-                                    ->label('Country')
-                                    ->disabled(),
+                                TextEntry::make('country')
+                                    ->label('Country'),
                             ]),
                     ])
                     ->collapsible(),
@@ -135,21 +128,18 @@ class ViewUser extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('driver_license_number')
-                                    ->label('License Number')
-                                    ->disabled(),
+                                TextEntry::make('driver_license_number')
+                                    ->label('License Number'),
 
-                                TextInput::make('license_expiry_date')
+                                TextEntry::make('license_expiry_date')
                                     ->label('License Expiry')
-                                    ->disabled(),
+                                    ->date(),
 
-                                TextInput::make('preferred_language')
-                                    ->label('Language')
-                                    ->disabled(),
+                                TextEntry::make('preferred_language')
+                                    ->label('Language'),
 
-                                TextInput::make('notification_preferences')
-                                    ->label('Notifications')
-                                    ->disabled(),
+                                TextEntry::make('notification_preferences')
+                                    ->label('Notifications'),
                             ]),
                     ])
                     ->collapsible(),

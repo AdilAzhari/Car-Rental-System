@@ -14,7 +14,7 @@ class CreateTestUser extends Command
 
     protected $description = 'Create a test user with new user status';
 
-    public function handle()
+    public function handle(): int
     {
         $name = $this->argument('name');
         $email = $this->argument('email');

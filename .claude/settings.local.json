@@ -14,7 +14,20 @@
       "Bash(composer show:*)",
       "Bash(composer:*)",
       "Bash(php:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(vendor/bin/pint:*)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "WebSearch",
+      "WebFetch(domain:unsplash.com)",
+      "Bash(vendor/bin/rector process:*)",
+      "Bash(vendor/bin/rector list-rules:*)",
+      "Bash(for category in economy compact midsize luxury suv sports convertible pickup minivan electric)",
+      "Bash(do for i in {1..10})",
+      "Bash(do touch \"$category-placeholder-$i.jpg\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

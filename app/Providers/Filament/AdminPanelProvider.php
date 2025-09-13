@@ -2,6 +2,15 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\DashboardStatsOverview;
+use App\Filament\Widgets\LatestActivitiesWidget;
+use App\Filament\Widgets\PopularVehiclesWidget;
+use App\Filament\Widgets\RecentBookingsWidget;
+use App\Filament\Widgets\RevenueChartWidget;
+use App\Filament\Widgets\UserStatsWidget;
+use App\Filament\Widgets\VehicleStatsWidget;
+use App\Http\Middleware\LocalizationMiddleware;
+use App\Http\Middleware\NewUserNotificationMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,23 +19,12 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
-use App\Filament\Widgets\DashboardStatsOverview;
-use App\Filament\Widgets\LatestActivitiesWidget;
-use App\Filament\Widgets\PopularVehiclesWidget;
-use App\Filament\Widgets\RecentBookingsWidget;
-use App\Filament\Widgets\RevenueChartWidget;
-use App\Filament\Widgets\UserStatsWidget;
-use App\Filament\Widgets\VehicleStatsWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Http\Middleware\LocalizationMiddleware;
-use App\Http\Middleware\NewUserNotificationMiddleware;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -36,6 +34,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('SENTIENTS A.I.')
+            ->brandLogo(asset('images/logo.jpg'))
+//            ->darkModeBrandLogo(asset('images/logo.jpg'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('images/logo.jpg'))
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -46,13 +49,11 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 'panels::topbar.end',
-                fn (): string => 
-                    view('filament.hooks.notification-bell')->render() . 
-                    view('filament.hooks.language-switcher')->render()
+                fn (): string => view('filament.hooks.notification-bell')->render()
             )
             ->renderHook(
                 'panels::head.end',
-                fn (): string => '<link rel="stylesheet" href="' . asset('css/admin-fixes.css') . '?v=' . time() . '">'
+                fn (): string => '<link rel="stylesheet" href="'.asset('css/admin-fixes.css').'?v='.time().'">'
             )
             ->renderHook(
                 'panels::user-menu.start',
@@ -73,8 +74,6 @@ class AdminPanelProvider extends PanelProvider
                 RecentBookingsWidget::class,
                 VehicleStatsWidget::class,
                 UserStatsWidget::class,
-                AccountWidget::class,
-                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -89,6 +88,8 @@ class AdminPanelProvider extends PanelProvider
                 NewUserNotificationMiddleware::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->resourceCreatePageRedirect('index')
+            ->brandName('SENTIENTS A.I.')
             ->authMiddleware([
                 Authenticate::class,
             ]);

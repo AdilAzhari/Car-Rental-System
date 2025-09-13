@@ -15,7 +15,7 @@
 @endphp
 
 <div class="flex items-center gap-2 px-4">
-    <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+    <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 language-switcher">
         @foreach($availableLocales as $localeCode => $locale)
             <a
                 href="{{ url()->current() }}?locale={{ $localeCode }}"

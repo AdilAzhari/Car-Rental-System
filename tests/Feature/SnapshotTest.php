@@ -1,21 +1,21 @@
 <?php
 
+use App\Models\Booking;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Models\Booking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-describe('Snapshot Tests', function () {
-    beforeEach(function () {
+describe('Snapshot Tests', function (): void {
+    beforeEach(function (): void {
         $this->admin = User::factory()->admin()->create();
         $this->owner = User::factory()->owner()->create();
         $this->renter = User::factory()->renter()->create();
     });
 
-    describe('API Response Snapshots', function () {
-        it('matches vehicle list API response structure', function () {
+    describe('API Response Snapshots', function (): void {
+        it('matches vehicle list API response structure', function (): void {
             Vehicle::factory(3)->create();
 
             $response = $this->actingAs($this->admin)
@@ -25,11 +25,9 @@ describe('Snapshot Tests', function () {
             $responseData = $response->json();
 
             // Remove dynamic data for consistent snapshots
-            $cleanedData = collect($responseData['data'] ?? [])->map(function ($vehicle) {
-                return array_intersect_key($vehicle, array_flip([
-                    'id', 'make', 'model', 'year', 'fuel_type', 'transmission', 'status'
-                ]));
-            });
+            $cleanedData = collect($responseData['data'] ?? [])->map(fn ($vehicle): array => array_intersect_key($vehicle, array_flip([
+                'id', 'make', 'model', 'year', 'fuel_type', 'transmission', 'status',
+            ])));
 
             expect($cleanedData->toArray())->toMatchSnapshot();
         });
@@ -37,31 +35,31 @@ describe('Snapshot Tests', function () {
         it(/**
          * @throws JsonException
          */
-        'matches booking creation response structure', function () {
-            $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
+            'matches booking creation response structure', function (): void {
+                $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
 
-            $bookingData = [
-                'vehicle_id' => $vehicle->id,
-                'start_date' => '2024-12-01',
-                'end_date' => '2024-12-05',
-                'total_amount' => 400.00,
-                'notes' => 'Test booking'
-            ];
+                $bookingData = [
+                    'vehicle_id' => $vehicle->id,
+                    'start_date' => '2024-12-01',
+                    'end_date' => '2024-12-05',
+                    'total_amount' => 400.00,
+                    'notes' => 'Test booking',
+                ];
 
-            $response = $this->actingAs($this->renter)
-                ->postJson('/admin/bookings', $bookingData);
+                $response = $this->actingAs($this->renter)
+                    ->postJson('/admin/bookings', $bookingData);
 
-            $responseData = $response->json();
+                $responseData = $response->json();
 
-            // Remove dynamic fields
-            unset($responseData['data']['id'], $responseData['data']['created_at'], $responseData['data']['updated_at']);
+                // Remove dynamic fields
+                unset($responseData['data']['id'], $responseData['data']['created_at'], $responseData['data']['updated_at']);
 
-            expect($responseData)->toMatchSnapshot();
-        });
+                expect($responseData)->toMatchSnapshot();
+            });
 
         it(/**
          * @throws JsonException
-         */ 'matches user profile response structure', function () {
+         */ 'matches user profile response structure', function (): void {
             $response = $this->actingAs($this->admin)
                 ->getJson("/admin/users/{$this->admin->id}")
                 ->assertSuccessful();
@@ -81,16 +79,16 @@ describe('Snapshot Tests', function () {
         });
     });
 
-    describe('Database Query Snapshots', function () {
+    describe('Database Query Snapshots', function (): void {
         it(/**
          * @throws JsonException
-         */ 'matches complex booking query structure', function () {
+         */ 'matches complex booking query structure', function (): void {
             $vehicles = Vehicle::factory(5)->create(['owner_id' => $this->owner->id]);
 
             foreach ($vehicles as $vehicle) {
                 Booking::factory(2)->create([
                     'vehicle_id' => $vehicle->id,
-                    'renter_id' => $this->renter->id
+                    'renter_id' => $this->renter->id,
                 ]);
             }
 
@@ -104,7 +102,7 @@ describe('Snapshot Tests', function () {
 
         it(/**
          * @throws JsonException
-         */ 'matches vehicle search query with filters', function () {
+         */ 'matches vehicle search query with filters', function (): void {
             $query = Vehicle::query()
                 ->where('status', 'published')
                 ->where('fuel_type', 'petrol')
@@ -117,8 +115,8 @@ describe('Snapshot Tests', function () {
         });
     });
 
-    describe('HTML Response Snapshots', function () {
-        it('matches dashboard HTML structure', function () {
+    describe('HTML Response Snapshots', function (): void {
+        it('matches dashboard HTML structure', function (): void {
             $response = $this->actingAs($this->admin)
                 ->get('/admin')
                 ->assertSuccessful();
@@ -137,7 +135,7 @@ describe('Snapshot Tests', function () {
             ], $html);
 
             // Extract just the main content area for consistent snapshots
-            $dom = new DOMDocument();
+            $dom = new DOMDocument;
             @$dom->loadHTML($cleanedHtml);
             $xpath = new DOMXPath($dom);
             $mainContent = $xpath->query('//main[@class="dashboard-main"]');
@@ -148,7 +146,7 @@ describe('Snapshot Tests', function () {
             }
         });
 
-        it('matches vehicle form HTML structure', function () {
+        it('matches vehicle form HTML structure', function (): void {
             $response = $this->actingAs($this->admin)
                 ->get('/admin/vehicles/create')
                 ->assertSuccessful();
@@ -156,7 +154,7 @@ describe('Snapshot Tests', function () {
             $html = $response->getContent();
 
             // Extract form structure
-            $dom = new DOMDocument();
+            $dom = new DOMDocument;
             @$dom->loadHTML($html);
             $xpath = new DOMXPath($dom);
             $form = $xpath->query('//form[@class="vehicle-form"]');
@@ -178,8 +176,8 @@ describe('Snapshot Tests', function () {
         });
     });
 
-    describe('Configuration Snapshots', function () {
-        it('matches database configuration structure', function () {
+    describe('Configuration Snapshots', function (): void {
+        it('matches database configuration structure', function (): void {
             $dbConfig = config('database.connections.mysql');
 
             // Remove sensitive data
@@ -188,7 +186,7 @@ describe('Snapshot Tests', function () {
             expect($dbConfig)->toMatchSnapshot();
         });
 
-        it('matches mail configuration structure', function () {
+        it('matches mail configuration structure', function (): void {
             $mailConfig = config('mail');
 
             // Remove sensitive data
@@ -199,15 +197,15 @@ describe('Snapshot Tests', function () {
             expect($mailConfig)->toMatchSnapshot();
         });
 
-        it('matches filament configuration structure', function () {
+        it('matches filament configuration structure', function (): void {
             $filamentConfig = config('filament.default_filesystem_disk');
 
             expect($filamentConfig)->toMatchSnapshot();
         });
     });
 
-    describe('Validation Error Snapshots', function () {
-        it('matches vehicle validation error structure', function () {
+    describe('Validation Error Snapshots', function (): void {
+        it('matches vehicle validation error structure', function (): void {
             $response = $this->actingAs($this->admin)
                 ->postJson('/admin/vehicles', [])
                 ->assertStatus(422);
@@ -216,12 +214,12 @@ describe('Snapshot Tests', function () {
             expect($errors)->toMatchSnapshot();
         });
 
-        it('matches booking validation error structure', function () {
+        it('matches booking validation error structure', function (): void {
             $response = $this->actingAs($this->renter)
                 ->postJson('/admin/bookings', [
                     'start_date' => '2024-12-31',
                     'end_date' => '2024-12-01', // Invalid: end before start
-                    'vehicle_id' => 999 // Non-existent
+                    'vehicle_id' => 999, // Non-existent
                 ])
                 ->assertStatus(422);
 
@@ -229,11 +227,11 @@ describe('Snapshot Tests', function () {
             expect($errors)->toMatchSnapshot();
         });
 
-        it('matches user registration validation errors', function () {
+        it('matches user registration validation errors', function (): void {
             $response = $this->postJson('/register', [
                 'name' => '',
                 'email' => 'invalid-email',
-                'password' => '123' // Too short
+                'password' => '123', // Too short
             ])
                 ->assertStatus(422);
 
@@ -242,8 +240,8 @@ describe('Snapshot Tests', function () {
         });
     });
 
-    describe('Model Relationship Snapshots', function () {
-        it('matches vehicle with relationships structure', function () {
+    describe('Model Relationship Snapshots', function (): void {
+        it('matches vehicle with relationships structure', function (): void {
             $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
 
             Booking::factory(2)->create(['vehicle_id' => $vehicle->id]);
@@ -263,7 +261,7 @@ describe('Snapshot Tests', function () {
 
         it(/**
          * @throws JsonException
-         */ 'matches user with full profile structure', function () {
+         */ 'matches user with full profile structure', function (): void {
             Vehicle::factory(2)->create(['owner_id' => $this->owner->id]);
 
             $userData = $this->owner->load(['vehicles', 'ownedBookings'])->toArray();

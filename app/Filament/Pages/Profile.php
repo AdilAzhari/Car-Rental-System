@@ -2,33 +2,38 @@
 
 namespace App\Filament\Pages;
 
+use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Pages\Page;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use BackedEnum;
+use Livewire\Features\SupportFileUploads\WithFileUploads;
 
 class Profile extends Page implements HasForms
 {
-    use InteractsWithForms;
+    use InteractsWithForms, WithFileUploads;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
     protected static ?int $navigationSort = 99;
 
     public ?array $data = [];
+
+    public $id_document_path = [];
+
+    public $license_document_path = [];
 
     public function getView(): string
     {
@@ -49,12 +54,12 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
         $this->form->fill([
-            'name' => $user->name ?? '',
-            'email' => $user->email ?? '',
-            'phone' => $user->phone ?? '',
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
             'date_of_birth' => $user->date_of_birth?->format('Y-m-d'),
-            'address' => $user->address ?? '',
-            'license_number' => $user->license_number ?? '',
+            'address' => $user->address,
+            'license_number' => $user->license_number,
             'id_document_path' => $user->id_document_path ? [$user->id_document_path] : [],
             'license_document_path' => $user->license_document_path ? [$user->license_document_path] : [],
             'role' => $user->role?->value ?? 'renter',
@@ -213,7 +218,7 @@ class Profile extends Page implements HasForms
                                     ->label(__('resources.new_password'))
                                     ->password()
                                     ->maxLength(255)
-                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrated(fn ($state): bool => filled($state))
                                     ->rules([Password::default()])
                                     ->autocomplete('new-password')
                                     ->suffixIcon('heroicon-m-lock-closed')
@@ -289,11 +294,11 @@ class Profile extends Page implements HasForms
 
         // Handle file upload arrays - FileUpload returns arrays, but we need strings for database
         if (isset($data['id_document_path']) && is_array($data['id_document_path'])) {
-            $data['id_document_path'] = !empty($data['id_document_path']) ? $data['id_document_path'][0] : null;
+            $data['id_document_path'] = empty($data['id_document_path']) ? null : $data['id_document_path'][0];
         }
-        
+
         if (isset($data['license_document_path']) && is_array($data['license_document_path'])) {
-            $data['license_document_path'] = !empty($data['license_document_path']) ? $data['license_document_path'][0] : null;
+            $data['license_document_path'] = empty($data['license_document_path']) ? null : $data['license_document_path'][0];
         }
 
         // Remove display-only fields that aren't part of the user model

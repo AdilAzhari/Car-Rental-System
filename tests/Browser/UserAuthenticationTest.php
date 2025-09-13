@@ -6,25 +6,25 @@ use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
-describe('User Authentication Browser Tests', function () {
-    beforeEach(function () {
+describe('User Authentication Browser Tests', function (): void {
+    beforeEach(function (): void {
         $this->admin = User::factory()->admin()->create([
             'email' => 'admin@example.com',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
         $this->owner = User::factory()->owner()->create([
             'email' => 'owner@example.com',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
         $this->renter = User::factory()->renter()->create([
             'email' => 'renter@example.com',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
     });
 
-    describe('User Login Process', function () {
-        it('can login with valid credentials', function () {
-            browse(function ($browser) {
+    describe('User Login Process', function (): void {
+        it('can login with valid credentials', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->assertSee('Sign in to your account')
                     ->type('[data-testid="email"]', 'admin@example.com')
@@ -37,8 +37,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('shows error with invalid credentials', function () {
-            browse(function ($browser) {
+        it('shows error with invalid credentials', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->type('[data-testid="email"]', 'admin@example.com')
                     ->type('[data-testid="password"]', 'wrongpassword')
@@ -50,8 +50,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates required fields', function () {
-            browse(function ($browser) {
+        it('validates required fields', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->click('[data-testid="login-btn"]')
                     ->pause(1000)
@@ -61,8 +61,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('can login with remember me option', function () {
-            browse(function ($browser) {
+        it('can login with remember me option', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->type('[data-testid="email"]', 'admin@example.com')
                     ->type('[data-testid="password"]', 'password123')
@@ -73,18 +73,16 @@ describe('User Authentication Browser Tests', function () {
 
                 // Verify remember cookie is set
                 $cookies = $browser->driver->manage()->getCookies();
-                $rememberCookie = collect($cookies)->first(function ($cookie) {
-                    return str_contains($cookie['name'], 'remember_');
-                });
-                
+                $rememberCookie = collect($cookies)->first(fn ($cookie): bool => str_contains((string) $cookie['name'], 'remember_'));
+
                 expect($rememberCookie)->not()->toBeNull();
             });
         });
     });
 
-    describe('User Registration Process', function () {
-        it('can register a new user account', function () {
-            browse(function ($browser) {
+    describe('User Registration Process', function (): void {
+        it('can register a new user account', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/register')
                     ->assertSee('Create your account')
                     ->type('[data-testid="name"]', 'John Doe')
@@ -99,8 +97,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates registration form fields', function () {
-            browse(function ($browser) {
+        it('validates registration form fields', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/register')
                     ->click('[data-testid="register-btn"]')
                     ->pause(1000)
@@ -110,8 +108,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates password confirmation', function () {
-            browse(function ($browser) {
+        it('validates password confirmation', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/register')
                     ->type('[data-testid="name"]', 'John Doe')
                     ->type('[data-testid="email"]', 'john@example.com')
@@ -124,8 +122,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates unique email address', function () {
-            browse(function ($browser) {
+        it('validates unique email address', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/register')
                     ->type('[data-testid="name"]', 'John Doe')
                     ->type('[data-testid="email"]', 'admin@example.com') // Already exists
@@ -138,8 +136,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('can register with different user roles', function () {
-            browse(function ($browser) {
+        it('can register with different user roles', function (): void {
+            browse(function ($browser): void {
                 // Register as owner
                 $browser->visit('/register')
                     ->type('[data-testid="name"]', 'Vehicle Owner')
@@ -154,9 +152,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Password Reset Process', function () {
-        it('can request password reset', function () {
-            browse(function ($browser) {
+    describe('Password Reset Process', function (): void {
+        it('can request password reset', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->click('[data-testid="forgot-password-link"]')
                     ->assertPathIs('/forgot-password')
@@ -169,8 +167,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates email for password reset', function () {
-            browse(function ($browser) {
+        it('validates email for password reset', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/forgot-password')
                     ->type('[data-testid="email"]', 'nonexistent@example.com')
                     ->click('[data-testid="send-reset-link"]')
@@ -180,16 +178,16 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('can reset password with valid token', function () {
+        it('can reset password with valid token', function (): void {
             // Create a password reset token manually for testing
             $token = \Illuminate\Support\Str::random(60);
             \DB::table('password_reset_tokens')->insert([
                 'email' => 'admin@example.com',
                 'token' => Hash::make($token),
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
-            browse(function ($browser) use ($token) {
+            browse(function ($browser) use ($token): void {
                 $browser->visit("/reset-password/$token?email=admin@example.com")
                     ->assertSee('Reset Password')
                     ->type('[data-testid="email"]', 'admin@example.com')
@@ -203,14 +201,14 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Email Verification Process', function () {
-        it('prompts unverified users to verify email', function () {
+    describe('Email Verification Process', function (): void {
+        it('prompts unverified users to verify email', function (): void {
             $unverifiedUser = User::factory()->unverified()->create([
                 'email' => 'unverified@example.com',
-                'password' => Hash::make('password123')
+                'password' => Hash::make('password123'),
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->type('[data-testid="email"]', 'unverified@example.com')
                     ->type('[data-testid="password"]', 'password123')
@@ -222,13 +220,13 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('can resend verification email', function () {
+        it('can resend verification email', function (): void {
             $unverifiedUser = User::factory()->unverified()->create([
                 'email' => 'unverified@example.com',
-                'password' => Hash::make('password123')
+                'password' => Hash::make('password123'),
             ]);
 
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($unverifiedUser)
                     ->visit('/email/verify')
                     ->click('[data-testid="resend-verification"]')
@@ -238,15 +236,15 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('verifies email with valid verification link', function () {
+        it('verifies email with valid verification link', function (): void {
             $unverifiedUser = User::factory()->unverified()->create();
             $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
                 'verification.verify',
                 now()->addMinutes(60),
-                ['id' => $unverifiedUser->id, 'hash' => sha1($unverifiedUser->email)]
+                ['id' => $unverifiedUser->id, 'hash' => sha1((string) $unverifiedUser->email)]
             );
 
-            browse(function ($browser) use ($verificationUrl) {
+            browse(function ($browser) use ($verificationUrl): void {
                 $browser->visit($verificationUrl)
                     ->pause(2000)
                     ->assertSee('Email verified successfully')
@@ -255,9 +253,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('User Logout Process', function () {
-        it('can logout successfully', function () {
-            browse(function ($browser) {
+    describe('User Logout Process', function (): void {
+        it('can logout successfully', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
                     ->assertSee('Dashboard')
@@ -270,8 +268,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('redirects to login when accessing protected routes after logout', function () {
-            browse(function ($browser) {
+        it('redirects to login when accessing protected routes after logout', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
                     ->click('[data-testid="user-menu"]')
@@ -284,9 +282,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Role-Based Access Control', function () {
-        it('redirects users to appropriate dashboard based on role', function () {
-            browse(function ($browser) {
+    describe('Role-Based Access Control', function (): void {
+        it('redirects users to appropriate dashboard based on role', function (): void {
+            browse(function ($browser): void {
                 // Admin access
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
@@ -295,7 +293,7 @@ describe('User Authentication Browser Tests', function () {
 
                 $browser->logout();
 
-                // Owner access  
+                // Owner access
                 $browser->loginAs($this->owner)
                     ->visit('/admin')
                     ->assertSee('Owner Dashboard')
@@ -311,8 +309,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('restricts access to admin-only features', function () {
-            browse(function ($browser) {
+        it('restricts access to admin-only features', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->renter)
                     ->visit('/admin/users')
                     ->assertSee('Unauthorized')
@@ -320,8 +318,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('allows owners to manage their own content only', function () {
-            browse(function ($browser) {
+        it('allows owners to manage their own content only', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->owner)
                     ->visit('/admin/vehicles')
                     ->assertSee('My Vehicles')
@@ -331,9 +329,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Session Management and Security', function () {
-        it('maintains session across page navigation', function () {
-            browse(function ($browser) {
+    describe('Session Management and Security', function (): void {
+        it('maintains session across page navigation', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
                     ->assertAuthenticatedAs($this->admin)
@@ -344,9 +342,9 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('handles session timeout appropriately', function () {
+        it('handles session timeout appropriately', function (): void {
             // Simulate session timeout by clearing session
-            browse(function ($browser) {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
                     ->assertSee('Dashboard');
@@ -361,8 +359,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('prevents CSRF attacks', function () {
-            browse(function ($browser) {
+        it('prevents CSRF attacks', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     ->pause(1000);
 
@@ -380,8 +378,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('handles concurrent logins correctly', function () {
-            browse(function ($browser1, $browser2) {
+        it('handles concurrent logins correctly', function (): void {
+            browse(function ($browser1, $browser2): void {
                 // Login with same user in two browsers
                 $browser1->loginAs($this->admin)
                     ->visit('/admin')
@@ -398,9 +396,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('User Profile Management', function () {
-        it('can access and update user profile', function () {
-            browse(function ($browser) {
+    describe('User Profile Management', function (): void {
+        it('can access and update user profile', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin')
                     ->click('[data-testid="user-menu"]')
@@ -417,8 +415,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('can change password', function () {
-            browse(function ($browser) {
+        it('can change password', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/profile')
                     ->type('[data-testid="current_password"]', 'password123')
@@ -430,8 +428,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('validates current password when changing password', function () {
-            browse(function ($browser) {
+        it('validates current password when changing password', function (): void {
+            browse(function ($browser): void {
                 $browser->loginAs($this->admin)
                     ->visit('/admin/profile')
                     ->type('[data-testid="current_password"]', 'wrongpassword')
@@ -445,9 +443,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Mobile Authentication Experience', function () {
-        it('displays authentication forms correctly on mobile', function () {
-            browse(function ($browser) {
+    describe('Mobile Authentication Experience', function (): void {
+        it('displays authentication forms correctly on mobile', function (): void {
+            browse(function ($browser): void {
                 $browser->resize(375, 667) // iPhone SE size
                     ->visit('/login')
                     ->assertPresent('[data-testid="mobile-login-form"]')
@@ -460,8 +458,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('handles mobile registration flow', function () {
-            browse(function ($browser) {
+        it('handles mobile registration flow', function (): void {
+            browse(function ($browser): void {
                 $browser->resize(375, 667)
                     ->visit('/register')
                     ->assertPresent('[data-testid="mobile-register-form"]')
@@ -477,9 +475,9 @@ describe('User Authentication Browser Tests', function () {
         });
     });
 
-    describe('Error Handling and Recovery', function () {
-        it('handles server errors gracefully during login', function () {
-            browse(function ($browser) {
+    describe('Error Handling and Recovery', function (): void {
+        it('handles server errors gracefully during login', function (): void {
+            browse(function ($browser): void {
                 $browser->visit('/login')
                     // Simulate server error
                     ->script('
@@ -497,8 +495,8 @@ describe('User Authentication Browser Tests', function () {
             });
         });
 
-        it('provides clear error messages for various scenarios', function () {
-            browse(function ($browser) {
+        it('provides clear error messages for various scenarios', function (): void {
+            browse(function ($browser): void {
                 // Invalid email format
                 $browser->visit('/login')
                     ->type('[data-testid="email"]', 'invalid-email')

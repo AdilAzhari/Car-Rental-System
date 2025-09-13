@@ -8,9 +8,14 @@ use Filament\Widgets\ChartWidget;
 
 class RevenueChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Monthly Revenue Trends';
+    public function getHeading(): string
+    {
+        return __('widgets.revenue_chart');
+    }
 
     protected static ?int $sort = 2;
+
+    protected int|string|array $columnSpan = 2;
 
     public static function canView(): bool
     {
@@ -39,7 +44,7 @@ class RevenueChartWidget extends ChartWidget
 
             // Filter by owner if not admin
             if ($user && $user->role === UserRole::OWNER) {
-                $bookingQuery->whereHas('vehicle', function ($query) use ($user) {
+                $bookingQuery->whereHas('vehicle', function ($query) use ($user): void {
                     $query->where('owner_id', $user->id);
                 });
             }

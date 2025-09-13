@@ -8,15 +8,18 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-language-switch": "*",
+        "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mcamara/laravel-localization": "*",
-        "spatie/laravel-activitylog": "*"
+        "spatie/laravel-activitylog": "*",
+        "stripe/stripe-php": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "infection/infection": "*",
+        "laravel/boost": "^1.1",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
@@ -29,6 +32,7 @@
         "pestphp/pest-plugin-laravel": "*",
         "pestphp/pest-plugin-type-coverage": "*",
         "phpunit/phpunit": "*",
+        "rector/rector": "^2.1",
         "spatie/pest-plugin-snapshots": "^2.2"
     },
     "autoload": {

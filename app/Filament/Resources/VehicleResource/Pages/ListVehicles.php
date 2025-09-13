@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\VehicleResource\Pages;
 
-use App\Filament\Resources\VehicleResource;
 use App\Enums\VehicleStatus;
+use App\Filament\Resources\VehicleResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -18,7 +18,7 @@ class ListVehicles extends ListRecords
         return [
             CreateAction::make()
                 ->icon('heroicon-m-plus')
-                ->label('Add Vehicle'),
+                ->label(__('resources.add_vehicle')),
         ];
     }
 

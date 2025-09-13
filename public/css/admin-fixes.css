@@ -59,6 +59,402 @@
 [dir="rtl"] [x-data*="selectField"] .fi-fo-select-menu {
     right: 0 !important;
     left: auto !important;
+    transform-origin: top right !important;
+}
+
+/* Advanced RTL fixes for Filament components */
+[dir="rtl"] .fi-ta-header-toolbar .fi-btn-group {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .fi-ta-header-toolbar .fi-dropdown-panel {
+    right: 0 !important;
+    left: auto !important;
+    transform-origin: top right !important;
+}
+
+/* Fix filter badges positioning */
+[dir="rtl"] .fi-ta-filters-indicator {
+    margin-right: 0.5rem;
+    margin-left: 0;
+}
+
+/* Fix table action buttons */
+[dir="rtl"] .fi-ta-row .fi-ta-actions {
+    text-align: left;
+}
+
+/* Fix bulk action toolbar */
+[dir="rtl"] .fi-ta-bulk-actions-toolbar {
+    direction: rtl;
+}
+
+/* Fix select all checkbox */
+[dir="rtl"] .fi-ta-header-cell-checkbox {
+    text-align: right;
+}
+
+/* Fix modal header buttons */
+[dir="rtl"] .fi-modal-header .fi-btn {
+    margin-left: 0.75rem;
+    margin-right: 0;
+}
+
+/* Fix breadcrumb navigation */
+[dir="rtl"] .fi-breadcrumb-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .fi-breadcrumb-item::after {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Fix form layout in RTL */
+[dir="rtl"] .fi-fo-grid {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-fo-fieldset {
+    text-align: right;
+}
+
+/* Fix select field arrow positioning */
+[dir="rtl"] .fi-fo-select-menu-trigger::after {
+    right: auto !important;
+    left: 0.75rem !important;
+}
+
+/* Fix checkbox and radio positioning */
+[dir="rtl"] .fi-fo-checkbox, 
+[dir="rtl"] .fi-fo-radio {
+    direction: ltr;
+    float: right;
+}
+
+/* Fix toggle switch positioning */
+[dir="rtl"] .fi-fo-toggle {
+    direction: ltr;
+    float: right;
+}
+
+/* Fix file upload area */
+[dir="rtl"] .fi-fo-file-upload {
+    text-align: right;
+}
+
+/* Fix datetime picker */
+[dir="rtl"] .fi-fo-date-time-picker input {
+    text-align: right;
+}
+
+/* Fix color picker */
+[dir="rtl"] .fi-fo-color-picker {
+    direction: ltr;
+}
+
+/* Fix tag input */
+[dir="rtl"] .fi-fo-tag-input {
+    direction: rtl;
+}
+
+/* Fix markdown editor */
+[dir="rtl"] .fi-fo-markdown-editor {
+    direction: rtl;
+}
+
+/* Fix rich editor */
+[dir="rtl"] .fi-fo-rich-editor {
+    direction: rtl;
+}
+
+/* Fix repeater components */
+[dir="rtl"] .fi-fo-repeater {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-fo-repeater-item-actions {
+    flex-direction: row-reverse;
+}
+
+/* Fix wizard navigation */
+[dir="rtl"] .fi-wizard-nav {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-wizard-nav .fi-wizard-nav-item::after {
+    content: "‹";
+    margin-left: 0;
+    margin-right: 0.75rem;
+}
+
+/* Fix stats widgets */
+[dir="rtl"] .fi-widget-stats {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-widget-stats-icon {
+    float: left;
+}
+
+/* Fix chart widgets */
+[dir="rtl"] .fi-widget-chart {
+    direction: ltr;
+}
+
+/* Fix notification positioning */
+[dir="rtl"] .fi-no-notifications {
+    right: 1rem !important;
+    left: auto !important;
+}
+
+/* Fix avatar menu */
+[dir="rtl"] .fi-user-menu {
+    direction: rtl;
+}
+
+/* Fix dropdown menu items */
+[dir="rtl"] .fi-dropdown-list-item {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-dropdown-list-item .fi-icon {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Fix table responsive scrolling */
+[dir="rtl"] .fi-ta-content {
+    direction: ltr;
+}
+
+[dir="rtl"] .fi-ta {
+    direction: rtl;
+}
+
+/* Fix loading indicators */
+[dir="rtl"] .fi-loading-indicator {
+    direction: ltr;
+}
+
+/* Filament v4 specific RTL fixes */
+/* Fix schema components */
+[dir="rtl"] .fi-sc-grid {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-sc-section {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-sc-fieldset {
+    text-align: right;
+}
+
+/* Fix infolist components */
+[dir="rtl"] .fi-in {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-in-text .fi-in-text-item {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-in-key-value .fi-in-key-value-item {
+    text-align: right;
+}
+
+/* Fix action modals */
+[dir="rtl"] .fi-ac-modal {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-ac-modal-header {
+    text-align: right;
+}
+
+/* Fix table filters specifically */
+[dir="rtl"] .fi-ta-filters {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-ta-filters-trigger {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .fi-ta-filters-form {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-ta-filter {
+    text-align: right;
+}
+
+/* Fix table search */
+[dir="rtl"] .fi-ta-search {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-ta-search input {
+    text-align: right;
+    padding-right: 2.5rem;
+    padding-left: 0.75rem;
+}
+
+[dir="rtl"] .fi-ta-search .fi-icon {
+    right: auto;
+    left: 0.75rem;
+}
+
+/* Fix table bulk actions */
+[dir="rtl"] .fi-ta-bulk-actions {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-ta-bulk-actions .fi-btn {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Fix table pagination */
+[dir="rtl"] .fi-ta-pagination {
+    direction: rtl;
+}
+
+/* Fix resource pages */
+[dir="rtl"] .fi-resource-page {
+    direction: rtl;
+}
+
+/* Fix page header */
+[dir="rtl"] .fi-page-header {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-page-header-actions {
+    flex-direction: row-reverse;
+}
+
+/* Fix breadcrumbs in header */
+[dir="rtl"] .fi-breadcrumbs {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-breadcrumbs-item::after {
+    content: "‹";
+    margin-left: 0.25rem;
+    margin-right: 0;
+}
+
+/* Fix sidebar navigation */
+[dir="rtl"] .fi-sidebar-nav {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-sidebar-nav-item {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-sidebar-nav-group-label {
+    text-align: right;
+}
+
+/* Fix topbar */
+[dir="rtl"] .fi-topbar {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-topbar-start {
+    order: 2;
+}
+
+[dir="rtl"] .fi-topbar-end {
+    order: 1;
+}
+
+/* Fix notification panel */
+[dir="rtl"] .fi-no-panel {
+    right: 0;
+    left: auto;
+}
+
+/* Fix global search */
+[dir="rtl"] .fi-global-search {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-global-search-input {
+    text-align: right;
+}
+
+/* Fix tenant menu */
+[dir="rtl"] .fi-tenant-menu {
+    direction: rtl;
+}
+
+/* Fix dark mode toggle */
+[dir="rtl"] .fi-theme-switcher {
+    direction: ltr;
+}
+
+/* Language switcher specific fixes */
+[dir="rtl"] .language-switcher {
+    direction: ltr;
+}
+
+/* Fix form actions */
+[dir="rtl"] .fi-fo-actions {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .fi-fo-actions .fi-btn {
+    margin-left: 0.75rem;
+    margin-right: 0;
+}
+
+/* Fix resource relation managers */
+[dir="rtl"] .fi-resource-relation-manager {
+    direction: rtl;
+}
+
+/* Fix widget layouts */
+[dir="rtl"] .fi-wi {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-wi-stats-overview {
+    direction: rtl;
+}
+
+/* Fix dashboard layout */
+[dir="rtl"] .fi-dashboard-page {
+    direction: rtl;
+}
+
+/* Ensure consistent text alignment */
+[dir="rtl"] .fi-section-header-heading,
+[dir="rtl"] .fi-section-header-description {
+    text-align: right;
+}
+
+/* Fix tab navigation */
+[dir="rtl"] .fi-tabs-nav {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-tabs-tab {
+    text-align: right;
+}
+
+/* Fix key-value pairs in infolists */
+[dir="rtl"] .fi-in-key-value-key {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-in-key-value-value {
+    text-align: right;
 }
 
 /* Better spacing for form sections */
@@ -92,4 +488,74 @@
 .fi-resource-edit-record-page .max-w-none {
     max-width: none !important;
     width: 100% !important;
+}
+
+/* Widget optimizations - smaller size and 4 columns */
+.fi-wi-stats-overview .fi-wi-stats-overview-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1rem !important;
+}
+
+/* Make individual stat widgets smaller */
+.fi-wi-stats-overview-stat {
+    padding: 1rem !important;
+    min-height: auto !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.fi-wi-stats-overview-stat-description {
+    font-size: 0.625rem !important;
+    margin-top: 0.25rem !important;
+}
+
+/* Ensure chart in stats is smaller */
+.fi-wi-stats-overview-stat-chart {
+    height: 40px !important;
+    margin-top: 0.5rem !important;
+}
+
+/* Responsive behavior for widgets */
+@media (max-width: 1280px) {
+    .fi-wi-stats-overview .fi-wi-stats-overview-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .fi-wi-stats-overview .fi-wi-stats-overview-stats {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
+}
+
+/* Ensure brand logo displays correctly */
+.fi-logo {
+    max-height: 2rem !important;
+    height: auto !important;
+    width: auto !important;
+    object-fit: contain !important;
+}
+
+/* Fix brand logo container */
+.fi-topbar-start .fi-logo,
+.fi-sidebar-header .fi-logo {
+    display: block !important;
+    max-height: 2rem !important;
+}
+
+/* Ensure logo is visible in both light and dark modes */
+.fi-logo img {
+    display: block !important;
+    max-height: 2rem !important;
+    height: auto !important;
+    width: auto !important;
 }

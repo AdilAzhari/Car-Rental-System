@@ -2,36 +2,40 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserRole;
+use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Filament\Resources\VehicleResource\RelationManagers;
 use App\Models\Vehicle;
+use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\ViewField;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
-use BackedEnum;
 
 class VehicleResource extends Resource
 {
@@ -39,13 +43,29 @@ class VehicleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Fleet Management';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        $user = auth()->user();
+
+        return $user && $user->role === UserRole::RENTER ? 'Browse & Book' : __('resources.vehicle_management');
+
+    }
 
     protected static ?int $navigationSort = 2;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        // All authenticated users can see vehicles (renters for browsing/booking, owners for management)
+        return true;
+    }
+
     public static function getNavigationLabel(): string
     {
-        return __('resources.vehicles');
+        $user = auth()->user();
+
+        return $user && $user->role === UserRole::RENTER ? __('resources.browse_vehicles') : __('resources.vehicles');
     }
 
     public static function getModelLabel(): string
@@ -56,11 +76,6 @@ class VehicleResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('resources.vehicles');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('resources.vehicle_management');
     }
 
     public static function form(Schema $schema): Schema
@@ -207,7 +222,9 @@ class VehicleResource extends Resource
                                         TextInput::make('email')->email()->required(),
                                         Select::make('role')->options(['owner' => __('resources.owner')])->default('owner'),
                                     ])
-                                    ->placeholder(__('resources.select_or_create_owner')),
+                                    ->placeholder(__('resources.select_or_create_owner'))
+                                    ->default(fn () => auth()->user() && auth()->user()->role === UserRole::OWNER ? auth()->id() : null)
+                                    ->hidden(fn (): bool => auth()->user() && auth()->user()->role === UserRole::OWNER),
 
                                 TextInput::make('daily_rate')
                                     ->label(__('resources.daily_rate'))
@@ -229,12 +246,12 @@ class VehicleResource extends Resource
                                 Select::make('status')
                                     ->label(__('resources.status'))
                                     ->options([
-                                        'draft' => __('resources.draft'),
-                                        'published' => __('resources.published'),
-                                        'maintenance' => __('resources.under_maintenance'),
-                                        'archived' => __('resources.archived'),
+                                        VehicleStatus::DRAFT->value => __('resources.draft'),
+                                        VehicleStatus::PUBLISHED->value => __('resources.published'),
+                                        VehicleStatus::MAINTENANCE->value => __('resources.under_maintenance'),
+                                        VehicleStatus::ARCHIVED->value => __('resources.archived'),
                                     ])
-                                    ->default('draft')
+                                    ->default(VehicleStatus::DRAFT->value)
                                     ->required()
                                     ->native(false),
 
@@ -380,7 +397,7 @@ class VehicleResource extends Resource
                         ViewField::make('traffic_violations_display')
                             ->label(__('resources.violation_details'))
                             ->view('filament.components.traffic-violations-display')
-                            ->visible(fn ($record) => $record && $record->traffic_violations && count($record->traffic_violations) > 0)
+                            ->visible(fn ($record): bool => $record && $record->traffic_violations && count($record->traffic_violations) > 0)
                             ->columnSpanFull(),
 
                         // API Integration Actions
@@ -390,7 +407,7 @@ class VehicleResource extends Resource
                                     ->label(__('resources.api_integration'))
                                     ->content(fn (): string => __('resources.api_integration_description'))
                                     ->extraAttributes([
-                                        'class' => 'text-sm p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800'
+                                        'class' => 'text-sm p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800',
                                     ]),
                             ])
                             ->columnSpanFull(),
@@ -444,10 +461,10 @@ class VehicleResource extends Resource
                 BadgeColumn::make('status')
                     ->label(__('resources.status'))
                     ->colors([
-                        'success' => 'published',
-                        'warning' => 'draft',
-                        'danger' => 'maintenance',
-                        'gray' => 'archived',
+                        'success' => VehicleStatus::PUBLISHED->value,
+                        'warning' => VehicleStatus::DRAFT->value,
+                        'danger' => VehicleStatus::MAINTENANCE->value,
+                        'gray' => VehicleStatus::ARCHIVED->value,
                     ]),
 
                 BooleanColumn::make('is_available')
@@ -471,6 +488,32 @@ class VehicleResource extends Resource
                     ->badge()
                     ->color('info'),
 
+                BadgeColumn::make('has_pending_violations')
+                    ->label(__('resources.violations'))
+                    ->getStateUsing(function ($record): string {
+                        if (! $record->traffic_violations || empty($record->traffic_violations)) {
+                            return 'none';
+                        }
+
+                        $pendingCount = collect($record->traffic_violations)->where('status', 'pending')->count();
+
+                        if ($pendingCount > 0) {
+                            return $pendingCount.' pending';
+                        }
+
+                        return 'resolved';
+                    })
+                    ->colors([
+                        'success' => 'none',
+                        'warning' => 'resolved',
+                        'danger' => fn ($state): bool => str_contains((string) $state, 'pending'),
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'none',
+                        'heroicon-o-exclamation-triangle' => fn ($state): bool => str_contains((string) $state, 'pending'),
+                        'heroicon-o-shield-check' => 'resolved',
+                    ]),
+
                 TextColumn::make('created_at')
                     ->label(__('resources.added'))
                     ->dateTime()
@@ -480,41 +523,53 @@ class VehicleResource extends Resource
             ->filters([
                 SelectFilter::make('category')
                     ->options([
-                        'economy' => 'Economy',
-                        'compact' => 'Compact',
-                        'midsize' => 'Midsize',
-                        'fullsize' => 'Full-size',
-                        'luxury' => 'Luxury',
-                        'suv' => 'SUV',
+                        'economy' => __('resources.economy'),
+                        'compact' => __('resources.compact'),
+                        'midsize' => __('resources.midsize'),
+                        'fullsize' => __('enums.vehicle_category.fullsize'),
+                        'luxury' => __('resources.luxury'),
+                        'suv' => __('resources.suv'),
                     ]),
 
                 SelectFilter::make('status')
                     ->options([
-                        'published' => 'Published',
-                        'draft' => 'Draft',
-                        'maintenance' => 'Under Maintenance',
-                        'archived' => 'Archived',
+                        VehicleStatus::PUBLISHED->value => __('resources.published'),
+                        VehicleStatus::DRAFT->value => __('resources.draft'),
+                        VehicleStatus::MAINTENANCE->value => __('resources.under_maintenance'),
+                        VehicleStatus::ARCHIVED->value => __('resources.archived'),
                     ]),
 
                 SelectFilter::make('transmission')
                     ->options([
-                        'automatic' => 'Automatic',
-                        'manual' => 'Manual',
-                        'cvt' => 'CVT',
+                        'automatic' => __('resources.automatic'),
+                        'manual' => __('resources.manual'),
+                        'cvt' => __('resources.cvt'),
                     ]),
 
                 SelectFilter::make('is_available')
-                    ->label('Availability')
+                    ->label(__('resources.availability'))
                     ->options([
-                        '1' => 'Available',
-                        '0' => 'Not Available',
+                        '1' => __('resources.available'),
+                        '0' => __('resources.not_available'),
                     ]),
             ])
-            ->actions([
+            ->actions(array_filter([
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
-            ])
+                Action::make('book_now')
+                    ->label(__('resources.book_now'))
+                    ->icon('heroicon-m-calendar-plus')
+                    ->color('success')
+                    ->url(fn (Vehicle $record): string => route('filament.admin.resources.bookings.create', [
+                        'vehicle_id' => $record->id,
+                    ]))
+                    ->visible(fn (Vehicle $record): bool => auth()->user() &&
+                        auth()->user()->role === UserRole::RENTER &&
+                        $record->status === VehicleStatus::PUBLISHED &&
+                        $record->is_available
+                    ),
+            ]))
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -535,19 +590,45 @@ class VehicleResource extends Resource
         return [
             'index' => Pages\ListVehicles::route('/'),
             'create' => Pages\CreateVehicle::route('/create'),
-            'edit' => Pages\EditVehicle::route('/{record}/edit'),
             'view' => Pages\ViewVehicle::route('/{record}'),
+            'edit' => Pages\EditVehicle::route('/{record}/edit'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 'published')->count();
+        $user = auth()->user();
+        if (! $user) {
+            return null;
+        }
+
+        if ($user->role === UserRole::ADMIN) {
+            return static::getModel()::where('status', VehicleStatus::PUBLISHED->value)->count();
+        } elseif ($user->role === UserRole::OWNER) {
+            return static::getModel()::where('owner_id', $user->id)->count();
+        } else {
+            return static::getModel()::where('status', VehicleStatus::PUBLISHED->value)->where('is_available', true)->count();
+        }
     }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        $count = static::getModel()::where('status', 'published')->count();
-        return $count > 50 ? 'success' : ($count > 20 ? 'warning' : 'primary');
+        $count = (int) static::getNavigationBadge();
+
+        return $count > 10 ? 'success' : ($count > 5 ? 'warning' : 'primary');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        return parent::getEloquentQuery()
+            ->when($user && $user->role === UserRole::OWNER, fn($query) => $query->where('owner_id', $user->id))
+            ->when($user && $user->role === UserRole::RENTER, fn($query) =>
+                // Renters can only see published and available vehicles
+                $query->where('status', VehicleStatus::PUBLISHED->value)->where('is_available', true))
+            ->when(! $user, fn($query) =>
+                // If no authenticated user, return empty results
+                $query->whereRaw('1 = 0'));
     }
 }

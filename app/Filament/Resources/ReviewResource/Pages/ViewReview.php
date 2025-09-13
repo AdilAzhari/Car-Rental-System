@@ -3,14 +3,14 @@
 namespace App\Filament\Resources\ReviewResource\Pages;
 
 use App\Filament\Resources\ReviewResource;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewReview extends ViewRecord
 {
@@ -34,18 +34,18 @@ class ViewReview extends ViewRecord
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('id')
-                                    ->label('Review ID')
-                                    ->formatStateUsing(fn ($state) => 'RV-' . $state)
+                                    ->label(__('resources.review_id'))
+                                    ->formatStateUsing(fn ($state): string => 'RV-'.$state)
                                     ->disabled(),
 
                                 TextInput::make('rating')
-                                    ->label('Overall Rating')
-                                    ->formatStateUsing(fn ($state) => str_repeat('⭐', (int) $state) . ' (' . $state . '/5)')
+                                    ->label(__('resources.overall_rating'))
+                                    ->formatStateUsing(fn ($state): string => str_repeat('⭐', (int) $state).' ('.$state.'/5)')
                                     ->disabled(),
 
                                 TextInput::make('recommendation')
-                                    ->label('Recommends')
-                                    ->formatStateUsing(fn ($state) => match($state) {
+                                    ->label(__('resources.recommends'))
+                                    ->formatStateUsing(fn ($state): string => match ($state) {
                                         'yes' => 'Yes, would recommend',
                                         'no' => 'No, would not recommend',
                                         'maybe' => 'Maybe, with conditions',
@@ -58,24 +58,24 @@ class ViewReview extends ViewRecord
                 Section::make('Customer & Booking Details')
                     ->icon('heroicon-m-user')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('reviewer.name')
-                                    ->label('Customer Name')
+                                    ->label(__('resources.customer_name'))
                                     ->disabled(),
 
                                 TextInput::make('reviewer.email')
-                                    ->label('Customer Email')
+                                    ->label(__('resources.customer_email'))
                                     ->disabled(),
 
                                 TextInput::make('booking.id')
-                                    ->label('Booking ID')
-                                    ->formatStateUsing(fn ($state) => 'BK-' . $state)
+                                    ->label(__('resources.booking_id'))
+                                    ->formatStateUsing(fn ($state): string => 'BK-'.$state)
                                     ->disabled(),
 
                                 TextInput::make('booking_vehicle')
-                                    ->label('Vehicle')
-                                    ->formatStateUsing(fn ($state, $record) => $record->booking ? "{$record->booking->vehicle->make} {$record->booking->vehicle->model} ({$record->booking->vehicle->year})" : 'N/A')
+                                    ->label(__('resources.vehicle'))
+                                    ->formatStateUsing(fn ($state, $record): string => $record->booking ? "{$record->booking->vehicle->make} {$record->booking->vehicle->model} ({$record->booking->vehicle->year})" : 'N/A')
                                     ->disabled(),
                             ]),
                     ]),
@@ -90,7 +90,7 @@ class ViewReview extends ViewRecord
                             ->columnSpanFull(),
 
                         Textarea::make('review_text')
-                            ->label('Review Text')
+                            ->label(__('resources.review_text'))
                             ->disabled()
                             ->rows(4)
                             ->columnSpanFull(),
@@ -103,17 +103,17 @@ class ViewReview extends ViewRecord
                             ->schema([
                                 TextInput::make('vehicle_condition_rating')
                                     ->label('Vehicle Condition')
-                                    ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
+                                    ->formatStateUsing(fn ($state): string => $state ? str_repeat('⭐', (int) $state).' ('.$state.'/5)' : 'Not rated')
                                     ->disabled(),
 
                                 TextInput::make('cleanliness_rating')
                                     ->label('Cleanliness')
-                                    ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
+                                    ->formatStateUsing(fn ($state): string => $state ? str_repeat('⭐', (int) $state).' ('.$state.'/5)' : 'Not rated')
                                     ->disabled(),
 
                                 TextInput::make('service_rating')
                                     ->label('Customer Service')
-                                    ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', (int) $state) . ' (' . $state . '/5)' : 'Not rated')
+                                    ->formatStateUsing(fn ($state): string => $state ? str_repeat('⭐', (int) $state).' ('.$state.'/5)' : 'Not rated')
                                     ->disabled(),
                             ]),
                     ])
@@ -129,7 +129,7 @@ class ViewReview extends ViewRecord
                                     ->disabled(),
 
                                 TextInput::make('visibility')
-                                    ->label('Visibility')
+                                    ->label(__('resources.visibility'))
                                     ->disabled(),
 
                                 TextInput::make('reviewed_at')
@@ -143,20 +143,20 @@ class ViewReview extends ViewRecord
                             ->disabled()
                             ->rows(2)
                             ->columnSpanFull()
-                            ->visible(fn () => auth()->user()->role === 'admin'),
+                            ->visible(fn (): bool => auth()->user()->role === 'admin'),
                     ]),
 
                 Section::make('System Information')
                     ->icon('heroicon-m-information-circle')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('created_at')
                                     ->label('Review Submitted')
                                     ->disabled(),
 
                                 TextInput::make('updated_at')
-                                    ->label('Last Updated')
+                                    ->label(__('resources.last_updated'))
                                     ->disabled(),
                             ]),
                     ])
@@ -179,7 +179,7 @@ class ViewReview extends ViewRecord
 
                                 TextInput::make('review_length')
                                     ->label('Review Length')
-                                    ->formatStateUsing(fn ($state, $record) => strlen($record->review_text) . ' characters')
+                                    ->formatStateUsing(fn ($state, $record): string => strlen((string) $record->review_text).' characters')
                                     ->disabled(),
                             ]),
                     ])

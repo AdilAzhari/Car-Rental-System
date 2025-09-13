@@ -6,29 +6,22 @@ use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
 use App\Filament\Resources\Bookings\Pages\ViewBooking;
-use App\Filament\Resources\Bookings\RelationManagers\PaymentRelationManager;
-use App\Filament\Resources\Bookings\RelationManagers\ReviewRelationManager;
 use App\Filament\Resources\Bookings\Schemas\BookingForm;
-use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
 use BackedEnum;
-use Exception;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use UnitEnum;
 
 class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static UnitEnum|string|null $navigationGroup = 'Bookings';
+    protected static string $policy = \App\Policies\BookingPolicy::class;
 
     public static function getNavigationLabel(): string
     {
@@ -47,28 +40,18 @@ class BookingResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('resources.booking_management');
+        return __('resources.car_rental');
     }
 
-    /**
-     * @throws Exception
-     */
+    protected static ?int $navigationSort = 1;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ArchiveBoxArrowDown;
+
     public static function form(Schema $schema): Schema
     {
         return BookingForm::configure($schema);
     }
 
-    /**
-     * @throws Exception
-     */
-    public static function infolist(Schema $schema): Schema
-    {
-        return BookingInfolist::configure($schema);
-    }
-
-    /**
-     * @throws Exception
-     */
     public static function table(Table $table): Table
     {
         return BookingsTable::configure($table);
@@ -77,8 +60,7 @@ class BookingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PaymentRelationManager::class,
-            ReviewRelationManager::class,
+            //
         ];
     }
 
@@ -90,6 +72,15 @@ class BookingResource extends Resource
             'view' => ViewBooking::route('/{record}'),
             'edit' => EditBooking::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->when(auth()->user()->role === 'renter', fn($query) => $query->where('renter_id', auth()->id()))
+            ->when(auth()->user()->role === 'owner', fn($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
+                $vehicleQuery->where('owner_id', auth()->id());
+            }));
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

@@ -10,22 +10,19 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use UnitEnum;
 
 class ReviewResource extends Resource
 {
@@ -33,7 +30,10 @@ class ReviewResource extends Resource
 
     protected static string|null|BackedEnum $navigationIcon = 'heroicon-o-star';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Customer Feedback';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.customer_feedback');
+    }
 
     protected static ?int $navigationSort = 3;
 
@@ -52,11 +52,6 @@ class ReviewResource extends Resource
         return __('resources.reviews');
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('resources.customer_feedback');
-    }
-
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -73,7 +68,7 @@ class ReviewResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->getOptionLabelFromRecordUsing(fn ($record) => "Booking #{$record->id} - {$record->vehicle->make} {$record->vehicle->model}")
+                                    ->getOptionLabelFromRecordUsing(fn ($record): string => "Booking #{$record->id} - {$record->vehicle->make} {$record->vehicle->model}")
                                     ->createOptionForm([
                                         // Booking creation form would go here
                                     ]),
@@ -140,29 +135,28 @@ class ReviewResource extends Resource
                     ->sortable()
                     ->weight('medium'),
 
-                TextColumn::make('booking.vehicle')
+                TextColumn::make('vehicle.make')
                     ->label(__('resources.vehicle'))
-                    ->formatStateUsing(fn ($record) => $record->booking ? "{$record->booking->vehicle->make} {$record->booking->vehicle->model}" : __('resources.na'))
-                    ->searchable(),
+                    ->formatStateUsing(fn ($record): string|array|null => $record->vehicle ? "{$record->vehicle->make} {$record->vehicle->model}" : __('resources.na'))
+                    ->searchable(['vehicles.make', 'vehicles.model']),
 
                 TextColumn::make('rating')
                     ->label(__('resources.rating'))
-                    ->formatStateUsing(fn ($state) => str_repeat('⭐', (int) $state) . ' (' . $state . '/5)')
+                    ->formatStateUsing(fn ($state): string => str_repeat('⭐', (int) $state).' ('.$state.'/5)')
                     ->sortable(),
 
-                BadgeColumn::make('is_visible')
+                TextColumn::make('is_visible')
                     ->label(__('resources.visibility'))
-                    ->colors([
-                        'success' => true,
-                        'danger' => false,
-                    ])
-                    ->formatStateUsing(fn ($state) => $state ? __('resources.visible') : __('resources.hidden')),
+                    ->badge()
+                    ->color(fn ($state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($state): string|array|null => $state ? __('resources.visible') : __('resources.hidden')),
 
                 TextColumn::make('comment')
                     ->label(__('resources.comment'))
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
+
                         return strlen($state) > 50 ? $state : null;
                     }),
 
@@ -229,6 +223,16 @@ class ReviewResource extends Resource
     public static function getNavigationBadgeColor(): string|array|null
     {
         $totalCount = static::getModel()::count();
+
         return $totalCount > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->when(auth()->user()->role === 'renter', fn($query) => $query->where('renter_id', auth()->id()))
+            ->when(auth()->user()->role === 'owner', fn($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
+                $vehicleQuery->where('owner_id', auth()->id());
+            }));
     }
 }

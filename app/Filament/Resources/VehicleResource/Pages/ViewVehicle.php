@@ -3,16 +3,16 @@
 namespace App\Filament\Resources\VehicleResource\Pages;
 
 use App\Filament\Resources\VehicleResource;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\KeyValue;
 
 class ViewVehicle extends ViewRecord
 {
@@ -33,15 +33,13 @@ class ViewVehicle extends ViewRecord
                 Section::make('Vehicle Gallery')
                     ->icon('heroicon-m-photo')
                     ->schema([
-                        FileUpload::make('featured_image')
-                            ->label('Featured Image')
-                            ->disabled()
+                        ImageEntry::make('featured_image')
+                            ->label(__('resources.featured_image'))
                             ->columnSpanFull(),
 
-                        FileUpload::make('gallery_images')
-                            ->label('Gallery')
-                            ->disabled()
-                            ->multiple()
+                        ImageEntry::make('gallery_images')
+                            ->label(__('resources.gallery'))
+                            ->stacked()
                             ->columnSpanFull(),
                     ]),
 
@@ -50,28 +48,25 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextInput::make('make')
-                                    ->label('Make')
-                                    ->disabled(),
+                                TextEntry::make('make')
+                                    ->label(__('resources.make')),
 
-                                TextInput::make('model')
-                                    ->label('Model')
-                                    ->disabled(),
+                                TextEntry::make('model')
+                                    ->label(__('resources.model')),
 
-                                TextInput::make('year')
-                                    ->label('Year')
-                                    ->disabled(),
+                                TextEntry::make('year')
+                                    ->label(__('resources.year')),
                             ]),
 
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('license_plate')
-                                    ->label('License Plate')
-                                    ->disabled(),
+                                TextEntry::make('plate_number')
+                                    ->label(__('resources.license_plate'))
+                                    ->copyable(),
 
-                                TextInput::make('vin')
-                                    ->label('VIN Number')
-                                    ->disabled(),
+                                TextEntry::make('vin')
+                                    ->label(__('resources.vin_number'))
+                                    ->copyable(),
                             ]),
                     ]),
 
@@ -80,40 +75,40 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(4)
                             ->schema([
-                                TextInput::make('category')
-                                    ->label('Category')
-                                    ->disabled(),
+                                TextEntry::make('category')
+                                    ->label(__('resources.category'))
+                                    ->badge(),
 
-                                TextInput::make('transmission')
-                                    ->label('Transmission')
-                                    ->disabled(),
+                                TextEntry::make('transmission')
+                                    ->label(__('resources.transmission'))
+                                    ->badge(),
 
-                                TextInput::make('fuel_type')
-                                    ->label('Fuel Type')
-                                    ->disabled(),
+                                TextEntry::make('fuel_type')
+                                    ->label(__('resources.fuel_type'))
+                                    ->badge(),
 
-                                TextInput::make('seating_capacity')
-                                    ->label('Seats')
-                                    ->disabled(),
+                                TextEntry::make('seats')
+                                    ->label(__('resources.seats'))
+                                    ->icon('heroicon-m-user-group'),
                             ]),
 
                         Grid::make(4)
                             ->schema([
-                                TextInput::make('doors')
-                                    ->label('Doors')
-                                    ->disabled(),
+                                TextEntry::make('doors')
+                                    ->label(__('resources.doors')),
 
-                                TextInput::make('engine_size')
+                                TextEntry::make('engine_size')
                                     ->label('Engine Size (L)')
-                                    ->disabled(),
+                                    ->suffix(' L'),
 
-                                TextInput::make('mileage')
+                                TextEntry::make('mileage')
                                     ->label('Mileage (km)')
-                                    ->disabled(),
+                                    ->numeric()
+                                    ->suffix(' km'),
 
-                                TextInput::make('daily_rate')
-                                    ->label('Daily Rate')
-                                    ->disabled(),
+                                TextEntry::make('daily_rate')
+                                    ->label(__('resources.daily_rate'))
+                                    ->money('MYR'),
                             ]),
                     ]),
 
@@ -122,17 +117,18 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                TextInput::make('status')
-                                    ->label('Status')
-                                    ->disabled(),
+                                TextEntry::make('status')
+                                    ->label(__('resources.status'))
+                                    ->badge()
+                                    ->color(fn ($state) => $state?->color()),
 
-                                Toggle::make('is_available')
-                                    ->label('Available for Rent')
-                                    ->disabled(),
+                                IconEntry::make('is_available')
+                                    ->label(__('resources.available_for_rent'))
+                                    ->boolean(),
 
-                                Toggle::make('insurance_included')
-                                    ->label('Insurance Included')
-                                    ->disabled(),
+                                IconEntry::make('insurance_included')
+                                    ->label(__('resources.insurance_included'))
+                                    ->boolean(),
                             ]),
                     ]),
 
@@ -141,13 +137,13 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('location')
-                                    ->label('Current Location')
-                                    ->disabled(),
+                                TextEntry::make('location')
+                                    ->label(__('resources.current_location'))
+                                    ->icon('heroicon-m-map-pin'),
 
-                                TextInput::make('pickup_location')
-                                    ->label('Pickup Location')
-                                    ->disabled(),
+                                TextEntry::make('pickup_location')
+                                    ->label(__('resources.pickup_location'))
+                                    ->icon('heroicon-m-map'),
                             ]),
                     ])
                     ->collapsible(),
@@ -155,15 +151,14 @@ class ViewVehicle extends ViewRecord
                 Section::make('Features & Specifications')
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
-                        KeyValue::make('features')
-                            ->label('Vehicle Features')
-                            ->disabled()
+                        KeyValueEntry::make('features')
+                            ->label(__('resources.vehicle_features'))
                             ->columnSpanFull(),
 
-                        TextInput::make('description')
-                            ->label('Description')
-                            ->disabled()
-                            ->columnSpanFull(),
+                        TextEntry::make('description')
+                            ->label(__('resources.description'))
+                            ->columnSpanFull()
+                            ->markdown(),
                     ])
                     ->collapsible(),
             ]);

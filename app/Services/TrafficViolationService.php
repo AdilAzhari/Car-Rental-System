@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 class TrafficViolationService
 {
     protected string $apiUrl;
+
     protected string $apiKey;
 
     public function __construct()
@@ -24,27 +25,28 @@ class TrafficViolationService
     public function fetchViolationsForVehicle(Vehicle $vehicle): array
     {
         try {
-            if (!$this->apiKey) {
+            if ($this->apiKey === '' || $this->apiKey === '0') {
                 Log::warning('Traffic API key not configured');
+
                 return [];
             }
 
             $response = Http::timeout(30)
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Authorization' => 'Bearer '.$this->apiKey,
                     'Accept' => 'application/json',
                 ])
-                ->get($this->apiUrl . '/check', [
+                ->get($this->apiUrl.'/check', [
                     'plate_number' => $vehicle->plate_number,
                     'vin' => $vehicle->vin,
                 ]);
 
             if ($response->successful()) {
                 $data = $response->json();
-                
+
                 // Update vehicle with latest violation data
                 $this->updateVehicleViolations($vehicle, $data);
-                
+
                 return $data['violations'] ?? [];
             }
 
@@ -80,7 +82,7 @@ class TrafficViolationService
             if (isset($violation['fine_amount'])) {
                 $totalFines += $violation['fine_amount'];
             }
-            
+
             if (isset($violation['status']) && $violation['status'] === 'pending') {
                 $hasPending = true;
             }
@@ -108,14 +110,14 @@ class TrafficViolationService
     public function updateAllVehicleViolations(): int
     {
         $updated = 0;
-        
+
         Vehicle::whereDoesntHave('violations_last_checked')
             ->orWhere('violations_last_checked', '<', now()->subHours(24))
-            ->chunk(10, function ($vehicles) use (&$updated) {
+            ->chunk(10, function ($vehicles) use (&$updated): void {
                 foreach ($vehicles as $vehicle) {
                     $this->fetchViolationsForVehicle($vehicle);
                     $updated++;
-                    
+
                     // Rate limiting - wait 1 second between requests
                     sleep(1);
                 }
@@ -142,19 +144,17 @@ class TrafficViolationService
     public function getFormattedViolations(Vehicle $vehicle): array
     {
         $violations = $vehicle->traffic_violations ?? [];
-        
-        return collect($violations)->map(function ($violation) {
-            return [
-                'violation_type' => $violation['type'] ?? 'Unknown Violation',
-                'date' => isset($violation['date']) ? Carbon::parse($violation['date'])->format('Y-m-d') : null,
-                'location' => $violation['location'] ?? 'Unknown Location',
-                'fine_amount' => $violation['fine_amount'] ?? 0,
-                'status' => $violation['status'] ?? 'unknown',
-                'reference_number' => $violation['reference'] ?? null,
-                'due_date' => isset($violation['due_date']) ? Carbon::parse($violation['due_date'])->format('Y-m-d') : null,
-                'description' => $violation['description'] ?? null,
-            ];
-        })->toArray();
+
+        return collect($violations)->map(fn ($violation): array => [
+            'violation_type' => $violation['type'] ?? 'Unknown Violation',
+            'date' => isset($violation['date']) ? Carbon::parse($violation['date'])->format('Y-m-d') : null,
+            'location' => $violation['location'] ?? 'Unknown Location',
+            'fine_amount' => $violation['fine_amount'] ?? 0,
+            'status' => $violation['status'] ?? 'unknown',
+            'reference_number' => $violation['reference'] ?? null,
+            'due_date' => isset($violation['due_date']) ? Carbon::parse($violation['due_date'])->format('Y-m-d') : null,
+            'description' => $violation['description'] ?? null,
+        ])->toArray();
     }
 
     /**
@@ -162,7 +162,7 @@ class TrafficViolationService
      */
     protected function shouldRefreshViolations(Vehicle $vehicle): bool
     {
-        if (!$vehicle->violations_last_checked) {
+        if (! $vehicle->violations_last_checked) {
             return true;
         }
 

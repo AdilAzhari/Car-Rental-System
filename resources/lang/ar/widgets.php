@@ -9,7 +9,7 @@ return [
     'monthly_revenue' => 'الإيرادات الشهرية',
     'today_bookings' => 'حجوزات اليوم',
     'pending_reviews' => 'المراجعات المعلقة',
-    
+
     // Revenue Widget
     'revenue_chart' => 'مخطط الإيرادات',
     'total_revenue' => 'إجمالي الإيرادات',
@@ -22,7 +22,7 @@ return [
     'payment_success_rate' => 'معدل نجاح الدفع',
     'average_payment' => 'متوسط الدفع',
     'average_transaction' => 'متوسط المعاملة',
-    
+
     // Vehicle Stats
     'vehicle_stats' => 'إحصائيات المركبات',
     'available_vehicles' => 'المركبات المتاحة',
@@ -31,7 +31,7 @@ return [
     'under_maintenance' => 'تحت الصيانة',
     'published_vehicles' => 'المركبات المنشورة',
     'live_listings' => 'القوائم المباشرة',
-    
+
     // User Stats
     'user_stats' => 'إحصائيات المستخدمين',
     'new_users' => 'مستخدمون جدد',
@@ -40,34 +40,87 @@ return [
     'account_verified' => 'حساب متحقق',
     'admin_users' => 'المستخدمون المشرفون',
     'system_administrators' => 'مديرو النظام',
-    
+
     // Recent Bookings
     'recent_bookings' => 'الحجوزات الأخيرة',
     'latest_bookings' => 'أحدث نشاط الحجوزات',
     'view_all_bookings' => 'عرض جميع الحجوزات',
-    
+
     // Popular Vehicles
     'popular_vehicles' => 'المركبات الشائعة',
     'most_booked_vehicles' => 'أكثر المركبات حجزاً هذا الشهر',
     'view_all_vehicles' => 'عرض جميع المركبات',
     'bookings' => 'حجوزات',
-    
+
     // Latest Activities
     'latest_activities' => 'الأنشطة الأخيرة',
     'recent_system_activities' => 'أنشطة النظام الأخيرة',
     'view_all_activities' => 'عرض جميع الأنشطة',
-    
+
     // Time periods
     'last_7_days' => 'آخر 7 أيام',
     'last_30_days' => 'آخر 30 يوماً',
     'this_week' => 'هذا الأسبوع',
     'growth_from_last_month' => 'نمو من الشهر الماضي',
     'compared_to_last_month' => 'مقارنة بالشهر الماضي',
-    
+
     // Status indicators
     'increase' => 'زيادة',
     'decrease' => 'نقصان',
     'no_change' => 'لا تغيير',
     'up_from_yesterday' => 'ارتفاع من أمس',
     'down_from_yesterday' => 'انخفاض من أمس',
+
+    // Owner specific stats
+    'my_vehicles' => 'مركباتي',
+    'published_comma_available' => 'منشورة، متاحة',
+    'total_bookings' => 'إجمالي الحجوزات',
+    'bookings_this_month' => 'حجوزات هذا الشهر',
+    'completed_bookings' => 'حجوزات مكتملة',
+    'from_last_month' => 'من الشهر الماضي',
+    'average_rating' => 'متوسط التقييم',
+    'total_reviews' => 'إجمالي المراجعات',
+
+    // Renter specific stats
+    'my_bookings' => 'حجوزاتي',
+    'pending' => 'معلقة',
+    'completed' => 'مكتملة',
+    'ready_for_booking' => 'جاهز للحجز',
+    'monthly_spending' => 'الإنفاق الشهري',
+    'total_spent' => 'إجمالي المصروف',
+    'my_reviews' => 'مراجعاتي',
+    'reviews_this_month' => 'مراجعات هذا الشهر',
+
+    // Chart widgets
+    'vehicle_status_distribution' => 'توزيع حالة المركبات',
+
+    // Table widget descriptions
+    'top_performing_vehicles' => 'أفضل المركبات أداءً حسب عدد الحجوزات والإيرادات',
+    'recent_system_activities_desc' => 'أحدث أنشطة النظام والتحديثات',
+    'latest_bookings_activity' => 'أحدث نشاط الحجوزات والمعاملات',
+
+    // Column labels
+    'image' => 'صورة',
+    'vehicle' => 'مركبة',
+    'category' => 'فئة',
+    'rating' => 'التقييم',
+    'daily_rate' => 'السعر اليومي',
+    'no_ratings' => 'لا توجد تقييمات',
+    'revenue' => 'الإيرادات',
+    'status' => 'الحالة',
+
+    // Action labels
+    'view' => 'عرض',
+    'book' => 'احجز',
+
+    // Booking Statistics
+    'all_time_bookings' => 'حجوزات جميع الأوقات',
+    'awaiting_confirmation' => 'في انتظار التأكيد',
+    'active_reservations' => 'حجوزات نشطة',
+    'current_month_bookings' => 'حجوزات الشهر الحالي',
+    'from_completed_bookings' => 'من الحجوزات المكتملة',
+    'avg_duration' => 'متوسط المدة',
+    'average_booking_duration' => 'متوسط مدة الحجز',
+    'days' => 'أيام',
+    'hours' => 'ساعات',
 ];

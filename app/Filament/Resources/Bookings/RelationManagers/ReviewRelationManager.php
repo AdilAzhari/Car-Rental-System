@@ -28,16 +28,16 @@ class ReviewRelationManager extends RelationManager
         return $schema
             ->schema([
                 TextInput::make('rating')
-                    ->label('Rating')
+                    ->label(__('resources.rating'))
                     ->required()
                     ->numeric()
                     ->minValue(1)
                     ->maxValue(5)
                     ->step(1)
                     ->helperText('Rate from 1 to 5 stars'),
-                
+
                 Textarea::make('review_text')
-                    ->label('Review')
+                    ->label(__('resources.review'))
                     ->maxLength(1000)
                     ->rows(4)
                     ->helperText('Share your experience with this booking'),
@@ -53,23 +53,24 @@ class ReviewRelationManager extends RelationManager
             ->recordTitleAttribute('rating')
             ->columns([
                 TextColumn::make('rating')
-                    ->label('Rating')
+                    ->label(__('resources.rating'))
                     ->formatStateUsing(fn ($state) => str_repeat('⭐', (int) $state))
                     ->sortable(),
-                
+
                 TextColumn::make('review_text')
-                    ->label('Review')
+                    ->label(__('resources.review'))
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
-                
+
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('resources.created'))
                     ->dateTime()
                     ->sortable(),
             ])

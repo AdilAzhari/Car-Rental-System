@@ -25,14 +25,14 @@ class CreateReview extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Set default status to pending if not specified
-        if (!isset($data['status'])) {
-            $data['status'] = 'pending';
+        // Set current user as renter if they are a renter role
+        if (auth()->user()->role === 'renter') {
+            $data['renter_id'] = auth()->id();
         }
 
-        // Set reviewed_at to now if not provided
-        if (!isset($data['reviewed_at']) || empty($data['reviewed_at'])) {
-            $data['reviewed_at'] = now();
+        // Set default visibility to true if not specified
+        if (! isset($data['is_visible'])) {
+            $data['is_visible'] = true;
         }
 
         return $data;

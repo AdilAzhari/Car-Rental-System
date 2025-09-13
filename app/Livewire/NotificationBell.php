@@ -9,12 +9,12 @@ class NotificationBell extends Component
     public $unreadCount = 0;
     public $notifications = [];
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadNotifications();
     }
 
-    public function loadNotifications()
+    public function loadNotifications(): void
     {
         $user = auth()->user();
         if ($user) {
@@ -23,7 +23,7 @@ class NotificationBell extends Component
         }
     }
 
-    public function markAllAsRead()
+    public function markAllAsRead(): void
     {
         $user = auth()->user();
         if ($user) {
@@ -34,7 +34,7 @@ class NotificationBell extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
     {
         return view('livewire.notification-bell');
     }

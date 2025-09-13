@@ -33,40 +33,40 @@ class PaymentRelationManager extends RelationManager
         return $schema
             ->schema([
                 TextInput::make('amount')
-                    ->label('Amount')
+                    ->label(__('resources.amount'))
                     ->required()
                     ->numeric()
                     ->prefix('$')
                     ->step(0.01),
 
                 Select::make('payment_method')
-                    ->label('Payment Method')
+                    ->label(__('resources.payment_method'))
                     ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case): array => [$case->value => $case->label()]))
                     ->required(),
 
                 Select::make('payment_status')
-                    ->label('Payment Status')
+                    ->label(__('resources.payment_status'))
                     ->options(collect(PaymentStatus::cases())->mapWithKeys(fn ($case): array => [$case->value => $case->label()]))
                     ->required(),
 
                 TextInput::make('transaction_id')
-                    ->label('Transaction ID')
+                    ->label(__('resources.transaction_id'))
                     ->maxLength(255),
 
                 DateTimePicker::make('processed_at')
-                    ->label('Processed At'),
+                    ->label(__('resources.processed_at')),
 
                 TextInput::make('refund_amount')
-                    ->label('Refund Amount')
+                    ->label(__('resources.refund_amount'))
                     ->numeric()
                     ->prefix('$')
                     ->step(0.01),
 
                 DateTimePicker::make('refunded_at')
-                    ->label('Refunded At'),
+                    ->label(__('resources.refunded_at')),
 
                 Textarea::make('gateway_response')
-                    ->label('Gateway Response')
+                    ->label(__('resources.gateway_response'))
                     ->columnSpanFull()
                     ->rows(3),
             ]);
@@ -81,17 +81,17 @@ class PaymentRelationManager extends RelationManager
             ->recordTitleAttribute('amount')
             ->columns([
                 TextColumn::make('amount')
-                    ->label('Amount')
+                    ->label(__('resources.amount'))
                     ->money('MYR')
                     ->sortable(),
 
                 TextColumn::make('payment_method')
-                    ->label('Payment Method')
+                    ->label(__('resources.payment_method'))
                     ->formatStateUsing(fn ($state) => PaymentMethod::tryFrom($state)?->label() ?? $state)
                     ->sortable(),
 
                 BadgeColumn::make('payment_status')
-                    ->label('Status')
+                    ->label(__('resources.status'))
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'confirmed',
@@ -103,23 +103,23 @@ class PaymentRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => PaymentStatus::tryFrom($state)?->label() ?? $state),
 
                 TextColumn::make('transaction_id')
-                    ->label('Transaction ID')
+                    ->label(__('resources.transaction_id'))
                     ->limit(20)
                     ->searchable(),
 
                 TextColumn::make('processed_at')
-                    ->label('Processed At')
+                    ->label(__('resources.processed_at'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('refund_amount')
-                    ->label('Refund Amount')
+                    ->label(__('resources.refund_amount'))
                     ->money('MYR')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('resources.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

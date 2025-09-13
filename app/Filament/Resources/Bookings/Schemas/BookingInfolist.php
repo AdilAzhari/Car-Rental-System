@@ -30,14 +30,14 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 2, 'xl' => 4])
                             ->schema([
                                 TextEntry::make('id')
-                                    ->label('Booking ID')
+                                    ->label(__('resources.booking_id'))
                                     ->icon('heroicon-m-hashtag')
                                     ->weight(FontWeight::Bold)
                                     ->size('lg')
                                     ->color('primary'),
 
                                 TextEntry::make('status')
-                                    ->label('Status')
+                                    ->label(__('resources.status'))
                                     ->icon('heroicon-m-flag')
                                     ->badge()
                                     ->formatStateUsing(fn ($state): string => match (true) {
@@ -55,7 +55,7 @@ class BookingInfolist
                                     }),
 
                                 TextEntry::make('payment_status')
-                                    ->label('Payment Status')
+                                    ->label(__('resources.payment_status'))
                                     ->icon('heroicon-m-currency-dollar')
                                     ->badge()
                                     ->formatStateUsing(fn ($state): string => match (true) {
@@ -74,7 +74,7 @@ class BookingInfolist
                                     }),
 
                                 TextEntry::make('total_amount')
-                                    ->label('Total Amount')
+                                    ->label(__('resources.total_amount'))
                                     ->icon('heroicon-m-currency-dollar')
                                     ->money('MYR')
                                     ->size('lg')
@@ -91,13 +91,13 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 2])
                             ->schema([
                                 TextEntry::make('renter.name')
-                                    ->label('Renter')
+                                    ->label(__('resources.renter'))
                                     ->icon('heroicon-m-user')
                                     ->weight(FontWeight::Bold)
                                     ->color('primary'),
 
                                 TextEntry::make('renter.email')
-                                    ->label('Renter Email')
+                                    ->label(__('resources.renter_email'))
                                     ->icon('heroicon-m-envelope')
                                     ->copyable()
                                     ->copyMessage('Email copied!'),
@@ -106,14 +106,14 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 2])
                             ->schema([
                                 TextEntry::make('vehicle.make')
-                                    ->label('Vehicle')
-                                    ->formatStateUsing(fn ($record) => $record->vehicle ? $record->vehicle->make . ' ' . $record->vehicle->model . ' (' . $record->vehicle->year . ')' : 'N/A')
+                                    ->label(__('resources.vehicle'))
+                                    ->formatStateUsing(fn ($record): string => $record->vehicle ? $record->vehicle->make.' '.$record->vehicle->model.' ('.$record->vehicle->year.')' : 'N/A')
                                     ->icon('heroicon-m-truck')
                                     ->weight(FontWeight::Bold)
                                     ->color('info'),
 
                                 TextEntry::make('vehicle.plate_number')
-                                    ->label('License Plate')
+                                    ->label(__('resources.license_plate'))
                                     ->icon('heroicon-m-rectangle-group')
                                     ->copyable()
                                     ->copyMessage('Plate number copied!')
@@ -146,14 +146,14 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 2])
                             ->schema([
                                 TextEntry::make('created_at')
-                                    ->label('Booking Created')
+                                    ->label(__('resources.booking_created'))
                                     ->icon('heroicon-m-plus-circle')
                                     ->dateTime()
                                     ->since()
                                     ->dateTimeTooltip(),
 
                                 TextEntry::make('updated_at')
-                                    ->label('Last Updated')
+                                    ->label(__('resources.last_updated'))
                                     ->icon('heroicon-m-pencil')
                                     ->dateTime()
                                     ->since()
@@ -169,27 +169,27 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 3])
                             ->schema([
                                 TextEntry::make('total_amount')
-                                    ->label('Total Amount')
+                                    ->label(__('resources.total_amount'))
                                     ->icon('heroicon-m-currency-dollar')
                                     ->money('MYR')
                                     ->weight(FontWeight::Bold)
                                     ->color('success'),
 
                                 TextEntry::make('deposit_amount')
-                                    ->label('Deposit')
+                                    ->label(__('resources.deposit'))
                                     ->icon('heroicon-m-shield-check')
                                     ->money('MYR')
                                     ->placeholder('No deposit required'),
 
                                 TextEntry::make('commission_amount')
-                                    ->label('Commission')
+                                    ->label(__('resources.commission'))
                                     ->icon('heroicon-m-percent-badge')
                                     ->money('MYR')
                                     ->placeholder('No commission'),
                             ]),
 
                         TextEntry::make('payment_method')
-                            ->label('Payment Method')
+                            ->label(__('resources.payment_method'))
                             ->icon('heroicon-m-credit-card')
                             ->placeholder('Not specified')
                             ->badge()
@@ -204,18 +204,18 @@ class BookingInfolist
                         Grid::make(['default' => 1, 'md' => 2])
                             ->schema([
                                 TextEntry::make('pickup_location')
-                                    ->label('Pickup Location')
+                                    ->label(__('resources.pickup_location'))
                                     ->icon('heroicon-m-map-pin')
                                     ->placeholder('Not specified'),
 
                                 TextEntry::make('dropoff_location')
-                                    ->label('Drop off Location')
+                                    ->label(__('resources.drop_off_location'))
                                     ->icon('heroicon-m-flag')
                                     ->placeholder('Not specified'),
                             ]),
 
                         TextEntry::make('special_requests')
-                            ->label('Special Requests')
+                            ->label(__('resources.special_requests'))
                             ->icon('heroicon-m-chat-bubble-left-ellipsis')
                             ->placeholder('No special requests')
                             ->html()
@@ -227,14 +227,14 @@ class BookingInfolist
                     ->schema([
                         Actions::make([
                             Action::make('edit')
-                                ->label('Edit Booking')
+                                ->label(__('resources.edit_booking'))
                                 ->icon('heroicon-m-pencil-square')
                                 ->url(fn ($record): string => route('filament.admin.resources.bookings.edit', $record))
                                 ->color('primary')
                                 ->button(),
 
                             Action::make('view_payment')
-                                ->label('View Payment')
+                                ->label(__('resources.view_payment'))
                                 ->icon('heroicon-m-currency-dollar')
                                 ->color('success')
                                 ->button()

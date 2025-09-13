@@ -10,6 +10,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.4.1
 - filament/filament (FILAMENT) - v4
+- inertiajs/inertia-laravel (INERTIA) - v2
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - laravel/sanctum (SANCTUM) - v4
@@ -19,7 +20,9 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
-- rector/rector (RECTOR) - v2
+- @inertiajs/vue3 (INERTIA) - v1
+- vue (VUE) - v3
+- tailwindcss (TAILWINDCSS) - v3
 
 
 ## Conventions
@@ -217,6 +220,44 @@ Forms\Components\Select::make('user_id')
 - Actions: `Actions/`
 
 
+=== inertia-laravel/core rules ===
+
+## Inertia Core
+
+- Inertia.js components should be placed in the `resources/js/Pages` directory unless specified differently in the JS bundler (vite.config.js).
+- Use `Inertia::render()` for server-side routing instead of traditional Blade views.
+- Use `search-docs` for accurate guidance on all things Inertia.
+
+<code-snippet lang="php" name="Inertia::render Example">
+// routes/web.php example
+Route::get('/users', function () {
+    return Inertia::render('Users/Index', [
+        'users' => User::all()
+    ]);
+});
+</code-snippet>
+
+
+=== inertia-laravel/v2 rules ===
+
+## Inertia v2
+
+- Make use of all Inertia features from v1 & v2. Check the documentation before making any changes to ensure we are taking the correct approach.
+
+### Inertia v2 New Features
+- Polling
+- Prefetching
+- Deferred props
+- Infinite scrolling using merging props and `WhenVisible`
+- Lazy loading data on scroll
+
+### Deferred Props & Empty States
+- When using deferred props on the frontend, you should add a nice empty state with pulsing / animated skeleton.
+
+### Inertia Form General Guidance
+- Build forms using the `useForm` helper. Use the code examples and `search-docs` tool with a query of `useForm helper` for guidance.
+
+
 === laravel/core rules ===
 
 ## Do Things the Laravel Way
@@ -289,7 +330,7 @@ Forms\Components\Select::make('user_id')
 
 ## Livewire Core
 - Use the `search-docs` tool to find exact version specific documentation for how to write Livewire & Livewire tests.
-- Use the `php artisan make:livewire [Posts\\CreatePost]` artisan command to create new components
+- Use the `php artisan make:livewire [Posts\CreatePost]` artisan command to create new components
 - State should live on the server, with the UI reflecting it.
 - All Livewire requests hit the Laravel backend, they're like regular HTTP requests. Always validate form data, and run authorization checks in Livewire actions.
 
@@ -475,10 +516,90 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 </code-snippet>
 
 
-=== tests rules ===
+=== inertia-vue/core rules ===
 
-## Test Enforcement
+## Inertia + Vue
 
-- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+- Vue components must have a single root element.
+- Use `router.visit()` or `<Link>` for navigation instead of traditional links.
+
+<code-snippet name="Inertia Client Navigation" lang="vue">
+
+    import { Link } from '@inertiajs/vue3'
+    <Link href="/">Home</Link>
+
+</code-snippet>
+
+
+=== inertia-vue/v1/forms rules ===
+
+## Inertia + Vue Forms
+
+- For form handling in Inertia pages, use `router.post` and related methods. Do not use regular forms.
+
+
+<code-snippet lang="vue" name="Inertia Vue Form Example">
+<script setup>
+    import { reactive } from 'vue'
+    import { router } from '@inertiajs/vue3'
+    import { usePage } from '@inertiajs/vue3'
+
+    const page = usePage()
+
+    const form = reactive({
+        first_name: null,
+        last_name: null,
+        email: null,
+    })
+
+    function submit() {
+        router.post('/users', form)
+    }
+</script>
+
+<template>
+    <h1>Create {{ page.modelName }}</h1>
+    <form @submit.prevent="submit">
+        <label for="first_name">First name:</label>
+        <input id="first_name" v-model="form.first_name" />
+        <label for="last_name">Last name:</label>
+        <input id="last_name" v-model="form.last_name" />
+        <label for="email">Email:</label>
+        <input id="email" v-model="form.email" />
+        <button type="submit">Submit</button>
+    </form>
+</template>
+</code-snippet>
+
+
+=== tailwindcss/core rules ===
+
+## Tailwind Core
+
+- Use Tailwind CSS classes to style HTML, check and use existing tailwind conventions within the project before writing your own.
+- Offer to extract repeated patterns into components that match the project's conventions (i.e. Blade, JSX, Vue, etc..)
+- Think through class placement, order, priority, and defaults - remove redundant classes, add classes to parent or child carefully to limit repetition, group elements logically
+- You can use the `search-docs` tool to get exact examples from the official documentation when needed.
+
+### Spacing
+- When listing items, use gap utilities for spacing, don't use margins.
+
+    <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+        <div class="flex gap-8">
+            <div>Superior</div>
+            <div>Michigan</div>
+            <div>Erie</div>
+        </div>
+    </code-snippet>
+
+
+### Dark Mode
+- If existing pages and components support dark mode, new pages and components must support dark mode in a similar way, typically using `dark:`.
+
+
+=== tailwindcss/v3 rules ===
+
+## Tailwind 3
+
+- Always use Tailwind CSS v3 - verify you're using only classes supported by this version.
 </laravel-boost-guidelines>
