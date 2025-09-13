@@ -2,41 +2,55 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use UnitEnum;
-use BackedEnum;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static string $policy = \App\Policies\UserPolicy::class;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static UnitEnum|string|null $navigationGroup = 'User Management';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resources.user_management');
+    }
 
     protected static ?int $navigationSort = 1;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Only admins can see users in navigation
+        $user = auth()->user();
+
+        return $user && $user->role === UserRole::ADMIN;
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -51,11 +65,6 @@ class UserResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('resources.users');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('resources.user_management');
     }
 
     public static function form(Schema $schema): Schema
@@ -130,30 +139,12 @@ class UserResource extends Resource
                     ->icon('heroicon-m-map-pin')
                     ->collapsible()
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('address')
-                                    ->label(__('resources.street_address'))
-                                    ->maxLength(255)
-                                    ->columnSpanFull(),
-
-                                TextInput::make('city')
-                                    ->label(__('resources.city'))
-                                    ->maxLength(100),
-
-                                TextInput::make('state')
-                                    ->label(__('resources.state_province'))
-                                    ->maxLength(100),
-
-                                TextInput::make('postal_code')
-                                    ->label(__('resources.postal_code'))
-                                    ->maxLength(20),
-
-                                TextInput::make('country')
-                                    ->label(__('resources.country'))
-                                    ->maxLength(100)
-                                    ->default(__('resources.malaysia')),
-                            ]),
+                        Textarea::make('address')
+                            ->label(__('resources.address'))
+                            ->maxLength(500)
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->placeholder(__('resources.enter_full_address')),
                     ]),
 
                 Section::make(__('resources.additional_information'))
@@ -252,10 +243,11 @@ class UserResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('city')
-                    ->label(__('resources.city'))
+                TextColumn::make('address')
+                    ->label(__('resources.address'))
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->limit(30),
 
                 TextColumn::make('bookings_count')
                     ->label(__('resources.bookings'))
@@ -300,19 +292,18 @@ class UserResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.joined_until')),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
+                    ->query(fn(Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        )),
             ])
             ->actions([
+                ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
@@ -350,5 +341,18 @@ class UserResource extends Resource
     public static function getNavigationBadgeColor(): string|array|null
     {
         return static::getModel()::count() > 100 ? 'warning' : 'primary';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        return parent::getEloquentQuery()
+            ->when($user && $user->role !== UserRole::ADMIN, fn($query) =>
+                // Non-admin users can only see their own profile
+                $query->where('id', $user->id))
+            ->when(! $user, fn($query) =>
+                // If no authenticated user, return empty results
+                $query->whereRaw('1 = 0'));
     }
 }
