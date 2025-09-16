@@ -16,9 +16,17 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button @click="goBack" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
-                            Back to Search
-                        </button>
+                        <a href="/cars" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            Browse Cars
+                        </a>
+                        <a href="/my-bookings" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            My Bookings
+                        </a>
+                        <form @submit.prevent="logout" class="inline">
+                            <button type="submit" class="text-gray-600 hover:text-red-600 font-medium transition-colors">
+                                Logout
+                            </button>
+                        </form>
                         <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -80,6 +88,7 @@
                             :key="car.id"
                             :vehicle="car"
                             @view-details="goToCarDetails"
+                            @reserve-now="goToReservation"
                         />
                     </div>
 
@@ -103,13 +112,14 @@
                         <h3 class="text-xl font-bold text-gray-900">My Bookings</h3>
                     </div>
 
-                    <!-- Coming Soon -->
+                    <!-- Bookings redirect -->
                     <div class="text-center py-16">
-                        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        <svg class="mx-auto h-16 w-16 text-blue-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Booking History</h3>
-                        <p class="text-gray-600">Your rental history and current bookings will appear here</p>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">View Your Bookings</h3>
+                        <p class="text-gray-600 mb-4">Manage your rental history and current bookings</p>
+                        <a href="/my-bookings" class="btn-primary">Go to My Bookings</a>
                     </div>
                 </div>
 
@@ -127,19 +137,19 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
-                                <input type="text" class="search-input" placeholder="Your full name" readonly value="Demo User">
+                                <input type="text" class="input-modern" placeholder="Your full name" readonly value="Demo User">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                <input type="email" class="search-input" placeholder="your@email.com" readonly value="demo@example.com">
+                                <input type="email" class="input-modern" placeholder="your@email.com" readonly value="demo@example.com">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                                <input type="tel" class="search-input" placeholder="Your phone number" readonly value="+1 (555) 123-4567">
+                                <input type="tel" class="input-modern" placeholder="Your phone number" readonly value="+1 (555) 123-4567">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
-                                <input type="text" class="search-input" placeholder="Your city" readonly value="New York, NY">
+                                <input type="text" class="input-modern" placeholder="Your city" readonly value="New York, NY">
                             </div>
                         </div>
                         <div class="mt-6 pt-6 border-t border-gray-200">
@@ -267,8 +277,23 @@ const goToCarDetails = (car) => {
     router.visit(`/cars/${car.id}`)
 }
 
+const goToReservation = (carId) => {
+    router.visit(`/cars/${carId}/reserve`)
+}
+
 const goBack = () => {
     router.visit('/')
+}
+
+const logout = async () => {
+    try {
+        await axios.post('/logout')
+        router.visit('/cars')
+    } catch (error) {
+        console.error('Logout error:', error)
+        // Force redirect anyway
+        router.visit('/cars')
+    }
 }
 
 // Lifecycle
