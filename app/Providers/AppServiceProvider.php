@@ -14,6 +14,7 @@ use App\Policies\VehiclePolicy;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS in production
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
         // Register policies
         Gate::policy(Vehicle::class, VehiclePolicy::class);
         Gate::policy(User::class, UserPolicy::class);
