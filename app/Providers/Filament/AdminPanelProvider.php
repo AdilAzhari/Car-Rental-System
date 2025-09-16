@@ -92,6 +92,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('SENTIENTS A.I.')
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->authGuard('web')
+            ->userModel(\App\Models\User::class);
     }
 }
