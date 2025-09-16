@@ -1,42 +1,16 @@
 <?php
-
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Web\BookingController;
-use App\Http\Controllers\Web\CarController;
-use App\Http\Controllers\Web\ReservationController;
+// Debug Filament authentication specifically
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Homepage - shows featured cars
-Route::get('/', [CarController::class, 'index']);
-
-// Car routes
-Route::get('/cars', [CarController::class, 'listing']);
-Route::get('/cars/{id}', [CarController::class, 'show']);
-
-// Reservation routes
-Route::get('/reservations/create', [ReservationController::class, 'create']);
-Route::get('/cars/{id}/reserve', [ReservationController::class, 'reserve'])->name('cars.reserve');
-
-// Payment return route (can be accessed without auth for payment callbacks)
-Route::get('/booking/payment/return/{booking}', [BookingController::class, 'paymentReturn'])->name('booking.payment.return');
-
-// Authenticated routes
-Route::middleware('auth')->group(function () {
-    Route::get('/my-bookings', [BookingController::class, 'index']);
-    Route::get('/my-bookings/{booking}', [BookingController::class, 'show']);
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-});
-
-require __DIR__.'/auth.php';
-
-// Debug route for Filament authentication
+// Add this temporarily to routes/web.php to debug
 Route::get('/debug-filament-auth', function () {
-    $user = \Illuminate\Support\Facades\Auth::user();
+    $user = Auth::user();
 
     $response = [
         'request_url' => request()->fullUrl(),
-        'auth_check' => \Illuminate\Support\Facades\Auth::check(),
+        'auth_check' => Auth::check(),
         'user' => null,
         'panel_access' => false,
         'session_data' => [
@@ -73,3 +47,5 @@ Route::get('/debug-filament-auth', function () {
 
     return response()->json($response);
 })->name('debug.filament.auth');
+
+echo "Debug route created. Add this to routes/web.php and visit /debug-filament-auth\n";
