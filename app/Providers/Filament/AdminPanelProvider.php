@@ -55,10 +55,10 @@ class AdminPanelProvider extends PanelProvider
             //     'panels::head.end',
             //     fn (): string => '<link rel="stylesheet" href="'.asset('css/admin-fixes.css').'?v='.time().'">'
             // )
-            // ->renderHook(
-            //     'panels::user-menu.start',
-            //     fn (): string => view('filament.hooks.user-menu')->render()
-            // )
+//             ->renderHook(
+//                 'panels::user-menu.start',
+//                 fn (): string => view('filament.hooks.user-menu')->render()
+//             )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -79,17 +79,13 @@ class AdminPanelProvider extends PanelProvider
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
-                AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
-                LocalizationMiddleware::class,
-                NewUserNotificationMiddleware::class,
                 DispatchServingFilamentEvent::class,
             ])
             ->resourceCreatePageRedirect('index')
-            ->brandName('SENTIENTS A.I.')
+            ->brandName('SENTIENTS A.I')
             ->authGuard('web')
             ->authMiddleware([
                 Authenticate::class,
