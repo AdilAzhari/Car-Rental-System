@@ -65,8 +65,8 @@ class UserSeeder extends Seeder
             User::query()->firstOrCreate(['email' => $ownerData['email']], array_merge($ownerData, [
                 'password' => Hash::make('password123'),
                 'role' => UserRole::OWNER,
-                'id_document_path' => 'documents/ids/'.fake()->uuid().'.pdf',
-                'license_document_path' => 'documents/licenses/'.fake()->uuid().'.pdf',
+                'id_document_path' => 'documents/ids/sample-id-'.uniqid().'.pdf',
+                'license_document_path' => 'documents/licenses/sample-license-'.uniqid().'.pdf',
             ]));
         }
 
@@ -108,8 +108,8 @@ class UserSeeder extends Seeder
             User::query()->firstOrCreate(['email' => $renterData['email']], array_merge($renterData, [
                 'password' => Hash::make('password123'),
                 'role' => UserRole::RENTER,
-                'id_document_path' => 'documents/ids/'.fake()->uuid().'.pdf',
-                'license_document_path' => 'documents/licenses/'.fake()->uuid().'.pdf',
+                'id_document_path' => 'documents/ids/sample-id-'.uniqid().'.pdf',
+                'license_document_path' => 'documents/licenses/sample-license-'.uniqid().'.pdf',
             ]));
         }
 

@@ -51,10 +51,10 @@ class AdminPanelProvider extends PanelProvider
             //     'panels::topbar.end',
             //     fn (): string => view('filament.hooks.notification-bell')->render()
             // )
-            ->renderHook(
-                'panels::head.end',
-                fn (): string => '<link rel="stylesheet" href="'.asset('css/admin-fixes.css').'?v='.time().'">'
-            )
+            // ->renderHook(
+            //     'panels::head.end',
+            //     fn (): string => '<link rel="stylesheet" href="'.asset('css/admin-fixes.css').'?v='.time().'">'
+            // )
             // ->renderHook(
             //     'panels::user-menu.start',
             //     fn (): string => view('filament.hooks.user-menu')->render()
