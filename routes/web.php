@@ -5,6 +5,8 @@ use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\CarController;
 use App\Http\Controllers\Web\ReservationController;
 use App\Models\User;
+use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Homepage - shows featured cars
@@ -32,11 +34,11 @@ require __DIR__.'/auth.php';
 
 // Debug route for Filament authentication
 Route::get('/debug-filament-auth', function () {
-    $user = \Illuminate\Support\Facades\Auth::user();
+    $user = Auth::user();
 
     $response = [
         'request_url' => request()->fullUrl(),
-        'auth_check' => \Illuminate\Support\Facades\Auth::check(),
+        'auth_check' => Auth::check(),
         'user' => null,
         'panel_access' => false,
         'session_data' => [
@@ -61,7 +63,7 @@ Route::get('/debug-filament-auth', function () {
 
         // Test canAccessPanel method
         try {
-            $panel = \Filament\Facades\Filament::getPanel('admin');
+            $panel = Filament::getPanel('admin');
             $response['filament_panel_exists'] = true;
             $response['panel_access'] = $user->canAccessPanel($panel);
             $response['panel_id'] = $panel->getId();
