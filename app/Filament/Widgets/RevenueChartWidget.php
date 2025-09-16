@@ -15,7 +15,7 @@ class RevenueChartWidget extends ChartWidget
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 2;
+    protected int|string|array $columnSpan = 1;
 
     public static function canView(): bool
     {
@@ -62,7 +62,7 @@ class RevenueChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Revenue ($)',
+                    'label' => __('widgets.revenue_currency'),
                     'data' => $revenues,
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                     'borderColor' => 'rgba(59, 130, 246, 1)',
@@ -71,7 +71,7 @@ class RevenueChartWidget extends ChartWidget
                     'tension' => 0.4,
                 ],
                 [
-                    'label' => 'Bookings Count',
+                    'label' => __('widgets.bookings_count'),
                     'data' => $bookingsCount,
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'borderColor' => 'rgba(16, 185, 129, 1)',
@@ -105,7 +105,7 @@ class RevenueChartWidget extends ChartWidget
                     'position' => 'left',
                     'title' => [
                         'display' => true,
-                        'text' => 'Revenue ($)',
+                        'text' => __('widgets.revenue_currency'),
                     ],
                 ],
                 'y1' => [
@@ -114,7 +114,7 @@ class RevenueChartWidget extends ChartWidget
                     'position' => 'right',
                     'title' => [
                         'display' => true,
-                        'text' => 'Bookings Count',
+                        'text' => __('widgets.bookings_count'),
                     ],
                     'grid' => [
                         'drawOnChartArea' => false,

@@ -122,5 +122,73 @@ return [
     'avg_duration' => 'متوسط المدة',
     'average_booking_duration' => 'متوسط مدة الحجز',
     'days' => 'أيام',
+    'day' => 'يوم',
     'hours' => 'ساعات',
+
+    // Recent Bookings Widget Arabic
+    'booking_number' => 'رقم الحجز',
+    'customer' => 'العميل',
+    'start_date' => 'تاريخ البدء',
+    'end_date' => 'تاريخ الانتهاء',
+    'duration' => 'المدة',
+    'amount' => 'المبلغ',
+    'booked' => 'تم الحجز',
+    'edit' => 'تعديل',
+    'confirm' => 'تأكيد',
+    'booking_confirmed_via_dashboard' => 'تم تأكيد الحجز عبر لوحة التحكم',
+
+    // Status translations Arabic
+    'status_pending' => 'معلق',
+    'status_confirmed' => 'مؤكد',
+    'status_active' => 'نشط',
+    'status_completed' => 'مكتمل',
+    'status_cancelled' => 'ملغي',
+
+    // Chart translations Arabic
+    'revenue_currency' => 'الإيرادات ($)',
+    'bookings_count' => 'عدد الحجوزات',
+    'vehicle_status_distribution' => 'توزيع حالة المركبات',
+
+    // Additional missing translations (removing duplicates)
+    'confirmed' => 'مؤكد',
+    'rating_distribution' => 'توزيع التقييمات',
+    'with_comments' => 'مع التعليقات',
+    'recent_reviews' => 'المراجعات الأخيرة',
+
+    // New missing translations
+    '5-star_reviews' => 'مراجعات 5 نجوم',
+    'all_customer_reviews' => 'جميع مراجعات العملاء',
+    'average_rental_period' => 'متوسط فترة الإيجار',
+    'description' => 'الوصف',
+    'detailed_feedback' => 'تعليقات مفصلة',
+    'event' => 'الحدث',
+    'excellent_ratings' => 'تقييمات ممتازة',
+    'overall_satisfaction' => 'الرضا العام',
+    'subject' => 'الموضوع',
+    'subject_type' => 'نوع الموضوع',
+    'last_30_days' => 'آخر 30 يوماً',
+
+    // UserStatsWidget translations
+    'all_registered_users' => 'جميع المستخدمين المسجلين',
+    'renters' => 'المستأجرون',
+    'customer_accounts' => 'حسابات العملاء',
+    'owners' => 'المالكون',
+    'vehicle_owners' => 'مالكو المركبات',
+    'recent_signups' => 'الاشتراكات الأخيرة',
+    'verified' => 'متحققون',
+    'email_verified_users' => 'مستخدمون متحققون بالبريد الإلكتروني',
+    'active_users' => 'المستخدمون النشطون',
+    'active_last_30_days' => 'نشط في آخر 30 يوماً',
+
+    // VehicleStatsWidget translations
+    'all_registered_vehicles' => 'جميع المركبات المسجلة',
+    'pending_approval' => 'في انتظار الموافقة',
+    'vehicles_awaiting_approval' => 'مركبات في انتظار الموافقة',
+    'published' => 'منشور',
+    'available_for_booking' => 'متاح للحجز',
+    'avg_daily_rate' => 'متوسط السعر اليومي',
+    'average_rental_rate' => 'متوسط سعر الإيجار',
+
+    // BookingStatsWidget translations
+    'current_month_bookings' => 'حجوزات الشهر الحالي',
 ];

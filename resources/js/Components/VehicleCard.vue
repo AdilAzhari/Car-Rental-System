@@ -150,15 +150,23 @@
                     <span class="text-xs text-gray-500">Best price guaranteed</span>
                 </div>
                 
-                <button
-                    @click="$emit('view-details', vehicle)"
-                    class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 inline-flex items-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                >
-                    <span>Book Now</span>
-                    <svg class="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
+                <div class="flex gap-2">
+                    <button
+                        @click="$emit('view-details', vehicle.id)"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-3 rounded-xl transition-all duration-300 inline-flex items-center justify-center shadow-md hover:shadow-lg"
+                    >
+                        <span>View Details</span>
+                    </button>
+                    <button
+                        @click="$emit('reserve-now', vehicle.id)"
+                        class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-3 rounded-xl transition-all duration-300 inline-flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                    >
+                        <span>Reserve</span>
+                        <svg class="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -175,7 +183,7 @@ const props = defineProps({
     }
 })
 
-defineEmits(['view-details'])
+defineEmits(['view-details', 'reserve-now'])
 
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)

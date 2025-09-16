@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\VehicleStatus;
+use App\Actions\Booking\CreateBookingAction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
-use App\Models\Vehicle;
-use App\Services\PaymentService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class BookingController extends Controller
 {
     public function __construct(
-        private readonly PaymentService $paymentService
+        private readonly CreateBookingAction $createBookingAction
     ) {}
 
     /**
@@ -27,109 +23,102 @@ class BookingController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Log::info('🚀 BOOKING REQUEST STARTED', [
+            'user_id' => auth()->id(),
+            'user_email' => auth()->user()?->email,
+            'request_data' => $request->all(),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'timestamp' => now()
+        ]);
+
         $validatedData = $request->validate([
             'car_id' => 'required|exists:car_rental_vehicles,id',
             'start_date' => 'required|date|after:today',
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:stripe,visa,credit,tng,touch_n_go,cash,bank_transfer',
-            'payment_method_id' => 'sometimes|string', // For Stripe payments
+            'payment_method_id' => 'sometimes|string',
             'pickup_location' => 'sometimes|string|max:255',
-            'special_requests' => 'sometimes|string|max:500',
+            'dropoff_location' => 'sometimes|string|max:255',
+            'special_requests' => 'nullable|string|max:500',
+        ]);
+
+        Log::info('✅ VALIDATION PASSED', [
+            'user_id' => auth()->id(),
+            'validated_data' => $validatedData
         ]);
 
         try {
-            DB::beginTransaction();
-
-            $car = Vehicle::query()->findOrFail($validatedData['car_id']);
-
-            // Check if car is available
-            if (! $car->is_available || $car->status !== VehicleStatus::PUBLISHED->value) {
-                throw ValidationException::withMessages([
-                    'car_id' => 'This car is not available for booking.',
-                ]);
-            }
-
-            $startDate = Carbon::parse($validatedData['start_date']);
-            $endDate = Carbon::parse($validatedData['end_date']);
-
-            // Check for overlapping bookings
-            $overlappingBooking = Booking::query()->where('vehicle_id', $car->id)
-                ->where('status', '!=', 'cancelled')
-                ->where(function ($query) use ($startDate, $endDate): void {
-                    $query->whereBetween('start_date', [$startDate, $endDate])
-                        ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(function ($overlapQuery) use ($startDate, $endDate): void {
-                            $overlapQuery->where('start_date', '<=', $startDate)
-                                ->where('end_date', '>=', $endDate);
-                        });
-                })
-                ->exists();
-
-            if ($overlappingBooking) {
-                throw ValidationException::withMessages([
-                    'dates' => 'The car is not available for the selected dates.',
-                ]);
-            }
-
-            // Calculate pricing
-            $days = $startDate->diffInDays($endDate) + 1;
-            $subtotal = $car->daily_rate * $days;
-
-            // Add basic insurance (10% of subtotal)
-            $insurance = $subtotal * 0.10;
-
-            // Add taxes (8% of subtotal + insurance)
-            $taxes = ($subtotal + $insurance) * 0.08;
-
-            $totalAmount = $subtotal + $insurance + $taxes;
-
-            // Create booking with pending status initially
-            $booking = Booking::query()->create([
-                'user_id' => $request->user()->id,
-                'vehicle_id' => $car->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'days' => $days,
-                'daily_rate' => $car->daily_rate,
-                'subtotal' => $subtotal,
-                'insurance_fee' => $insurance,
-                'tax_amount' => $taxes,
-                'total_amount' => $totalAmount,
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'pickup_location' => $validatedData['pickup_location'] ?? $car->location,
-                'special_requests' => $validatedData['special_requests'] ?? null,
+            Log::info('🔧 CALLING CREATE BOOKING ACTION', [
+                'user_id' => auth()->id(),
+                'action_class' => get_class($this->createBookingAction),
+                'data' => $validatedData
             ]);
 
-            // Process payment using PaymentService
-            $paymentResult = $this->paymentService->processPayment($booking, $validatedData);
+            $booking = $this->createBookingAction->execute($validatedData);
 
-            DB::commit();
+            Log::info('🎉 BOOKING CREATED SUCCESSFULLY', [
+                'user_id' => auth()->id(),
+                'booking_id' => $booking->id,
+                'booking_status' => $booking->status,
+                'vehicle_id' => $booking->vehicle_id,
+                'total_amount' => $booking->total_amount,
+                'created_at' => $booking->created_at
+            ]);
 
-            // Load relationships for response
-            $booking->load(['vehicle.owner', 'vehicle.images', 'user', 'payments']);
-
-            return response()->json([
+            $response = [
                 'success' => true,
+                'message' => 'Booking created successfully.',
                 'booking' => new BookingResource($booking),
-                'payment' => $paymentResult,
+            ];
+
+            // Add admin contact info for cash payments
+            if ($validatedData['payment_method'] === 'cash') {
+                Log::info('💰 CASH PAYMENT - ADDING ADMIN CONTACT', [
+                    'booking_id' => $booking->id,
+                    'user_id' => auth()->id()
+                ]);
+
+                $response['admin_contact'] = [
+                    'whatsapp' => '+1234567890', // Replace with actual admin WhatsApp
+                    'email' => 'admin@carrentalsystem.com', // Replace with actual admin email
+                    'message' => 'Your booking is pending approval. Please contact our admin to confirm your reservation.',
+                ];
+                $response['status'] = 'pending_approval';
+            } else {
+                $response['status'] = $booking->status;
+            }
+
+            Log::info('📤 SENDING SUCCESS RESPONSE', [
+                'user_id' => auth()->id(),
+                'booking_id' => $booking->id,
+                'response_status' => 201
             ]);
+
+            return response()->json($response, 201);
 
         } catch (ValidationException $e) {
-            DB::rollBack();
+            Log::error('❌ VALIDATION EXCEPTION', [
+                'user_id' => auth()->id(),
+                'errors' => $e->errors(),
+                'message' => $e->getMessage()
+            ]);
             throw $e;
         } catch (Exception $e) {
-            DB::rollBack();
-
-            Log::error('Booking creation failed', [
-                'user_id' => $request->user()->id,
-                'car_id' => $validatedData['car_id'],
-                'error' => $e->getMessage(),
+            Log::error('💥 BOOKING CREATION EXCEPTION', [
+                'user_id' => auth()->id(),
+                'car_id' => $validatedData['car_id'] ?? null,
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'validated_data' => $validatedData
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create booking. Please try again.',
+                'message' => 'Unable to create booking. Please try again later.',
+                'error' => app()->environment('local') ? $e->getMessage() : null,
             ], 500);
         }
     }

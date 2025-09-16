@@ -73,32 +73,32 @@ class BookingStatsWidget extends BaseWidget
         }
 
         return [
-            Stat::make('Total Bookings', $totalBookings)
-                ->description('All time bookings')
+            Stat::make(__('widgets.total_bookings'), $totalBookings)
+                ->description(__('widgets.all_time_bookings'))
                 ->descriptionIcon('heroicon-o-calendar-days')
                 ->color('primary')
                 ->chart($bookingTrend),
 
-            Stat::make('Pending', $pendingBookings)
-                ->description('Awaiting confirmation')
+            Stat::make(__('widgets.pending'), $pendingBookings)
+                ->description(__('widgets.awaiting_confirmation'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($pendingBookings > 0 ? 'warning' : 'success')
                 ->chart(array_slice($bookingTrend, -4)),
 
-            Stat::make('Confirmed', $confirmedBookings)
-                ->description('Active reservations')
+            Stat::make(__('widgets.confirmed'), $confirmedBookings)
+                ->description(__('widgets.active_reservations'))
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('info')
                 ->chart(array_slice($bookingTrend, -4)),
 
-            Stat::make('This Month', $thisMonthBookings)
-                ->description('Current month bookings')
+            Stat::make(__('widgets.this_month'), $thisMonthBookings)
+                ->description(__('widgets.current_month_bookings'))
                 ->descriptionIcon('heroicon-o-chart-bar-square')
                 ->color('success')
                 ->chart(array_slice($bookingTrend, -5)),
 
-            Stat::make('Total Revenue', 'RM '.number_format($totalRevenue, 2))
-                ->description('From completed bookings')
+            Stat::make(__('widgets.total_revenue'), 'RM '.number_format($totalRevenue, 2))
+                ->description(__('widgets.from_completed_bookings'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->chart([
@@ -110,8 +110,8 @@ class BookingStatsWidget extends BaseWidget
                     max(1, $totalRevenue),
                 ]),
 
-            Stat::make('Avg. Duration', round($averageDuration, 1).' days')
-                ->description('Average rental period')
+            Stat::make(__('widgets.avg_duration'), round($averageDuration, 1).' days')
+                ->description(__('widgets.average_rental_period'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('info')
                 ->chart([2, 4, 3, 5, 4, max(1, round($averageDuration))]),

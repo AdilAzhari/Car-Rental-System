@@ -164,7 +164,7 @@ class PaymentController extends Controller
 
             $paymentIntent = \Stripe\PaymentIntent::create([
                 'amount' => (int) ($booking->total_amount * 100), // Convert to cents
-                'currency' => 'usd',
+                'currency' => 'MYR',
                 'metadata' => [
                     'booking_id' => $booking->id,
                     'user_id' => $booking->user_id,

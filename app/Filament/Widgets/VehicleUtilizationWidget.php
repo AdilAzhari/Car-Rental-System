@@ -16,7 +16,7 @@ class VehicleUtilizationWidget extends ChartWidget
 
     protected static ?int $sort = 3;
 
-    protected int|string|array $columnSpan = 2;
+    protected int|string|array $columnSpan = 1;
 
     public static function canView(): bool
     {

@@ -7,14 +7,21 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+// GET routes for auth pages
+Route::middleware('guest')->group(function () {
+    Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
+    Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
+});
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest')
-    ->name('register');
+    ->name('register.store');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')
-    ->name('login');
+    ->name('login.store');
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware('guest')

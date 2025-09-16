@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+</head>
+<body>
+    <h1>Vehicle Image Test</h1>
+    <div id="results"></div>
+
+    <script>
+        // Test the complete flow
+        fetch('/api/cars')
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+
+                if (data.data && data.data.length > 0) {
+                    const vehicle = data.data[0];
+
+                    // Show API response
+                    resultsDiv.innerHTML += `<h2>API Response:</h2>`;
+                    resultsDiv.innerHTML += `<p>Featured Image Path: ${vehicle.featured_image}</p>`;
+
+                    // Construct URL like frontend does
+                    const imageUrl = `/storage/${vehicle.featured_image}`;
+                    resultsDiv.innerHTML += `<p>Constructed URL: ${imageUrl}</p>`;
+
+                    // Test the image
+                    const img = new Image();
+                    img.onload = function() {
+                        resultsDiv.innerHTML += `<p style="color: green;">✓ Image loads successfully!</p>`;
+                        resultsDiv.innerHTML += `<img src="${imageUrl}" style="max-width: 300px; border: 2px solid green;">`;
+                    };
+                    img.onerror = function() {
+                        resultsDiv.innerHTML += `<p style="color: red;">✗ Image failed to load</p>`;
+                        resultsDiv.innerHTML += `<img src="${imageUrl}" style="max-width: 300px; border: 2px solid red;" alt="Broken image">`;
+                    };
+                    img.src = imageUrl;
+                } else {
+                    resultsDiv.innerHTML += `<p style="color: red;">No vehicles found in API response</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('results').innerHTML += `<p style="color: red;">API Error: ${error}</p>`;
+            });
+    </script>
+</body>
+</html>

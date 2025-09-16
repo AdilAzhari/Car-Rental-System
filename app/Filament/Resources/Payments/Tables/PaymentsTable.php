@@ -34,7 +34,7 @@ class PaymentsTable
 
                 TextColumn::make('amount')
                     ->label(__('resources.amount'))
-                    ->money('USD')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 TextColumn::make('payment_method')

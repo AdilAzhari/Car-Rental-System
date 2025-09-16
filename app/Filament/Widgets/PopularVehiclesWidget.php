@@ -62,7 +62,7 @@ class PopularVehiclesWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('daily_rate')
                     ->label(__('widgets.daily_rate'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_revenue')
@@ -70,7 +70,7 @@ class PopularVehiclesWidget extends BaseWidget
                     ->state(fn($record) => $record->bookings()
                         ->where('status', 'completed')
                         ->sum('total_amount'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->color('success')
                     ->sortable(),
 

@@ -94,11 +94,6 @@ class Vehicle extends Model
         return $this->hasMany(VehicleImage::class);
     }
 
-    public function vehicleImages(): HasMany
-    {
-        return $this->hasMany(VehicleImage::class);
-    }
-
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
@@ -228,6 +223,102 @@ class Vehicle extends Model
         // Simple text-based proximity (in real app, use spatial queries)
         return $query->where('location', 'like', "%{$location}%")
             ->orWhere('pickup_location', 'like', "%{$location}%");
+    }
+
+    /**
+     * Scope for price range filtering
+     */
+    public function scopePriceRange($query, $minPrice = null, $maxPrice = null)
+    {
+        return $query->when($minPrice, fn ($q) => $q->where('daily_rate', '>=', $minPrice))
+            ->when($maxPrice, fn ($q) => $q->where('daily_rate', '<=', $maxPrice));
+    }
+
+    /**
+     * Scope for vehicles with images
+     */
+    public function scopeWithImages($query)
+    {
+        return $query->whereNotNull('featured_image')
+            ->orWhereJsonLength('gallery_images', '>', 0)
+            ->orWhereHas('images');
+    }
+
+    /**
+     * Scope for premium vehicles (high-rated with luxury features)
+     */
+    public function scopePremium($query)
+    {
+        return $query->where('category', 'luxury')
+            ->where('daily_rate', '>', 100)
+            ->withAvg('reviews', 'rating')
+            ->having('reviews_avg_rating', '>=', 4.0);
+    }
+
+    /**
+     * Scope for eco-friendly vehicles
+     */
+    public function scopeEcoFriendly($query)
+    {
+        return $query->whereIn('fuel_type', ['electric', 'hybrid']);
+    }
+
+    /**
+     * Scope for family vehicles (suitable for families)
+     */
+    public function scopeFamilyFriendly($query)
+    {
+        return $query->where('seats', '>=', 5)
+            ->whereIn('category', ['suv', 'minivan', 'midsize']);
+    }
+
+    /**
+     * Scope for recently added vehicles
+     */
+    public function scopeRecent($query, $days = 30)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    /**
+     * Scope for vehicles with high ratings
+     */
+    public function scopeHighlyRated($query, $minRating = 4.0)
+    {
+        return $query->withAvg('reviews', 'rating')
+            ->having('reviews_avg_rating', '>=', $minRating);
+    }
+
+    /**
+     * Scope for vehicles by owner
+     */
+    public function scopeByOwner($query, $ownerId)
+    {
+        return $query->where('owner_id', $ownerId);
+    }
+
+    /**
+     * Scope for vehicles with active bookings
+     */
+    public function scopeWithActiveBookings($query)
+    {
+        return $query->whereHas('bookings', function ($bookingQuery): void {
+            $bookingQuery->where('status', 'confirmed')
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now());
+        });
+    }
+
+    /**
+     * Scope for most booked vehicles
+     */
+    public function scopeMostBooked($query, $limit = 10)
+    {
+        return $query->withCount(['bookings' => function ($bookingQuery): void {
+            $bookingQuery->where('status', 'completed');
+        }])
+            ->orderBy('bookings_count', 'desc')
+            ->limit($limit);
     }
 
     public function getActivitylogOptions(): LogOptions

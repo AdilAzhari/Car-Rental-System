@@ -123,4 +123,66 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Application Currency Configuration
+    |--------------------------------------------------------------------------
+    |
+    | These values configure the default currency used throughout the application
+    | for displaying prices, processing payments, and financial calculations.
+    |
+    */
+
+    'currency' => env('APP_CURRENCY', 'USD'),
+    'currency_symbol' => env('APP_CURRENCY_SYMBOL', '$'),
+    'currency_position' => env('APP_CURRENCY_POSITION', 'before'), // 'before' or 'after'
+
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Currencies
+    |--------------------------------------------------------------------------
+    |
+    | List of supported currencies with their symbols and formatting options
+    |
+    */
+
+    'currencies' => [
+        'USD' => [
+            'name' => 'US Dollar',
+            'symbol' => '$',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+        'MYR' => [
+            'name' => 'Malaysian Ringgit',
+            'symbol' => 'RM',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+        'EUR' => [
+            'name' => 'Euro',
+            'symbol' => '€',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+        'GBP' => [
+            'name' => 'British Pound',
+            'symbol' => '£',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+        'SAR' => [
+            'name' => 'Saudi Riyal',
+            'symbol' => 'ر.س',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+        'AED' => [
+            'name' => 'UAE Dirham',
+            'symbol' => 'د.إ',
+            'position' => 'before',
+            'decimal_places' => 2,
+        ],
+    ]
+
 ];

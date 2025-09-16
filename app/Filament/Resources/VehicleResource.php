@@ -474,7 +474,7 @@ class VehicleResource extends Resource
 
                 TextColumn::make('daily_rate')
                     ->label(__('resources.daily_rate'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 TextColumn::make('owner.name')

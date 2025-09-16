@@ -80,20 +80,20 @@ class ReviewStatsWidget extends BaseWidget
         }
 
         return [
-            Stat::make('Total Reviews', $totalReviews)
-                ->description('All customer reviews')
+            Stat::make(__('widgets.total_reviews'), $totalReviews)
+                ->description(__('widgets.all_customer_reviews'))
                 ->descriptionIcon('heroicon-o-star')
                 ->color('primary')
                 ->chart($reviewTrend),
 
-            Stat::make('Average Rating', number_format($averageRating, 1).'/5')
-                ->description('Overall satisfaction')
+            Stat::make(__('widgets.average_rating'), number_format($averageRating, 1).'/5')
+                ->description(__('widgets.overall_satisfaction'))
                 ->descriptionIcon('heroicon-o-heart')
                 ->color($averageRating >= 4.5 ? 'success' : ($averageRating >= 3.5 ? 'warning' : 'danger'))
                 ->chart($ratingTrend),
 
-            Stat::make('5-Star Reviews', $fiveStars)
-                ->description('Excellent ratings')
+            Stat::make(__('widgets.5-star_reviews'), $fiveStars)
+                ->description(__('widgets.excellent_ratings'))
                 ->descriptionIcon('heroicon-o-star')
                 ->color('success')
                 ->chart([
@@ -104,14 +104,14 @@ class ReviewStatsWidget extends BaseWidget
                     max(1, $fiveStars),
                 ]),
 
-            Stat::make('Recent Reviews', $recentReviews)
-                ->description('Last 30 days')
+            Stat::make(__('widgets.recent_reviews'), $recentReviews)
+                ->description(__('widgets.last_30_days'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($recentReviews > 5 ? 'success' : 'warning')
                 ->chart(array_slice($reviewTrend, -5)),
 
-            Stat::make('With Comments', $reviewsWithComments)
-                ->description('Detailed feedback')
+            Stat::make(__('widgets.with_comments'), $reviewsWithComments)
+                ->description(__('widgets.detailed_feedback'))
                 ->descriptionIcon('heroicon-o-chat-bubble-left-right')
                 ->color('info')
                 ->chart([
@@ -121,7 +121,7 @@ class ReviewStatsWidget extends BaseWidget
                     max(1, $reviewsWithComments),
                 ]),
 
-            Stat::make('Rating Distribution', $fiveStars.'/'.$fourStars.'/'.$threeStars.'/'.$twoStars.'/'.$oneStar)
+            Stat::make(__('widgets.rating_distribution'), $fiveStars.'/'.$fourStars.'/'.$threeStars.'/'.$twoStars.'/'.$oneStar)
                 ->description('5★/4★/3★/2★/1★')
                 ->descriptionIcon('heroicon-o-chart-bar-square')
                 ->color('info')

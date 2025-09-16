@@ -53,32 +53,32 @@ class UserStatsWidget extends BaseWidget
         }
 
         return [
-            Stat::make('Total Users', $totalUsers)
-                ->description('All registered users')
+            Stat::make(__('widgets.total_users'), $totalUsers)
+                ->description(__('widgets.all_registered_users'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('primary')
                 ->chart($registrationTrend),
 
-            Stat::make('Renters', $renterCount)
-                ->description('Customer accounts')
+            Stat::make(__('widgets.renters'), $renterCount)
+                ->description(__('widgets.customer_accounts'))
                 ->descriptionIcon('heroicon-o-user')
                 ->color('info')
                 ->chart(array_slice($registrationTrend, -4)),
 
-            Stat::make('Owners', $ownerCount)
-                ->description('Vehicle owners')
+            Stat::make(__('widgets.owners'), $ownerCount)
+                ->description(__('widgets.vehicle_owners'))
                 ->descriptionIcon('heroicon-o-user-group')
                 ->color('success')
                 ->chart(array_slice($registrationTrend, -4)),
 
-            Stat::make('Recent Signups', $recentRegistrations)
-                ->description('Last 30 days')
+            Stat::make(__('widgets.recent_signups'), $recentRegistrations)
+                ->description(__('widgets.last_30_days'))
                 ->descriptionIcon('heroicon-o-user-plus')
                 ->color($recentRegistrations > 10 ? 'success' : 'warning')
                 ->chart(array_slice($registrationTrend, -5)),
 
-            Stat::make('Verified', $verifiedUsers)
-                ->description('Email verified users')
+            Stat::make(__('widgets.verified'), $verifiedUsers)
+                ->description(__('widgets.email_verified_users'))
                 ->descriptionIcon('heroicon-o-shield-check')
                 ->color('success')
                 ->chart([
@@ -89,8 +89,8 @@ class UserStatsWidget extends BaseWidget
                     max(1, $verifiedUsers),
                 ]),
 
-            Stat::make('Active Users', $activeUsers)
-                ->description('Active in last 30 days')
+            Stat::make(__('widgets.active_users'), $activeUsers)
+                ->description(__('widgets.active_last_30_days'))
                 ->descriptionIcon('heroicon-o-bolt')
                 ->color('info')
                 ->chart([

@@ -83,7 +83,7 @@ class BookingsRelationManager extends RelationManager
 
                 TextColumn::make('total_amount')
                     ->label(__('resources.amount'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 TextColumn::make('created_at')

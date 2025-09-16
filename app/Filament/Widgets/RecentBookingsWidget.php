@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\BookingStatus;
+use App\Helpers\CurrencyHelper;
 use App\Models\Booking;
 use Filament\Actions\Action;
 use Filament\Tables;
@@ -21,44 +22,44 @@ class RecentBookingsWidget extends BaseWidget
             ->query(Booking::query()->with(['renter', 'vehicle'])->latest()->limit(10))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('Booking #')
+                    ->label(__('widgets.booking_number'))
                     ->prefix('BK-')
                     ->searchable()
                     ->weight('medium'),
 
                 Tables\Columns\TextColumn::make('renter.name')
-                    ->label('Customer')
+                    ->label(__('widgets.customer'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('vehicle')
-                    ->label('Vehicle')
+                    ->label(__('widgets.vehicle'))
                     ->formatStateUsing(fn ($record): string => "{$record->vehicle->make} {$record->vehicle->model}")
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label('Start Date')
+                    ->label(__('widgets.start_date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('end_date')
-                    ->label('End Date')
+                    ->label(__('widgets.end_date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('duration')
-                    ->label('Duration')
+                    ->label(__('widgets.duration'))
                     ->state(function ($record): string {
                         $days = \Carbon\Carbon::parse($record->start_date)
                             ->diffInDays(\Carbon\Carbon::parse($record->end_date)) + 1;
 
-                        return $days.' day'.($days !== 1 ? 's' : '');
+                        return $days.' '.($days !== 1 ? __('widgets.days') : __('widgets.day'));
                     })
                     ->badge()
                     ->color('info'),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('widgets.status'))
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'confirmed',
@@ -66,36 +67,36 @@ class RecentBookingsWidget extends BaseWidget
                         'primary' => 'completed',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn ($state) => BookingStatus::tryFrom($state)?->label() ?? $state),
+                    ->formatStateUsing(fn ($state) => __('widgets.status_' . $state)),
 
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->label('Amount')
-                    ->money('MYR')
+                    ->label(__('widgets.amount'))
+                    ->money(config('app.currency', 'USD'))
                     ->sortable()
                     ->weight('bold')
                     ->color('success'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Booked')
+                    ->label(__('widgets.booked'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at->format('Y-m-d H:i:s')),
             ])
             ->actions([
                 Action::make('view')
-                    ->label('View')
+                    ->label(__('widgets.view'))
                     ->icon('heroicon-m-eye')
                     ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.view', $record)
                     ),
 
                 Action::make('edit')
-                    ->label('Edit')
+                    ->label(__('widgets.edit'))
                     ->icon('heroicon-m-pencil')
                     ->color('warning')
                     ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.edit', $record)
                     ),
 
                 Action::make('confirm')
-                    ->label('Confirm')
+                    ->label(__('widgets.confirm'))
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->visible(fn (Booking $record): bool => $record->status === 'pending')
@@ -105,7 +106,7 @@ class RecentBookingsWidget extends BaseWidget
                         activity()
                             ->performedOn($record)
                             ->causedBy(auth()->user())
-                            ->log('Booking confirmed via dashboard widget');
+                            ->log(__('widgets.booking_confirmed_via_dashboard'));
                     })
                     ->requiresConfirmation(),
             ])

@@ -57,7 +57,7 @@ class BookingsTable
 
                 TextColumn::make('total_amount')
                     ->label(__('resources.total_amount'))
-                    ->money('USD')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 BadgeColumn::make('status')
@@ -74,12 +74,9 @@ class BookingsTable
                 BadgeColumn::make('payment_status')
                     ->label(__('resources.payment_status'))
                     ->colors([
-                        'warning' => 'pending',
-                        'success' => 'confirmed',
-                        'info' => 'processing',
-                        'danger' => 'failed',
+                        'warning' => 'unpaid',
+                        'success' => 'paid',
                         'secondary' => 'refunded',
-                        'gray' => 'cancelled',
                     ])
                     ->sortable(),
 
@@ -106,13 +103,9 @@ class BookingsTable
                 SelectFilter::make('payment_status')
                     ->label(__('resources.payment_status'))
                     ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'processing' => 'Processing',
-                        'failed' => 'Failed',
-                        'refunded' => 'Refunded',
-                        'cancelled' => 'Cancelled',
                         'unpaid' => 'Unpaid',
+                        'paid' => 'Paid',
+                        'refunded' => 'Refunded',
                     ])
                     ->multiple(),
 
@@ -134,35 +127,75 @@ class BookingsTable
                 ViewAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner', 'renter'])),
                 EditAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner'])),
 
-                Action::make('confirm_payment')
-                    ->label(__('resources.confirm_payment'))
+                Action::make('confirm_booking')
+                    ->label('Confirm Booking')
                     ->icon(Heroicon::OutlinedCheckCircle)
                     ->color('success')
-                    ->visible(fn ($record): bool => $record->payment_status === 'pending' &&
-                        $record->payments()->where('payment_method', 'cash')->exists())
+                    ->visible(fn ($record): bool => in_array($record->status, ['pending', 'pending_payment']) &&
+                        auth()->user() && in_array(auth()->user()->role, ['admin', 'owner']))
                     ->requiresConfirmation()
-                    ->modalHeading('Confirm Cash Payment')
-                    ->modalDescription('Are you sure you want to confirm this cash payment?')
-                    ->modalSubmitActionLabel(__('resources.confirm_payment'))
+                    ->modalHeading('Confirm Booking')
+                    ->modalDescription('Are you sure you want to confirm this booking? This will change the status to confirmed.')
+                    ->modalSubmitActionLabel('Confirm Booking')
                     ->form([
                         Textarea::make('notes')
-                            ->label(__('resources.payment_notes'))
-                            ->placeholder('Add any notes about the payment confirmation...')
+                            ->label('Confirmation Notes')
+                            ->placeholder('Add any notes about the booking confirmation...')
                             ->rows(3),
                     ])
                     ->action(function ($record, array $data): void {
-                        $payment = $record->payments()->where('payment_method', 'cash')->latest()->first();
+                        $record->update([
+                            'status' => 'confirmed',
+                        ]);
 
-                        if ($payment) {
-                            $payment->update([
-                                'status' => 'confirmed',
-                                'notes' => $data['notes'] ?? null,
-                                'confirmed_at' => now(),
-                            ]);
-
+                        // Add a note to special_requests if provided
+                        if (!empty($data['notes'])) {
+                            $existingNotes = $record->special_requests;
                             $record->update([
-                                'status' => 'confirmed',
-                                'payment_status' => 'confirmed',
+                                'special_requests' => $existingNotes ? $existingNotes . "\n\nAdmin Notes: " . $data['notes'] : "Admin Notes: " . $data['notes']
+                            ]);
+                        }
+                    }),
+
+                Action::make('mark_paid')
+                    ->label('Mark as Paid')
+                    ->icon(Heroicon::OutlinedCreditCard)
+                    ->color('success')
+                    ->visible(fn ($record): bool => $record->payment_status === 'unpaid' &&
+                        auth()->user() && in_array(auth()->user()->role, ['admin']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Mark Payment as Paid')
+                    ->modalDescription('Are you sure you want to mark this payment as paid? This action should only be done after receiving payment.')
+                    ->modalSubmitActionLabel('Mark as Paid')
+                    ->form([
+                        Textarea::make('payment_notes')
+                            ->label('Payment Confirmation Notes')
+                            ->placeholder('Add details about how payment was received...')
+                            ->rows(3)
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data): void {
+                        $record->update([
+                            'payment_status' => 'paid',
+                        ]);
+
+                        // Create a payment record if one doesn't exist
+                        if (!$record->payments()->exists()) {
+                            $record->payments()->create([
+                                'amount' => $record->total_amount,
+                                'payment_method' => $record->payment_method ?: 'cash',
+                                'payment_gateway' => 'manual',
+                                'status' => 'paid',
+                                'notes' => $data['payment_notes'],
+                                'processed_at' => now(),
+                            ]);
+                        } else {
+                            // Update the existing payment
+                            $payment = $record->payments()->latest()->first();
+                            $payment->update([
+                                'status' => 'paid',
+                                'notes' => ($payment->notes ? $payment->notes . "\n\n" : '') . 'Admin confirmed: ' . $data['payment_notes'],
+                                'processed_at' => now(),
                             ]);
                         }
                     }),

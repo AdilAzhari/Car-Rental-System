@@ -108,7 +108,7 @@ class ViewVehicle extends ViewRecord
 
                                 TextEntry::make('daily_rate')
                                     ->label(__('resources.daily_rate'))
-                                    ->money('MYR'),
+                                    ->money(config('app.currency', 'USD')),
                             ]),
                     ]),
 

@@ -33,7 +33,10 @@ class CarResource extends JsonResource
             'category' => $this->category,
             'engine_size' => $this->engine_size,
             'insurance_included' => $this->insurance_included,
-            'featured_image' => $this->featured_image,
+            'featured_image' => $this->whenLoaded('images', function () {
+                $primaryImage = $this->images->where('is_primary', true)->first();
+                return $primaryImage ? $primaryImage->image_path : ($this->images->first()?->image_path ?? null);
+            }) ?? $this->featured_image,
             'gallery_images' => $this->gallery_images,
             'features' => $this->features,
             'policy' => $this->policy,
@@ -53,6 +56,7 @@ class CarResource extends JsonResource
                 'id' => $image->id,
                 'image_path' => $image->image_path,
                 'alt_text' => $image->alt_text,
+                'is_primary' => $image->is_primary,
             ])),
 
             'reviews' => $this->whenLoaded('reviews', fn () => $this->reviews->map(fn ($review): array => [

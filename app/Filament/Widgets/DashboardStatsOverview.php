@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Review;
@@ -99,7 +100,7 @@ class DashboardStatsOverview extends BaseWidget
                 ->color('info')
                 ->chart($bookingChart),
 
-            Stat::make(__('widgets.monthly_revenue'), 'RM '.number_format($monthlyRevenue, 2))
+            Stat::make(__('widgets.monthly_revenue'), CurrencyHelper::format($monthlyRevenue))
                 ->description($revenueGrowth >= 0 ? "+{$revenueGrowth}% ".__('widgets.growth_from_last_month') : "{$revenueGrowth}% ".__('widgets.growth_from_last_month'))
                 ->descriptionIcon($revenueGrowth >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($revenueGrowth >= 0 ? 'success' : 'warning')
@@ -155,7 +156,7 @@ class DashboardStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
 
-            Stat::make(__('widgets.monthly_revenue'), 'RM '.number_format($monthlyRevenue, 2))
+            Stat::make(__('widgets.monthly_revenue'), CurrencyHelper::format($monthlyRevenue))
                 ->description($revenueGrowth >= 0 ? "+{$revenueGrowth}% ".__('widgets.from_last_month') : "{$revenueGrowth}% ".__('widgets.from_last_month'))
                 ->descriptionIcon($revenueGrowth >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($revenueGrowth >= 0 ? 'success' : 'danger'),
@@ -203,8 +204,8 @@ class DashboardStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('success'),
 
-            Stat::make(__('widgets.monthly_spending'), 'RM '.number_format($monthlySpent, 2))
-                ->description('RM '.number_format($totalSpent, 2).' '.__('widgets.total_spent'))
+            Stat::make(__('widgets.monthly_spending'), CurrencyHelper::format($monthlySpent))
+                ->description(CurrencyHelper::format($totalSpent).' '.__('widgets.total_spent'))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('primary'),
 

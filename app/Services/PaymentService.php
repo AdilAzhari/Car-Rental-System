@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\CarRental\Booking;
-use App\Models\CarRental\Payment;
+use App\Helpers\CurrencyHelper;
+use App\Models\Booking;
+use App\Models\Payment;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
@@ -41,8 +42,8 @@ class PaymentService
     {
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $this->convertToStripeAmount($booking->total_amount),
-                'currency' => 'usd', // or config('app.currency', 'usd')
+                'amount' => CurrencyHelper::toCents($booking->total_amount),
+                'currency' => strtolower(config('app.currency', 'usd')),
                 'payment_method' => $paymentData['payment_method_id'] ?? null,
                 'confirmation_method' => 'manual',
                 'confirm' => true,
@@ -50,7 +51,7 @@ class PaymentService
                 'metadata' => [
                     'booking_id' => $booking->id,
                     'vehicle_id' => $booking->vehicle_id,
-                    'user_id' => $booking->user_id,
+                    'user_id' => $booking->renter_id,
                 ],
                 'description' => "Car rental booking #{$booking->id}",
             ]);
@@ -228,13 +229,6 @@ class PaymentService
         ];
     }
 
-    /**
-     * Convert amount to Stripe format (cents)
-     */
-    private function convertToStripeAmount(float $amount): int
-    {
-        return (int) ($amount * 100);
-    }
 
     /**
      * Map Stripe payment status to our internal status
@@ -243,10 +237,10 @@ class PaymentService
     {
         return match ($stripeStatus) {
             'succeeded' => 'paid',
-            'pending' => 'pending',
-            'requires_action', 'requires_confirmation' => 'processing',
-            'canceled', 'failed' => 'failed',
-            default => 'pending'
+            'pending' => 'unpaid',
+            'requires_action', 'requires_confirmation' => 'unpaid',
+            'canceled', 'failed' => 'unpaid',
+            default => 'unpaid'
         };
     }
 
@@ -294,7 +288,7 @@ class PaymentService
             } elseif (in_array($paymentIntent['status'], ['canceled', 'failed'])) {
                 $booking->update([
                     'status' => 'cancelled',
-                    'payment_status' => 'failed',
+                    'payment_status' => 'unpaid',
                 ]);
             }
 
@@ -323,7 +317,7 @@ class PaymentService
         }
 
         try {
-            $refundAmount = $amount ? $this->convertToStripeAmount($amount) : null;
+            $refundAmount = $amount ? CurrencyHelper::toCents($amount) : null;
 
             $refund = \Stripe\Refund::create([
                 'payment_intent' => $payment->gateway_transaction_id,

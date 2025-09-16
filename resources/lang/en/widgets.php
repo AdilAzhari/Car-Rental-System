@@ -83,5 +83,50 @@ return [
     'avg_duration' => 'Avg. Duration',
     'average_booking_duration' => 'Average booking duration',
     'days' => 'days',
+    'day' => 'day',
     'hours' => 'hours',
+
+    // Additional Dashboard Translations
+    'my_vehicles' => 'My Vehicles',
+    'published_comma_available' => 'published,',
+    'bookings_this_month' => 'bookings this month',
+    'completed_bookings' => 'completed bookings',
+    'from_last_month' => 'from last month',
+    'average_rating' => 'Average Rating',
+    'total_reviews' => 'total reviews',
+    'my_bookings' => 'My Bookings',
+    'ready_for_booking' => 'ready for booking',
+    'monthly_spending' => 'Monthly Spending',
+    'total_spent' => 'total spent',
+    'my_reviews' => 'My Reviews',
+    'reviews_this_month' => 'reviews this month',
+    'completed' => 'completed',
+
+    // Recent Bookings Widget
+    'booking_number' => 'Booking #',
+    'customer' => 'Customer',
+    'vehicle' => 'Vehicle',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'duration' => 'Duration',
+    'status' => 'Status',
+    'amount' => 'Amount',
+    'booked' => 'Booked',
+    'view' => 'View',
+    'edit' => 'Edit',
+    'confirm' => 'Confirm',
+    'latest_bookings_activity' => 'Latest booking activity',
+    'booking_confirmed_via_dashboard' => 'Booking confirmed via dashboard widget',
+
+    // Status translations
+    'status_pending' => 'Pending',
+    'status_confirmed' => 'Confirmed',
+    'status_active' => 'Active',
+    'status_completed' => 'Completed',
+    'status_cancelled' => 'Cancelled',
+
+    // Chart translations
+    'revenue_currency' => 'Revenue ($)',
+    'bookings_count' => 'Bookings Count',
+    'vehicle_status_distribution' => 'Vehicle Status Distribution',
 ];

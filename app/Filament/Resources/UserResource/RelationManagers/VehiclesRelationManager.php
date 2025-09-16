@@ -76,7 +76,7 @@ class VehiclesRelationManager extends RelationManager
 
                 TextColumn::make('daily_rate')
                     ->label(__('resources.daily_rate'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 TextColumn::make('bookings_count')

@@ -11,8 +11,8 @@
                         Back to Cars
                     </button>
                     <div class="flex items-center space-x-4">
-                        <button class="text-gray-600 hover:text-gray-900">Sign In</button>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Sign Up</button>
+                        <a href="/login" class="text-gray-600 hover:text-gray-900">Sign In</a>
+                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Sign Up</a>
                     </div>
                 </div>
             </div>
@@ -37,51 +37,71 @@
 
         <!-- Car Details -->
         <div v-else-if="car" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Image Gallery -->
+            <!-- Enhanced Image Carousel -->
             <div class="mb-8">
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                    <!-- Main Image -->
-                    <div class="lg:col-span-3">
-                        <div class="relative h-96 bg-gray-200 rounded-lg overflow-hidden">
-                            <img 
-                                v-if="selectedImage"
-                                :src="selectedImage" 
+                <div class="relative">
+                    <!-- Main Carousel -->
+                    <div class="relative h-96 bg-gray-200 rounded-lg overflow-hidden group">
+                        <div v-if="allImages.length > 0" class="relative w-full h-full">
+                            <img
+                                :src="getImageUrl(allImages[currentImageIndex])"
                                 :alt="`${car.make} ${car.model}`"
-                                class="w-full h-full object-cover cursor-pointer"
+                                class="w-full h-full object-cover cursor-pointer transition-opacity duration-300"
                                 @click="openImageModal"
                             >
-                            <div v-else class="flex items-center justify-center h-full text-gray-400">
-                                <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+
+                            <!-- Image Counter -->
+                            <div class="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm">
+                                {{ currentImageIndex + 1 }} / {{ allImages.length }}
+                            </div>
+
+                            <!-- Navigation Arrows -->
+                            <button v-if="allImages.length > 1"
+                                    @click="previousImage"
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+
+                            <button v-if="allImages.length > 1"
+                                    @click="nextImage"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div v-else class="flex items-center justify-center h-full text-gray-400">
+                            <div class="text-center">
+                                <svg class="w-24 h-24 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                                 </svg>
+                                <p class="text-lg">No images available</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Thumbnail Gallery -->
-                    <div class="space-y-4">
-                        <div v-if="car.featured_image" 
-                             @click="selectedImage = car.featured_image"
-                             :class="selectedImage === car.featured_image ? 'ring-2 ring-blue-500' : ''"
-                             class="h-20 bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
-                            <img :src="car.featured_image" :alt="car.make" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <div v-for="(image, index) in car.gallery_images" 
-                             :key="index"
-                             @click="selectedImage = image"
-                             :class="selectedImage === image ? 'ring-2 ring-blue-500' : ''"
-                             class="h-20 bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
-                            <img :src="image" :alt="`${car.make} ${index + 1}`" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <div v-for="image in car.images" 
-                             :key="image.id"
-                             @click="selectedImage = image.image_path"
-                             :class="selectedImage === image.image_path ? 'ring-2 ring-blue-500' : ''"
-                             class="h-20 bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
-                            <img :src="image.image_path" :alt="image.alt_text" class="w-full h-full object-cover">
-                        </div>
+                    <!-- Thumbnail Strip -->
+                    <div v-if="allImages.length > 1" class="flex space-x-2 mt-4 overflow-x-auto pb-2">
+                        <button v-for="(image, index) in allImages"
+                                :key="index"
+                                @click="currentImageIndex = index"
+                                :class="currentImageIndex === index ? 'ring-2 ring-blue-500' : 'hover:ring-2 hover:ring-gray-300'"
+                                class="flex-shrink-0 w-20 h-16 bg-gray-200 rounded-lg overflow-hidden transition-all">
+                            <img :src="getImageUrl(image)" :alt="`Thumbnail ${index + 1}`" class="w-full h-full object-cover">
+                        </button>
+                    </div>
+
+                    <!-- Dots Indicator (for mobile) -->
+                    <div v-if="allImages.length > 1" class="flex justify-center mt-4 space-x-2 md:hidden">
+                        <button v-for="(image, index) in allImages"
+                                :key="index"
+                                @click="currentImageIndex = index"
+                                :class="currentImageIndex === index ? 'bg-blue-500' : 'bg-gray-300'"
+                                class="w-2 h-2 rounded-full transition-colors">
+                        </button>
                     </div>
                 </div>
             </div>
@@ -288,7 +308,7 @@
         <!-- Image Modal -->
         <div v-if="showImageModal" @click="closeImageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
             <div class="max-w-4xl max-h-4xl p-4">
-                <img :src="selectedImage" :alt="car?.make" class="max-w-full max-h-full object-contain">
+                <img :src="getImageUrl(selectedImage)" :alt="car?.make" class="max-w-full max-h-full object-contain">
             </div>
             <button @click="closeImageModal" class="absolute top-4 right-4 text-white hover:text-gray-300">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +320,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import axios from 'axios'
 
@@ -315,6 +335,7 @@ const loading = ref(true)
 const error = ref(false)
 const selectedImage = ref('')
 const showImageModal = ref(false)
+const currentImageIndex = ref(0)
 
 const bookingForm = ref({
     start_date: '',
@@ -341,13 +362,47 @@ const totalPrice = computed(() => {
 })
 
 const canBook = computed(() => {
-    return car.value?.is_available && 
-           bookingForm.value.start_date && 
-           bookingForm.value.end_date && 
+    return car.value?.is_available &&
+           bookingForm.value.start_date &&
+           bookingForm.value.end_date &&
            bookingDays.value > 0
 })
 
+// Combine all images for carousel
+const allImages = computed(() => {
+    if (!car.value) return []
+
+    const images = []
+
+    // Add featured image first
+    if (car.value.featured_image) {
+        images.push(car.value.featured_image)
+    }
+
+    // Add gallery images
+    if (car.value.gallery_images && Array.isArray(car.value.gallery_images)) {
+        images.push(...car.value.gallery_images)
+    }
+
+    // Add database images
+    if (car.value.images && Array.isArray(car.value.images)) {
+        images.push(...car.value.images.map(img => img.image_path))
+    }
+
+    return images
+})
+
 // Methods
+const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+        return imagePath
+    }
+    // Construct URL for storage path
+    return `/storage/${imagePath}`
+}
+
 const fetchCar = async (carId) => {
     loading.value = true
     error.value = false
@@ -355,8 +410,8 @@ const fetchCar = async (carId) => {
     try {
         const response = await axios.get(`/api/cars/${carId}`)
         car.value = response.data.data
-        
-        // Set initial image
+
+        // Set initial image for modal (keeping backward compatibility)
         if (car.value.featured_image) {
             selectedImage.value = car.value.featured_image
         } else if (car.value.gallery_images && car.value.gallery_images.length) {
@@ -364,6 +419,9 @@ const fetchCar = async (carId) => {
         } else if (car.value.images && car.value.images.length) {
             selectedImage.value = car.value.images[0].image_path
         }
+
+        // Reset carousel index
+        currentImageIndex.value = 0
         
     } catch (err) {
         console.error('Error fetching car:', err)
@@ -396,7 +454,31 @@ const goToReservation = () => {
     }
 }
 
+const previousImage = () => {
+    if (allImages.value.length > 0) {
+        currentImageIndex.value = currentImageIndex.value === 0
+            ? allImages.value.length - 1
+            : currentImageIndex.value - 1
+
+        // Update selected image for modal
+        selectedImage.value = allImages.value[currentImageIndex.value]
+    }
+}
+
+const nextImage = () => {
+    if (allImages.value.length > 0) {
+        currentImageIndex.value = currentImageIndex.value === allImages.value.length - 1
+            ? 0
+            : currentImageIndex.value + 1
+
+        // Update selected image for modal
+        selectedImage.value = allImages.value[currentImageIndex.value]
+    }
+}
+
 const openImageModal = () => {
+    // Set modal image to current carousel image
+    selectedImage.value = allImages.value[currentImageIndex.value]
     showImageModal.value = true
 }
 
@@ -408,9 +490,28 @@ const goBack = () => {
     router.visit('/cars')
 }
 
+// Keyboard navigation
+const handleKeyPress = (event) => {
+    if (showImageModal.value) return // Don't interfere with modal
+
+    if (event.key === 'ArrowLeft') {
+        previousImage()
+    } else if (event.key === 'ArrowRight') {
+        nextImage()
+    }
+}
+
 // Lifecycle
 onMounted(() => {
     const carId = props.id || window.location.pathname.split('/').pop()
     fetchCar(carId)
+
+    // Add keyboard event listeners
+    document.addEventListener('keydown', handleKeyPress)
+})
+
+onUnmounted(() => {
+    // Clean up event listeners
+    document.removeEventListener('keydown', handleKeyPress)
 })
 </script>

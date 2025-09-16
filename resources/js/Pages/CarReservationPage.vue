@@ -1,23 +1,23 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <button @click="goBack" class="flex items-center text-gray-600 hover:text-gray-900">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Back
-                    </button>
-                    <h1 class="text-2xl font-bold text-gray-900">Complete Your Reservation</h1>
-                    <div class="flex items-center space-x-4">
-                        <button class="text-gray-600 hover:text-gray-900">Sign In</button>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Sign Up</button>
+    <AppLayout>
+
+        <!-- Page Header -->
+        <section class="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-16">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <button @click="goBack" class="flex items-center text-white/80 hover:text-white transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Details
+                        </button>
                     </div>
+                    <h1 class="text-4xl font-bold text-white mb-4">Complete Your Reservation</h1>
+                    <p class="text-xl text-white/90">Secure your vehicle booking in just a few steps</p>
                 </div>
             </div>
-        </header>
+        </section>
 
         <!-- Loading State -->
         <div v-if="loading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Reservation Form -->
-        <div v-else-if="car" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div v-else-if="car" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Main Form -->
                 <div class="lg:col-span-2 space-y-6">
@@ -38,11 +38,12 @@
                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Car Details</h2>
                         <div class="flex space-x-4">
                             <div class="w-24 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                <img 
+                                <img
                                     v-if="car.featured_image"
-                                    :src="car.featured_image" 
+                                    :src="getImageUrl(car.featured_image)"
                                     :alt="`${car.make} ${car.model}`"
                                     class="w-full h-full object-cover"
+                                    @error="handleImageError"
                                 >
                             </div>
                             <div class="flex-1">
@@ -192,6 +193,18 @@
                                 </label>
                             </div>
                             <p v-if="errors.agree_terms" class="text-sm text-red-600">{{ errors.agree_terms }}</p>
+
+                            <!-- General error display -->
+                            <div v-if="errors.general" class="mt-4 bg-red-50 border border-red-200 rounded-md p-3">
+                                <div class="flex">
+                                    <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                    <div class="text-sm">
+                                        <p class="text-red-800 font-medium">{{ errors.general }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -280,52 +293,125 @@
 
         <!-- Success Modal -->
         <div v-if="showSuccessModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div class="bg-white rounded-lg p-6 max-w-md mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="text-center">
-                    <svg class="mx-auto h-12 w-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="bookingResponse?.status === 'confirmed'" class="mx-auto h-12 w-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Booking {{ bookingResult?.status === 'confirmed' ? 'Confirmed' : 'Requested' }}!</h3>
+                    <svg v-else class="mx-auto h-12 w-12 text-yellow-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">
+                        {{ bookingResponse?.status === 'confirmed' ? 'Booking Confirmed!' : 'Booking Pending Approval' }}
+                    </h3>
+
                     <p class="text-sm text-gray-600 mb-4">
-                        {{ bookingResult?.status === 'confirmed' 
-                            ? 'Your car reservation has been confirmed. You\'ll receive a confirmation email shortly.' 
-                            : 'Your booking request has been sent to the car owner. You\'ll be notified once it\'s confirmed.' }}
+                        {{ bookingResponse?.status === 'confirmed'
+                            ? 'Your vehicle reservation has been confirmed. You\'ll receive a confirmation email shortly.'
+                            : bookingResponse?.admin_contact?.message || 'Your booking request has been submitted and is pending approval.' }}
                     </p>
+
+                    <!-- Admin Contact Info for Cash Payments -->
+                    <div v-if="bookingResponse?.admin_contact" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <h4 class="font-semibold text-yellow-800">Action Required</h4>
+                        </div>
+                        <p class="text-sm text-yellow-700 mb-3">Please contact our admin to confirm your cash payment booking:</p>
+
+                        <div class="space-y-2">
+                            <a :href="`https://wa.me/${bookingResponse.admin_contact.whatsapp.replace(/\D/g, '')}?text=Hi, I just made a booking with ID: ${bookingResult?.booking_number || bookingResult?.id}. I would like to confirm my cash payment.`"
+                               target="_blank"
+                               class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                Contact via WhatsApp
+                            </a>
+
+                            <a :href="`mailto:${bookingResponse.admin_contact.email}?subject=Booking Confirmation - ID: ${bookingResult?.booking_number || bookingResult?.id}&body=Hi, I just made a booking with ID: ${bookingResult?.booking_number || bookingResult?.id}. I would like to confirm my cash payment.`"
+                               class="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Send Email
+                            </a>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-t border-yellow-200">
+                            <p class="text-xs text-yellow-600">Admin Contact:</p>
+                            <p class="text-sm font-medium text-yellow-800">{{ bookingResponse.admin_contact.whatsapp }}</p>
+                            <p class="text-sm font-medium text-yellow-800">{{ bookingResponse.admin_contact.email }}</p>
+                        </div>
+                    </div>
+
                     <div class="bg-gray-50 rounded-lg p-3 mb-4 text-left">
-                        <p class="text-sm"><strong>Booking ID:</strong> #{{ bookingResult?.id }}</p>
-                        <p class="text-sm"><strong>Car:</strong> {{ car?.make }} {{ car?.model }}</p>
+                        <p class="text-sm"><strong>Booking ID:</strong> {{ bookingResult?.booking_number || `#${bookingResult?.id}` }}</p>
+                        <p class="text-sm"><strong>Vehicle:</strong> {{ car?.make }} {{ car?.model }}</p>
                         <p class="text-sm"><strong>Dates:</strong> {{ form.start_date }} to {{ form.end_date }}</p>
                         <p class="text-sm"><strong>Total:</strong> ${{ totalPrice.toFixed(2) }}</p>
+                        <p class="text-sm"><strong>Payment Method:</strong> {{ form.payment_method.charAt(0).toUpperCase() + form.payment_method.slice(1) }}</p>
+                        <p class="text-sm"><strong>Status:</strong>
+                            <span :class="bookingResponse?.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'">
+                                {{ bookingResponse?.status === 'confirmed' ? 'Confirmed' : 'Pending Approval' }}
+                            </span>
+                        </p>
                     </div>
-                    <button 
-                        @click="goToBookings"
+
+                    <button
+                        @click="closeSuccessModal"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium"
                     >
-                        View My Bookings
+                        {{ bookingResponse?.admin_contact ? 'Close & Contact Admin' : 'View My Bookings' }}
                     </button>
                 </div>
             </div>
         </div>
-    </div>
+
+    </AppLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import axios from 'axios'
 
+// Define props
+const props = defineProps({
+    car: {
+        type: Object,
+        required: false,
+        default: null
+    },
+    booking_params: {
+        type: Object,
+        required: false,
+        default: () => ({})
+    }
+})
+
+// Get auth user from Inertia
+const page = usePage()
+const isAuthenticated = computed(() => page.props.auth.user !== null)
+const authUser = computed(() => page.props.auth.user)
+
 // Reactive data
-const car = ref(null)
-const loading = ref(true)
+const car = ref(props.car)
+const loading = ref(!props.car) // Only show loading if no car prop provided
 const submitting = ref(false)
 const showSuccessModal = ref(false)
 const bookingResult = ref(null)
+const bookingResponse = ref(null)
 const errors = ref({})
 
 const form = ref({
-    car_id: null,
-    start_date: '',
-    end_date: '',
+    car_id: props.car?.id || null,
+    start_date: props.booking_params?.start_date || '',
+    end_date: props.booking_params?.end_date || '',
     payment_method: 'visa',
     special_requests: '',
     agree_terms: false
@@ -386,31 +472,114 @@ const calculateTotal = () => {
 
 const submitReservation = async () => {
     if (!canSubmit.value || submitting.value) return
-    
+
+    // Check authentication first - redirect to login if not authenticated
+    if (!isAuthenticated.value) {
+        const currentUrl = window.location.href
+        router.visit('/login', {
+            data: { intended: currentUrl },
+            preserveState: false
+        })
+        return
+    }
+
     submitting.value = true
     errors.value = {}
-    
+
     try {
-        const response = await axios.post('/api/bookings', {
+        console.log('🚀 Starting booking submission...')
+        console.log('📊 Current auth state:', {
+            isAuthenticated: isAuthenticated.value,
+            authUser: authUser.value
+        })
+
+        // Ensure we have CSRF cookie for authenticated requests
+        await axios.get('/sanctum/csrf-cookie')
+        console.log('🔒 CSRF cookie obtained')
+
+        // Make sure we're authenticated before proceeding
+        try {
+            const authCheck = await axios.get('/api/user')
+            console.log('✅ Auth check passed:', authCheck.data.name)
+        } catch (authError) {
+            console.log('❌ Auth check failed:', authError.response?.status, authError.response?.data)
+            console.log('🔄 Redirecting to login')
+            const currentUrl = window.location.href
+            router.visit('/login', {
+                data: { intended: currentUrl },
+                preserveState: false
+            })
+            return
+        }
+
+        const bookingData = {
             car_id: form.value.car_id,
             start_date: form.value.start_date,
             end_date: form.value.end_date,
             payment_method: form.value.payment_method,
-            special_requests: form.value.special_requests
+            special_requests: form.value.special_requests || ''
+        }
+
+        console.log('📝 Sending booking data:', bookingData)
+
+        const response = await axios.post('/api/bookings', bookingData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
-        
-        bookingResult.value = response.data.data
+
+        console.log('✅ Booking response:', response.data)
+
+        bookingResult.value = response.data.booking
+        bookingResponse.value = response.data
         showSuccessModal.value = true
-        
+
     } catch (error) {
-        console.error('Booking error:', error)
-        
+        console.error('❌ Booking error:', error)
+        console.error('❌ Error details:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            headers: error.response?.headers
+        })
+
+        // Handle authentication errors
+        if (error.response?.status === 401 || error.response?.status === 419) {
+            const currentUrl = window.location.href
+            router.visit('/login', {
+                data: { intended: currentUrl },
+                preserveState: false
+            })
+            return
+        }
+
+        // Handle validation errors
         if (error.response?.data?.errors) {
             errors.value = error.response.data.errors
+
+            // Show specific field errors
+            const errorMessages = []
+            for (const [field, messages] of Object.entries(error.response.data.errors)) {
+                if (Array.isArray(messages)) {
+                    errorMessages.push(...messages)
+                } else {
+                    errorMessages.push(messages)
+                }
+            }
+
+            if (errorMessages.length > 0) {
+                errors.value.general = errorMessages.join('. ')
+            }
         } else if (error.response?.data?.message) {
             errors.value = { general: error.response.data.message }
+        } else if (error.response?.status === 500) {
+            errors.value = { general: 'Server error occurred. Please try again or contact support.' }
+        } else if (error.response?.status === 422) {
+            errors.value = { general: 'Please check your input and try again.' }
         } else {
-            errors.value = { general: 'An error occurred while processing your booking. Please try again.' }
+            errors.value = { general: 'An unexpected error occurred. Please try again.' }
         }
     } finally {
         submitting.value = false
@@ -425,27 +594,60 @@ const goBack = () => {
     }
 }
 
-const goToBookings = () => {
-    router.visit('/my-bookings')
+const closeSuccessModal = () => {
+    showSuccessModal.value = false
+    if (bookingResponse.value?.admin_contact) {
+        // For cash payments, return to home or keep modal open for admin contact
+        router.visit('/cars')
+    } else {
+        // For confirmed bookings, go to bookings page
+        router.visit('/my-bookings')
+    }
+}
+
+// Image handling functions
+const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+        return imagePath
+    }
+    // Construct URL for storage path
+    return `/storage/${imagePath}`
+}
+
+const handleImageError = (event) => {
+    console.log('Image failed to load:', event.target.src)
+    // Hide the broken image and show placeholder instead
+    event.target.style.display = 'none'
 }
 
 // Lifecycle
-onMounted(() => {
-    // Get car ID from URL parameters
-    const urlParams = new URLSearchParams(window.location.search)
-    const carId = urlParams.get('car_id')
-    const startDate = urlParams.get('start_date')
-    const endDate = urlParams.get('end_date')
-    
-    if (!carId) {
-        router.visit('/cars')
-        return
+onMounted(async () => {
+    // If no car prop provided, try to get from URL (fallback for old URLs)
+    if (!props.car) {
+        const urlParams = new URLSearchParams(window.location.search)
+        const carId = urlParams.get('car_id')
+        const startDate = urlParams.get('start_date')
+        const endDate = urlParams.get('end_date')
+
+        if (!carId) {
+            router.visit('/cars')
+            return
+        }
+
+        // Pre-fill form with URL parameters
+        if (startDate) form.value.start_date = startDate
+        if (endDate) form.value.end_date = endDate
+
+        // Fetch car details
+        await fetchCar(carId)
     }
-    
-    // Pre-fill form with URL parameters
-    if (startDate) form.value.start_date = startDate
-    if (endDate) form.value.end_date = endDate
-    
-    fetchCar(carId)
+
+    // Log authentication status for debugging
+    console.log('Auth status:', {
+        isAuthenticated: isAuthenticated.value,
+        user: authUser.value
+    })
 })
 </script>

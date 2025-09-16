@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('car_rental_bookings', function (Blueprint $table) {
             $table->enum('payment_status', ['unpaid', 'paid', 'refunded'])->default('unpaid');
-            $table->enum('payment_method', ['visa', 'credit_card', 'cash'])->nullable();
+            $table->enum('payment_method', ['stripe', 'visa', 'credit', 'credit_card', 'tng', 'touch_n_go', 'cash', 'bank_transfer'])->nullable();
         });
     }
 

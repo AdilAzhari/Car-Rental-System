@@ -82,7 +82,7 @@ class PaymentRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('amount')
                     ->label(__('resources.amount'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable(),
 
                 TextColumn::make('payment_method')
@@ -114,7 +114,7 @@ class PaymentRelationManager extends RelationManager
 
                 TextColumn::make('refund_amount')
                     ->label(__('resources.refund_amount'))
-                    ->money('MYR')
+                    ->money(config('app.currency', 'USD'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
