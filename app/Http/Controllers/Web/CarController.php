@@ -27,7 +27,7 @@ class CarController extends Controller
                     'daily_rate' => $car->daily_rate,
                     'seats' => $car->seats,
                     'transmission' => $car->transmission,
-                    'featured_image' => $car->featured_image,
+                    'featured_image' => $car->featured_image ?? ($car->images->first()->image_path ?? null),
                     'location' => $car->location,
                 ];
             });
