@@ -138,7 +138,7 @@ class BookingSeeder extends Seeder
                 'user_id' => $renter->id,
                 'vehicle_id' => $vehicle->id,
                 'action' => 'booking_created',
-                'description' => "Booking created for {$vehicle->make} {$vehicle->model}",
+                'description' => "Booking created for $vehicle->make $vehicle->model",
                 'metadata' => [
                     'ip_address' => fake()->ipv4(),
                     'booking_id' => $booking->id,
@@ -150,7 +150,7 @@ class BookingSeeder extends Seeder
                     'user_id' => $vehicle->owner_id,
                     'vehicle_id' => $vehicle->id,
                     'action' => 'booking_confirmed',
-                    'description' => "Booking confirmed for {$vehicle->make} {$vehicle->model}",
+                    'description' => "Booking confirmed for $vehicle->make $vehicle->model",
                     'metadata' => [
                         'ip_address' => fake()->ipv4(),
                         'booking_id' => $booking->id,

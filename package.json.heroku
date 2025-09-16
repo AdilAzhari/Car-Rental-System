@@ -4,7 +4,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite dev",
-        "heroku-postbuild": "npm run build"
+        "heroku-postbuild": "npm install && npm run build"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.2.0",

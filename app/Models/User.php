@@ -75,4 +75,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class, 'renter_id');
     }
+
+    /**
+     * Determine if the user can access the Filament admin panel.
+     */
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->role === \App\Enums\UserRole::ADMIN;
+    }
 }
