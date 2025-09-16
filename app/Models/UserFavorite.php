@@ -19,6 +19,6 @@ class UserFavorite extends Model
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\CarRental\Vehicle::class);
+        return $this->belongsTo(Vehicle::class);
     }
 }

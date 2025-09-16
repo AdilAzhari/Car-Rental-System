@@ -90,6 +90,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->resourceCreatePageRedirect('index')
             ->brandName('SENTIENTS A.I.')
+            ->authGuard('web')
             ->authMiddleware([
                 Authenticate::class,
             ]);
