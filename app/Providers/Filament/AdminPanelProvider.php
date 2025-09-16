@@ -43,22 +43,22 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->renderHook(
-                'panels::body.start',
-                fn (): string => view('filament.hooks.rtl-support')->render()
-            )
-            ->renderHook(
-                'panels::topbar.end',
-                fn (): string => view('filament.hooks.notification-bell')->render()
-            )
+            // ->renderHook(
+            //     'panels::body.start',
+            //     fn (): string => view('filament.hooks.rtl-support')->render()
+            // )
+            // ->renderHook(
+            //     'panels::topbar.end',
+            //     fn (): string => view('filament.hooks.notification-bell')->render()
+            // )
             ->renderHook(
                 'panels::head.end',
                 fn (): string => '<link rel="stylesheet" href="'.asset('css/admin-fixes.css').'?v='.time().'">'
             )
-            ->renderHook(
-                'panels::user-menu.start',
-                fn (): string => view('filament.hooks.user-menu')->render()
-            )
+            // ->renderHook(
+            //     'panels::user-menu.start',
+            //     fn (): string => view('filament.hooks.user-menu')->render()
+            // )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
