@@ -25,6 +25,11 @@ Route::get('/test-inertia', function() {
     return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
 });
 
+// Test route for view resolution
+Route::get('/test-view', function() {
+    return view('app-simple', ['message' => 'Test view works']);
+});
+
 // Homepage - shows featured cars
 Route::get('/', [CarController::class, 'index']);
 
