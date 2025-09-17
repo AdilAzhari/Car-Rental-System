@@ -33,7 +33,7 @@
     }
   },
   "addons": [
-    "cleardb:ignite"
+    "heroku-postgresql:essential-0"
   ],
   "buildpacks": [
     {

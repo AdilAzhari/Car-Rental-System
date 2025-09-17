@@ -13,13 +13,13 @@ class LocalizationMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         // Get available languages
         $availableLanguages = ['en', 'ar'];
-        
+
         // Check if locale is provided in URL
         if ($request->has('locale') && in_array($request->get('locale'), $availableLanguages)) {
             $locale = $request->get('locale');
@@ -36,7 +36,10 @@ class LocalizationMiddleware
 
         // Set the application locale
         App::setLocale($locale);
-        
-        return $next($request);
+
+        // Process the request
+        $response = $next($request);
+
+        return $response;
     }
 }
