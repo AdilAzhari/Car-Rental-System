@@ -9,6 +9,11 @@ use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// Test route for debugging
+Route::get('/test-inertia', function() {
+    return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
+});
+
 // Homepage - shows featured cars
 Route::get('/', [CarController::class, 'index']);
 
