@@ -9,6 +9,17 @@ use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// Simple status route for testing
+Route::get('/status', function() {
+    return response()->json([
+        'status' => 'OK',
+        'timestamp' => now()->toISOString(),
+        'database' => 'Connected',
+        'app_name' => config('app.name'),
+        'environment' => config('app.env'),
+    ]);
+});
+
 // Test route for debugging
 Route::get('/test-inertia', function() {
     return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
