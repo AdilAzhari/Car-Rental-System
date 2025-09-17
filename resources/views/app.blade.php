@@ -11,7 +11,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/js/app.js', 'resources/css/app.css', "resources/js/Pages/{$page['component']}.vue"])
+        @vite(['resources/js/app.js', 'resources/css/app.css'])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
