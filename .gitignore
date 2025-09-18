@@ -8,6 +8,11 @@
 /.fleet
 /.idea
 /.nova
+
+# Docker files (removed for Railway deployment)
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
 /.phpunit.cache
 /.vscode
 /.zed
