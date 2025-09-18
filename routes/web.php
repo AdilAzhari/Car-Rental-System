@@ -25,6 +25,17 @@ Route::get('/test-inertia', function() {
     return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
 });
 
+// Test route for basic Laravel functionality
+Route::get('/test-json', function() {
+    return response()->json([
+        'message' => 'Laravel is working',
+        'timestamp' => now(),
+        'environment' => app()->environment(),
+        'view_paths' => config('view.paths'),
+        'view_exists' => file_exists(resource_path('views/app.blade.php')),
+    ]);
+});
+
 // Test route for view resolution
 Route::get('/test-view', function() {
     return view('app-simple', ['message' => 'Test view works']);
