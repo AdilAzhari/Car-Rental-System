@@ -161,3 +161,8 @@ Route::middleware('auth')->get('/debug-filament-auth-protected', function () {
 
     return response()->json($response, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.filament.auth.protected');
+
+
+Route::get('/status', function () {
+    return response()->json(['status' => 'ok'], 200);
+});

@@ -53,7 +53,10 @@
       "WebFetch(domain:car-rental-system-2024-dca5e980c168.herokuapp.com)",
       "Bash(del create_admin.php)",
       "Bash(heroku buildpacks:*)",
-      "Bash(\"heroku run php artisan view:clear --app car-rental-system-2024\")"
+      "Bash(\"heroku run php artisan view:clear --app car-rental-system-2024\")",
+      "Bash(railway variables set:*)",
+      "Bash(railway add:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []
