@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class BookingResource extends JsonResource
 {
@@ -37,7 +38,7 @@ class BookingResource extends JsonResource
                 'color' => $this->vehicle->color,
                 'plate_number' => $this->vehicle->plate_number,
                 'daily_rate' => $this->vehicle->daily_rate,
-                'featured_image' => $this->vehicle->featured_image,
+                'featured_image' => $this->vehicle->featured_image ? Storage::url($this->vehicle->featured_image) : null,
                 'transmission' => $this->vehicle->transmission?->value,
                 'fuel_type' => $this->vehicle->fuel_type?->value,
                 'seats' => $this->vehicle->seats,

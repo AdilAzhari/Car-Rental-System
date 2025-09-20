@@ -2,15 +2,20 @@
 
 namespace App\Filament\Resources\Bookings\Schemas;
 
+use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\UserRole;
 use App\Models\Vehicle;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Carbon\Carbon;
 
 class BookingForm
 {
@@ -18,7 +23,7 @@ class BookingForm
     {
         return $schema
             ->components([
-                Section::make('Booking Information')
+                Section::make(__('resources.booking_information'))
                     ->schema([
                         Grid::make()
                             ->schema([
@@ -32,13 +37,24 @@ class BookingForm
 
                                 Select::make('vehicle_id')
                                     ->label(__('resources.vehicle'))
-                                    ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('status', 'published')->where('is_available', true)
-                                    )
+                                    ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q)
+                                            => $q->where('status', 'published')->where('is_available', true)
+                                        )
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Vehicle $record): string => "$record->make $record->model ($record->plate_number)")
                                     ->searchable(['make', 'model', 'plate_number'])
                                     ->preload()
-                                    ->required(),
+                                    ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                                        if ($state) {
+                                            $vehicle = Vehicle::query()->find($state);
+                                            if ($vehicle) {
+                                                $set('daily_rate', $vehicle->daily_rate);
+                                                self::calculateTotals($set, $get);
+                                            }
+                                        }
+                                    }),
                             ]),
 
                         Grid::make()
@@ -46,13 +62,21 @@ class BookingForm
                                 DatePicker::make('start_date')
                                     ->label(__('resources.start_date'))
                                     ->required()
-                                    ->native(false),
+                                    ->native(false)
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                        self::calculateTotals($set, $get);
+                                    }),
 
                                 DatePicker::make('end_date')
                                     ->label(__('resources.end_date'))
                                     ->required()
                                     ->native(false)
-                                    ->after('start_date'),
+                                    ->after('start_date')
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                        self::calculateTotals($set, $get);
+                                    }),
                             ]),
 
                         Grid::make(3)
@@ -97,32 +121,28 @@ class BookingForm
                             ]),
                     ]),
 
-                Section::make('Status & Location')
+                Section::make(__('resources.vehicle_status_location'))
                     ->schema([
                         Grid::make()
                             ->schema([
                                 Select::make('status')
                                     ->label(__('resources.booking_status'))
-                                    ->options([
-                                        'pending' => 'Pending',
-                                        'confirmed' => 'Confirmed',
-                                        'ongoing' => 'Ongoing',
-                                        'completed' => 'Completed',
-                                        'cancelled' => 'Cancelled',
-                                    ])
+                                    ->options(
+                                        collect(bookingstatus::cases())
+                                            ->mapWithKeys(fn (bookingstatus $status) => [
+                                                $status->value => $status->label(),
+                                            ])
+                                    )
                                     ->required(),
 
-                                Select::make('payment_status')
+                                Select::make(__('resources.payment_status'))
                                     ->label(__('resources.payment_status'))
-                                    ->options([
-                                        'pending' => 'Pending',
-                                        'confirmed' => 'Confirmed',
-                                        'processing' => 'Processing',
-                                        'failed' => 'Failed',
-                                        'refunded' => 'Refunded',
-                                        'cancelled' => 'Cancelled',
-                                        'unpaid' => 'Unpaid',
-                                    ])
+                                    ->options(
+                                        collect(PaymentStatus::cases())
+                                            ->mapWithKeys(fn (PaymentStatus $status) => [
+                                                $status->value => $status->label(),
+                                            ])
+                                    )
                                     ->required(),
                             ]),
 
@@ -136,5 +156,39 @@ class BookingForm
                             ->maxLength(500),
                     ]),
             ]);
+    }
+
+    private static function calculateTotals(Set $set, Get $get): void
+    {
+        $startDate = $get('start_date');
+        $endDate = $get('end_date');
+        $dailyRate = $get('daily_rate');
+
+        if (!$startDate || !$endDate || !$dailyRate) {
+            return;
+        }
+
+        try {
+            $start = Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+            $days = $end->diffInDays($start);
+
+            if ($days <= 0) {
+                return;
+            }
+
+            $subtotal = $days * $dailyRate;
+            $insuranceFee = $subtotal * 0.10; // 10% insurance fee
+            $taxAmount = $subtotal * 0.15; // 15% tax
+            $totalAmount = $subtotal + $insuranceFee + $taxAmount;
+
+            $set('days', $days);
+            $set('subtotal', number_format($subtotal, 2, '.', ''));
+            $set('insurance_fee', number_format($insuranceFee, 2, '.', ''));
+            $set('tax_amount', number_format($taxAmount, 2, '.', ''));
+            $set('total_amount', number_format($totalAmount, 2, '.', ''));
+        } catch (\Exception $e) {
+            // Handle date parsing errors silently
+        }
     }
 }

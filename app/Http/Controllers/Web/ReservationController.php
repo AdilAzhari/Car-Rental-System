@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,7 +43,7 @@ class ReservationController extends Controller
             'booking_params' => [
                 'start_date' => $request->get('start_date'),
                 'end_date' => $request->get('end_date'),
-            ]
+            ],
         ]);
     }
 
@@ -50,19 +51,19 @@ class ReservationController extends Controller
     {
         // Check if vehicle has a featured_image set
         if ($vehicle->featured_image) {
-            return $vehicle->featured_image;
+            return Storage::url($vehicle->featured_image);
         }
 
         // Fall back to primary image from images relationship
         $primaryImage = $vehicle->images->where('is_primary', true)->first();
         if ($primaryImage) {
-            return $primaryImage->image_path;
+            return Storage::url($primaryImage->image_path);
         }
 
         // Fall back to first image
         $firstImage = $vehicle->images->first();
         if ($firstImage) {
-            return $firstImage->image_path;
+            return Storage::url($firstImage->image_path);
         }
 
         return null;

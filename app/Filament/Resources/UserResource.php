@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -33,7 +34,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string $policy = \App\Policies\UserPolicy::class;
+    protected static string $policy = UserPolicy::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 

@@ -7,6 +7,7 @@ return [
     'dashboard' => 'لوحة التحكم',
     'language' => 'اللغة',
     'switch_to' => 'التبديل إلى',
+    'change_language' => 'تغيير اللغة',
     
     // Navigation
     'navigation' => [

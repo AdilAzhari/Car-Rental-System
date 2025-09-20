@@ -9,6 +9,7 @@ use App\Filament\Resources\Bookings\Pages\ViewBooking;
 use App\Filament\Resources\Bookings\Schemas\BookingForm;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
+use App\Policies\BookingPolicy;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -21,7 +22,7 @@ class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static string $policy = \App\Policies\BookingPolicy::class;
+    protected static string $policy = BookingPolicy::class;
 
     public static function getNavigationLabel(): string
     {
@@ -45,7 +46,7 @@ class BookingResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::ArchiveBoxArrowDown;
+    protected static string|null|BackedEnum $navigationIcon = Heroicon::ArchiveBoxArrowDown;
 
     public static function form(Schema $schema): Schema
     {

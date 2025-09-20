@@ -20,13 +20,13 @@ class EditUser extends EditRecord
             ViewAction::make(),
 
             Action::make('verify')
-                ->label('Verify User')
+                ->label(__('resources.verify_user'))
                 ->icon('heroicon-m-check-badge')
                 ->color(Color::Emerald)
                 ->visible(fn (): bool => ! $this->record->is_verified)
                 ->requiresConfirmation()
-                ->modalHeading('Verify User Account')
-                ->modalDescription('This will mark the user as verified and allow them to make bookings.')
+                ->modalHeading(__('resources.verify_user_account'))
+                ->modalDescription(__('resources.verify_user_description'))
                 ->action(function (): void {
                     $this->record->update([
                         'is_verified' => true,
@@ -35,31 +35,31 @@ class EditUser extends EditRecord
 
                     Notification::make()
                         ->success()
-                        ->title('User Verified')
-                        ->body('The user account has been verified successfully.')
+                        ->title(__('resources.user_verified'))
+                        ->body(__('resources.user_verified_body'))
                         ->send();
                 }),
 
             Action::make('suspend')
-                ->label('Suspend User')
+                ->label(__('resources.suspend_user'))
                 ->icon('heroicon-m-no-symbol')
                 ->color(Color::Orange)
                 ->visible(fn () => $this->record->is_active)
                 ->requiresConfirmation()
-                ->modalHeading('Suspend User Account')
-                ->modalDescription('This will prevent the user from logging in.')
+                ->modalHeading(__('resources.suspend_user_account'))
+                ->modalDescription(__('resources.suspend_user_description'))
                 ->action(function (): void {
                     $this->record->update(['is_active' => false]);
 
                     Notification::make()
                         ->warning()
-                        ->title('User Suspended')
-                        ->body('The user account has been suspended.')
+                        ->title(__('resources.user_suspended'))
+                        ->body(__('resources.user_suspended_body'))
                         ->send();
                 }),
 
             Action::make('activate')
-                ->label('Activate User')
+                ->label(__('resources.activate_user'))
                 ->icon('heroicon-m-check-circle')
                 ->color(Color::Green)
                 ->visible(fn (): bool => ! $this->record->is_active)
@@ -68,8 +68,8 @@ class EditUser extends EditRecord
 
                     Notification::make()
                         ->success()
-                        ->title('User Activated')
-                        ->body('The user account has been activated.')
+                        ->title(__('resources.user_activated'))
+                        ->body(__('resources.user_activated_body'))
                         ->send();
                 }),
 
@@ -81,8 +81,8 @@ class EditUser extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title('User Updated')
-            ->body('The user details have been updated successfully.');
+            ->title(__('resources.user_updated'))
+            ->body(__('resources.user_updated_body'));
     }
 
     protected function getRedirectUrl(): string

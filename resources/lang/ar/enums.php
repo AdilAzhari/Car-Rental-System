@@ -26,6 +26,7 @@ return [
         'ongoing' => 'جاري',
         'completed' => 'مكتمل',
         'cancelled' => 'ملغي',
+        'unpaid' => 'غير مدفوع'
     ],
 
     'user_role' => [
@@ -57,6 +58,7 @@ return [
         'e_wallet' => 'محفظة إلكترونية',
         'paypal' => 'PayPal',
         'stripe' => 'Stripe',
+        'visa' => 'Visa'
     ],
 
     'vehicle_category' => [
@@ -71,4 +73,5 @@ return [
         'convertible' => 'قابل للطي',
         'sports' => 'رياضي',
     ],
+
 ];

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class CarResource extends JsonResource
 {
@@ -35,8 +36,9 @@ class CarResource extends JsonResource
             'insurance_included' => $this->insurance_included,
             'featured_image' => $this->whenLoaded('images', function () {
                 $primaryImage = $this->images->where('is_primary', true)->first();
-                return $primaryImage ? $primaryImage->image_path : ($this->images->first()?->image_path ?? null);
-            }) ?? $this->featured_image,
+
+                return $primaryImage ? Storage::url($primaryImage->image_path) : ($this->images->first() ? Storage::url($this->images->first()->image_path) : null);
+            }) ?? ($this->featured_image ? Storage::url($this->featured_image) : null),
             'gallery_images' => $this->gallery_images,
             'features' => $this->features,
             'policy' => $this->policy,

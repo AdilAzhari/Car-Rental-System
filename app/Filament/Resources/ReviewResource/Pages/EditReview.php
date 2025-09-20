@@ -40,8 +40,8 @@ class EditReview extends EditRecord
 
                     Notification::make()
                         ->success()
-                        ->title('Review Approved')
-                        ->body('The review has been approved and is now public.')
+                        ->title(__('resources.review_approved'))
+                        ->body(__('resources.review_approved_body'))
                         ->send();
                 }),
 
@@ -66,8 +66,8 @@ class EditReview extends EditRecord
 
                     Notification::make()
                         ->warning()
-                        ->title('Review Rejected')
-                        ->body('The review has been rejected.')
+                        ->title(__('resources.review_rejected'))
+                        ->body(__('resources.review_rejected_body'))
                         ->send();
                 }),
 
@@ -92,8 +92,8 @@ class EditReview extends EditRecord
 
                     Notification::make()
                         ->info()
-                        ->title('Review Flagged')
-                        ->body('The review has been flagged for investigation.')
+                        ->title(__('resources.review_flagged'))
+                        ->body(__('resources.review_flagged_body'))
                         ->send();
                 }),
 
@@ -106,8 +106,8 @@ class EditReview extends EditRecord
                     // TODO: Implement featured review functionality
                     Notification::make()
                         ->info()
-                        ->title('Feature Coming Soon')
-                        ->body('Featured reviews functionality will be available soon.')
+                        ->title(__('resources.feature_coming_soon'))
+                        ->body(__('resources.featured_reviews_coming_soon'))
                         ->send();
                 }),
 
@@ -119,8 +119,8 @@ class EditReview extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title('Review Updated')
-            ->body('The review details have been updated successfully.');
+            ->title(__('resources.review_updated'))
+            ->body(__('resources.review_updated_body'));
     }
 
     protected function getRedirectUrl(): string

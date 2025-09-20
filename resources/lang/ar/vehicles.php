@@ -5,7 +5,7 @@ return [
     'title' => 'إدارة المركبات',
     'singular' => 'مركبة',
     'plural' => 'مركبات',
-    
+    'none' => 'لا يوجد مخالفات حاليه',
     // Vehicle Fields
     'fields' => [
         'make' => 'الشركة المصنعة',
@@ -37,7 +37,7 @@ return [
         'features' => 'مواصفات المركبة',
         'description' => 'الوصف',
     ],
-    
+
     // Vehicle Sections
     'sections' => [
         'vehicle_gallery' => 'معرض صور المركبة',
@@ -47,7 +47,7 @@ return [
         'location_information' => 'معلومات الموقع',
         'features_specifications' => 'المواصفات والميزات',
     ],
-    
+
     // Fuel Types
     'fuel_types' => [
         'petrol' => 'بنزين',
@@ -56,7 +56,7 @@ return [
         'hybrid' => 'هجين',
         'cng' => 'غاز طبيعي مضغوط',
     ],
-    
+
     // Transmission Types
     'transmission_types' => [
         'manual' => 'يدوي',
@@ -64,7 +64,7 @@ return [
         'cvt' => 'CVT',
         'semi_automatic' => 'شبه أوتوماتيكي',
     ],
-    
+
     // Vehicle Status
     'status_options' => [
         'pending' => 'في الانتظار',
@@ -73,7 +73,7 @@ return [
         'suspended' => 'معلق',
         'maintenance' => 'في الصيانة',
     ],
-    
+
     // Categories
     'categories' => [
         'economy' => 'اقتصادية',
@@ -87,7 +87,7 @@ return [
         'sports' => 'رياضية',
         'convertible' => 'قابلة للتحويل',
     ],
-    
+
     // Messages
     'messages' => [
         'vehicle_created' => 'تم إضافة المركبة بنجاح',

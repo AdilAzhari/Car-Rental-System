@@ -15,8 +15,8 @@ class CreateUser extends CreateRecord
     {
         return Notification::make()
             ->success()
-            ->title('User Created Successfully')
-            ->body('The user account has been created and is ready to use.');
+            ->title(__('resources.user_created_successfully'))
+            ->body(__('resources.user_created_body'));
     }
 
     protected function getRedirectUrl(): string

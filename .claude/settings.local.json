@@ -56,7 +56,8 @@
       "Bash(\"heroku run php artisan view:clear --app car-rental-system-2024\")",
       "Bash(railway variables set:*)",
       "Bash(railway add:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(del databasemigrations2025_09_20_121316_add_calculated_fields_to_car_rental_bookings_table.php)"
     ],
     "deny": [],
     "ask": []

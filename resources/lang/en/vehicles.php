@@ -5,6 +5,7 @@ return [
     'navigation_group' => 'Fleet Management',
     'model_label' => 'Vehicle',
     'plural_model_label' => 'Vehicles',
+    'none' => 'None',
 
     'fields' => [
         'owner' => 'Owner',

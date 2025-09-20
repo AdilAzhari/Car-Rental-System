@@ -69,77 +69,77 @@ class ViewUser extends ViewRecord
                             ]),
                     ]),
 
-                Section::make('Account Details')
+                Section::make(__('resources.account_details'))
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 TextEntry::make('role')
-                                    ->label('User Role')
+                                    ->label(__('resources.user_role'))
                                     ->badge(),
 
                                 IconEntry::make('is_verified')
-                                    ->label('Account Verified')
+                                    ->label(__('resources.account_verified'))
                                     ->boolean(),
 
                                 IconEntry::make('is_active')
-                                    ->label('Account Active')
+                                    ->label(__('resources.account_active'))
                                     ->boolean(),
                             ]),
 
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('email_verified_at')
-                                    ->label('Email Verified At')
+                                    ->label(__('resources.email_verified_at'))
                                     ->dateTime(),
 
                                 TextEntry::make('created_at')
-                                    ->label('Account Created')
+                                    ->label(__('resources.account_created'))
                                     ->dateTime(),
                             ]),
                     ]),
 
-                Section::make('Location Information')
+                Section::make(__('resources.location_information'))
                     ->icon('heroicon-m-map-pin')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('address')
-                                    ->label('Street Address')
+                                    ->label(__('resources.street_address'))
                                     ->columnSpanFull(),
 
                                 TextEntry::make('city')
-                                    ->label('City'),
+                                    ->label(__('resources.city')),
 
                                 TextEntry::make('state')
-                                    ->label('State/Province'),
+                                    ->label(__('resources.state_province')),
 
                                 TextEntry::make('postal_code')
-                                    ->label('Postal Code'),
+                                    ->label(__('resources.postal_code')),
 
                                 TextEntry::make('country')
-                                    ->label('Country'),
+                                    ->label(__('resources.country')),
                             ]),
                     ])
                     ->collapsible(),
 
-                Section::make('Driver Information')
+                Section::make(__('resources.driver_information'))
                     ->icon('heroicon-m-identification')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('driver_license_number')
-                                    ->label('License Number'),
+                                    ->label(__('resources.license_number')),
 
                                 TextEntry::make('license_expiry_date')
-                                    ->label('License Expiry')
+                                    ->label(__('resources.license_expiry'))
                                     ->date(),
 
                                 TextEntry::make('preferred_language')
-                                    ->label('Language'),
+                                    ->label(__('resources.language')),
 
                                 TextEntry::make('notification_preferences')
-                                    ->label('Notifications'),
+                                    ->label(__('resources.notifications')),
                             ]),
                     ])
                     ->collapsible(),

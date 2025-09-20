@@ -26,8 +26,8 @@ class CreateVehicle extends CreateRecord
     {
         return Notification::make()
             ->success()
-            ->title('Vehicle Added Successfully')
-            ->body('The vehicle has been added to the fleet and is ready for configuration.');
+            ->title(__('resources.vehicle_added_successfully'))
+            ->body(__('resources.vehicle_added_body'));
     }
 
     protected function getRedirectUrl(): string

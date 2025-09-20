@@ -61,8 +61,8 @@ class EditVehicle extends EditRecord
 
                     Notification::make()
                         ->success()
-                        ->title('Vehicle Published')
-                        ->body('The vehicle is now live and available for booking.')
+                        ->title(__('resources.vehicle_published'))
+                        ->body(__('resources.vehicle_published_body'))
                         ->send();
                 }),
 
@@ -82,8 +82,8 @@ class EditVehicle extends EditRecord
 
                     Notification::make()
                         ->warning()
-                        ->title('Vehicle Under Maintenance')
-                        ->body('The vehicle has been marked for maintenance.')
+                        ->title(__('resources.vehicle_under_maintenance'))
+                        ->body(__('resources.vehicle_under_maintenance_body'))
                         ->send();
                 }),
 
@@ -103,8 +103,8 @@ class EditVehicle extends EditRecord
 
                     Notification::make()
                         ->info()
-                        ->title('Vehicle Archived')
-                        ->body('The vehicle has been archived.')
+                        ->title(__('resources.vehicle_archived'))
+                        ->body(__('resources.vehicle_archived_body'))
                         ->send();
                 }),
 
@@ -116,8 +116,8 @@ class EditVehicle extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title('Vehicle Updated')
-            ->body('The vehicle details have been updated successfully.');
+            ->title(__('resources.vehicle_updated'))
+            ->body(__('resources.vehicle_updated_body'));
     }
 
     protected function getRedirectUrl(): string

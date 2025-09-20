@@ -18,6 +18,7 @@ return [
         'refunded' => 'Refunded',
         'cancelled' => 'Cancelled',
         'processing' => 'Processing',
+        'unpaid' => 'Unpaid',
     ],
 
     'booking_status' => [
@@ -57,6 +58,7 @@ return [
         'e_wallet' => 'E-Wallet',
         'paypal' => 'PayPal',
         'stripe' => 'Stripe',
+        'visa' => 'Visa'
     ],
 
     'vehicle_category' => [

@@ -489,10 +489,10 @@ class VehicleResource extends Resource
                     ->color('info'),
 
                 BadgeColumn::make('has_pending_violations')
-                    ->label(__('resources.violations'))
+                    ->label(__('resources.traffic_violations'))
                     ->getStateUsing(function ($record): string {
                         if (! $record->traffic_violations || empty($record->traffic_violations)) {
-                            return 'none';
+                            return __('vehicles.none');
                         }
 
                         $pendingCount = collect($record->traffic_violations)->where('status', 'pending')->count();

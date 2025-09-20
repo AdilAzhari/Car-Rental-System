@@ -14,8 +14,8 @@ class CreateReview extends CreateRecord
     {
         return Notification::make()
             ->success()
-            ->title('Review Added Successfully')
-            ->body('The review has been added and is pending approval.');
+            ->title(__('resources.review_added_successfully'))
+            ->body(__('resources.review_added_body'));
     }
 
     protected function getRedirectUrl(): string

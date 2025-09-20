@@ -30,7 +30,7 @@ class ViewVehicle extends ViewRecord
     {
         return $schema
             ->schema([
-                Section::make('Vehicle Gallery')
+                Section::make(__('resources.gallery_images'))
                     ->icon('heroicon-m-photo')
                     ->schema([
                         ImageEntry::make('featured_image')
@@ -43,7 +43,7 @@ class ViewVehicle extends ViewRecord
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('Basic Information')
+                Section::make(__('resources.basic_information'))
                     ->icon('heroicon-m-information-circle')
                     ->schema([
                         Grid::make(3)
@@ -70,7 +70,7 @@ class ViewVehicle extends ViewRecord
                             ]),
                     ]),
 
-                Section::make('Categories & Specifications')
+                Section::make(__('resources.vehicle_categories_description'))
                     ->icon('heroicon-m-tag')
                     ->schema([
                         Grid::make(4)
@@ -112,7 +112,7 @@ class ViewVehicle extends ViewRecord
                             ]),
                     ]),
 
-                Section::make('Ownership & Status')
+                Section::make(__('resources.ownership_and_status'))
                     ->icon('heroicon-m-user-circle')
                     ->schema([
                         Grid::make(3)
@@ -132,7 +132,7 @@ class ViewVehicle extends ViewRecord
                             ]),
                     ]),
 
-                Section::make('Location Information')
+                Section::make(__('resources.location_information'))
                     ->icon('heroicon-m-map-pin')
                     ->schema([
                         Grid::make(2)
@@ -148,7 +148,7 @@ class ViewVehicle extends ViewRecord
                     ])
                     ->collapsible(),
 
-                Section::make('Features & Specifications')
+                Section::make(__('resources.features_specifications'))
                     ->icon('heroicon-m-cog-6-tooth')
                     ->schema([
                         KeyValueEntry::make('features')

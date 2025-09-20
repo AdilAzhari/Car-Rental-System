@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,7 +29,7 @@ class CarController extends Controller
                         'daily_rate' => $car->daily_rate,
                         'seats' => $car->seats,
                         'transmission' => $car->transmission,
-                        'featured_image' => $car->featured_image ?? ($car->images->first()->image_path ?? null),
+                        'featured_image' => $car->featured_image ? Storage::url($car->featured_image) : ($car->images->first() ? Storage::url($car->images->first()->image_path) : null),
                         'location' => $car->location,
                     ];
                 });
@@ -38,7 +39,7 @@ class CarController extends Controller
         }
 
         return Inertia::render('Home', [
-            'cars' => $cars
+            'cars' => $cars,
         ]);
     }
 
@@ -52,7 +53,7 @@ class CarController extends Controller
             ->paginate(12);
 
         return Inertia::render('Cars/Listing', [
-            'cars' => $cars
+            'cars' => $cars,
         ]);
     }
 
@@ -65,7 +66,7 @@ class CarController extends Controller
             ->firstOrFail();
 
         return Inertia::render('Cars/Show', [
-            'car' => $car
+            'car' => $car,
         ]);
     }
 }

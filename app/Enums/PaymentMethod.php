@@ -29,14 +29,12 @@ enum PaymentMethod: string
     public function label(): string
     {
         return match ($this) {
-            self::VISA => 'Visa',
-            self::CREDIT => 'Credit Card',
-            self::CASH => 'Cash',
-            self::BANK_TRANSFER => 'Bank Transfer',
-            self::DEBIT_CARD => 'Debit Card',
-            self::PAYPAL => 'PayPal',
-            self::APPLE_PAY => 'Apple Pay',
-            self::GOOGLE_PAY => 'Google Pay',
+            self::VISA => __('enums.payment_method.visa'),
+            self::CREDIT => __('enums.payment_method.credit_card'),
+            self::CASH => __('enums.payment_method.cash'),
+            self::BANK_TRANSFER => __('enums.payment_method.Bank Transfer'),
+            self::DEBIT_CARD => __('enums.payment_method.debit_card'),
+            self::PAYPAL => __('enums.payment_method.paypal'),
         };
     }
 
