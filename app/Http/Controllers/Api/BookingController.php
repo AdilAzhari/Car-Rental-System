@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Booking\CreateBookingAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateBookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use Exception;
@@ -19,29 +20,20 @@ class BookingController extends Controller
     ) {}
 
     /**
-     * @throws ValidationException
+     * Create a new booking.
      */
-    public function store(Request $request): JsonResponse
+    public function store(CreateBookingRequest $request): JsonResponse
     {
         Log::info('🚀 BOOKING REQUEST STARTED', [
             'user_id' => auth()->id(),
             'user_email' => auth()->user()?->email,
-            'request_data' => $request->all(),
+            'request_data' => $request->safe()->all(),
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'timestamp' => now()
         ]);
 
-        $validatedData = $request->validate([
-            'car_id' => 'required|exists:car_rental_vehicles,id',
-            'start_date' => 'required|date|after:today',
-            'end_date' => 'required|date|after:start_date',
-            'payment_method' => 'required|in:stripe,visa,credit,tng,touch_n_go,cash,bank_transfer',
-            'payment_method_id' => 'sometimes|string',
-            'pickup_location' => 'sometimes|string|max:255',
-            'dropoff_location' => 'sometimes|string|max:255',
-            'special_requests' => 'nullable|string|max:500',
-        ]);
+        $validatedData = $request->getValidatedDataWithComputed();
 
         Log::info('✅ VALIDATION PASSED', [
             'user_id' => auth()->id(),

@@ -1,31 +1,38 @@
 <template>
   <AppLayout>
-    <!-- Hero Section -->
-    <section class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-      <!-- Background Image -->
-      <div
-        class="absolute inset-0 z-0"
-        style="
-          background-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-          background-size: cover;
-          background-position: center;
-          background-attachment: fixed;
-        "
-      >
-        <div class="absolute inset-0 bg-black/40"></div>
+    <!-- Enhanced Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <!-- Background Carousel -->
+      <div class="absolute inset-0 z-0">
+        <ImageCarousel
+          :images="heroImages"
+          :autoplay="true"
+          :autoplay-delay="6000"
+          :infinite="true"
+          :show-dots="false"
+          :show-counter="false"
+          :allow-fullscreen="false"
+          class="w-full h-full"
+        />
+        <div class="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/60"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
       </div>
 
       <!-- Content -->
       <div class="relative z-10 container mx-auto px-4 text-center text-white">
-        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-          Premium Car Rental
-          <span class="block text-blue-400">
-            Made Simple
-          </span>
-        </h1>
-        <p class="text-xl md:text-2xl mb-12 max-w-2xl mx-auto text-white/90">
-          Discover our fleet of premium vehicles. From economy to luxury, find the perfect ride for your journey.
-        </p>
+        <div class="animate-fade-in-up">
+          <h1 class="text-6xl md:text-8xl font-black mb-8 leading-tight">
+            <span class="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+              Premium Car Rental
+            </span>
+            <span class="block text-4xl md:text-6xl bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent font-bold mt-4">
+              Redefined
+            </span>
+          </h1>
+          <p class="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-white/90 leading-relaxed">
+            Experience luxury, comfort, and reliability with our premium fleet. Your perfect journey starts here.
+          </p>
+        </div>
 
         <!-- Search Card -->
         <div class="max-w-6xl mx-auto p-6 bg-white/95 backdrop-blur-sm shadow-premium rounded-lg mb-8">
@@ -163,91 +170,15 @@
           </p>
         </div>
 
-        <div v-if="popularCars.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="(car, index) in popularCars"
+        <div v-if="popularCars.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <VehicleCard
+            v-for="car in popularCars"
             :key="car.id"
-            class="vehicle-card group"
-          >
-            <div class="relative">
-              <img
-                v-if="car.featured_image"
-                :src="car.featured_image"
-                :alt="car.make + ' ' + car.model"
-                class="w-full h-48 object-cover"
-              />
-              <div v-else class="flex items-center justify-center h-48 bg-gray-100">
-                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-                </svg>
-              </div>
-
-              <!-- Category Badge -->
-              <div class="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
-                PREMIUM
-              </div>
-
-              <!-- Fuel Type Badge -->
-              <div v-if="car.fuel_type === 'hybrid' || car.fuel_type === 'electric'" class="absolute top-3 right-3 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
-                ECO
-              </div>
-            </div>
-
-            <div class="p-6">
-              <div class="flex items-start justify-between mb-3">
-                <div>
-                  <h3 class="font-semibold text-lg text-gray-900">
-                    {{ car.make }} {{ car.model }}
-                  </h3>
-                  <p class="text-sm text-gray-500">{{ car.year }}</p>
-                </div>
-                <div class="text-right">
-                  <div class="text-2xl font-bold text-blue-600">
-                    ${{ car.daily_rate }}
-                  </div>
-                  <div class="text-sm text-gray-500">per day</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                  </svg>
-                  <span>{{ car.seats }}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                  </svg>
-                  <span class="capitalize">{{ car.transmission }}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4 fill-current text-yellow-400" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  <span>4.8</span>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <p class="text-sm text-gray-500 mb-2">Key Features:</p>
-                <div class="flex flex-wrap gap-1">
-                  <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">AC</span>
-                  <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">GPS</span>
-                  <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Bluetooth</span>
-                  <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">+2 more</span>
-                </div>
-              </div>
-
-              <Link
-                :href="`/cars/${car.id}`"
-                class="block w-full hero-button text-center py-3 rounded-lg font-semibold group-hover:bg-blue-700"
-              >
-                View Details
-              </Link>
-            </div>
-          </div>
+            :vehicle="car"
+            @view-details="(id) => $inertia.visit(`/cars/${id}`)"
+            @reserve-now="(id) => $inertia.visit(`/cars/${id}`)"
+            class="transform hover:scale-105 transition-all duration-300"
+          />
         </div>
 
         <div v-else class="text-center py-12">
@@ -326,6 +257,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import ImageCarousel from '@/Components/ImageCarousel.vue'
+import VehicleCard from '@/Components/VehicleCard.vue'
 
 // Props
 const props = defineProps({
@@ -353,6 +286,15 @@ const today = computed(() => {
 const popularCars = computed(() => {
   return props.cars.slice(0, 6) || []
 })
+
+// Hero images for background carousel
+const heroImages = [
+  'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'
+]
 
 // Data
 const features = [
@@ -437,3 +379,48 @@ onMounted(() => {
   searchForm.value.endDate = dayAfter.toISOString().split('T')[0]
 })
 </script>
+
+<style scoped>
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out;
+}
+
+/* Enhanced card styles */
+.vehicle-card {
+  @apply bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2;
+}
+
+.card-hover:hover {
+  @apply shadow-2xl;
+}
+
+/* Premium input styles */
+.premium-input {
+  @apply px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white;
+}
+
+/* Hero button styles */
+.hero-button {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105;
+}
+
+/* Shadow styles */
+.shadow-premium {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-colored {
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+}
+</style>

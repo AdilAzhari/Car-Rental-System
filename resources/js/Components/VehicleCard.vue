@@ -1,22 +1,17 @@
 <template>
     <div class="vehicle-card card-hover group relative overflow-hidden backdrop-blur-sm">
-        <!-- Vehicle Image -->
+        <!-- Enhanced Vehicle Image Carousel -->
         <div class="relative h-64 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden rounded-t-xl">
-            <img
-                v-if="vehicle.featured_image"
-                :src="getImageUrl(vehicle.featured_image)"
-                :alt="`${vehicle.make} ${vehicle.model}`"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                @error="handleImageError"
-            >
-            <div v-else class="flex items-center justify-center h-full text-gray-400">
-                <div class="text-center">
-                    <svg class="w-20 h-20 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                    </svg>
-                    <p class="text-sm font-medium">{{ vehicle.make }} {{ vehicle.model }}</p>
-                </div>
-            </div>
+            <ImageCarousel
+                :images="vehicleImages"
+                :autoplay="false"
+                :infinite="true"
+                :show-dots="vehicleImages.length > 1"
+                :show-counter="vehicleImages.length > 3"
+                :allow-fullscreen="true"
+                class="w-full h-full"
+                @image-error="handleImageError"
+            />
             
             <!-- Gradient Overlay -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -173,14 +168,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import ImageCarousel from './ImageCarousel.vue'
 
 const props = defineProps({
     vehicle: {
         type: Object,
         required: true
     }
+})
+
+// Computed property to prepare images for carousel
+const vehicleImages = computed(() => {
+    const images = []
+
+    // Add featured image
+    if (props.vehicle.featured_image) {
+        images.push(props.vehicle.featured_image)
+    }
+
+    // Add gallery images
+    if (props.vehicle.gallery_images && Array.isArray(props.vehicle.gallery_images)) {
+        images.push(...props.vehicle.gallery_images)
+    }
+
+    // Add images from images relationship
+    if (props.vehicle.images && Array.isArray(props.vehicle.images)) {
+        const relationshipImages = props.vehicle.images.map(img => img.image_path || img.path)
+        images.push(...relationshipImages)
+    }
+
+    // Remove duplicates and falsy values
+    return [...new Set(images.filter(Boolean))]
 })
 
 defineEmits(['view-details', 'reserve-now'])
@@ -206,9 +226,13 @@ const toggleFavorite = async () => {
         if (error.response?.status === 401) {
             // User not authenticated - redirect to login or show login modal
             console.log('Please login to add favorites')
-            // You can emit an event here to show login modal
+            // Emit event to parent component to handle login
+            // $emit('show-login-modal') - if you want to implement this
+        } else if (error.response?.status === 429) {
+            console.log('Too many requests. Please wait a moment.')
         } else {
             console.error('Failed to toggle favorite:', error)
+            console.log('Unable to update favorites. Please try again.')
         }
     } finally {
         favoriteLoading.value = false
@@ -228,17 +252,49 @@ const checkFavoriteStatus = async () => {
 // Methods
 const getImageUrl = (imagePath) => {
     if (!imagePath) return null
+
     // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
         return imagePath
     }
+
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath
+
     // Construct URL for storage path
-    return `/storage/${imagePath}`
+    return `/storage/${cleanPath}`
 }
+
+const imageRetryCount = ref(0)
+const maxRetries = 2
 
 const handleImageError = (event) => {
     console.log('Image failed to load:', event.target.src)
-    // Hide the broken image and show placeholder instead
+
+    // Try different image sources before giving up
+    if (imageRetryCount.value < maxRetries) {
+        imageRetryCount.value++
+
+        // Try gallery images as fallback
+        if (props.vehicle.gallery_images && props.vehicle.gallery_images.length > imageRetryCount.value - 1) {
+            const fallbackImage = props.vehicle.gallery_images[imageRetryCount.value - 1]
+            if (fallbackImage && fallbackImage !== event.target.src) {
+                event.target.src = getImageUrl(fallbackImage)
+                return
+            }
+        }
+
+        // Try images relationship if available
+        if (props.vehicle.images && props.vehicle.images.length > imageRetryCount.value - 1) {
+            const fallbackImage = props.vehicle.images[imageRetryCount.value - 1]
+            if (fallbackImage?.image_path && getImageUrl(fallbackImage.image_path) !== event.target.src) {
+                event.target.src = getImageUrl(fallbackImage.image_path)
+                return
+            }
+        }
+    }
+
+    // If all retries failed, hide the image and show placeholder
     event.target.style.display = 'none'
 }
 

@@ -1,34 +1,83 @@
 <?php
 
+use App\Models\User;
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
+use Carbon\Carbon;
+use Filament\Resources\Resource;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Seeder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rule;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\View\View;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
+
 describe('Application Architecture', function (): void {
 
     describe('Models Architecture', function (): void {
         it('ensures models are properly structured', function (): void {
             expect('App\Models')
                 ->toOnlyUse([
-                    \Illuminate\Database\Eloquent\Model::class,
-                    \Illuminate\Database\Eloquent\Factories\HasFactory::class,
-                    \Illuminate\Database\Eloquent\SoftDeletes::class,
+                    Model::class,
+                    HasFactory::class,
+                    SoftDeletes::class,
                     'Illuminate\Database\Eloquent\Relations',
                     \Illuminate\Database\Eloquent\Casts\Attribute::class,
-                    \Illuminate\Database\Eloquent\Builder::class,
-                    \Illuminate\Database\Eloquent\Collection::class,
+                    Builder::class,
+                    Collection::class,
                     \Illuminate\Support\Carbon::class,
-                    \Carbon\Carbon::class,
+                    Carbon::class,
                     'App\Enums',
-                    \Spatie\Activitylog\Traits\LogsActivity::class,
-                    \Spatie\Activitylog\LogOptions::class,
+                    LogsActivity::class,
+                    LogOptions::class,
                 ]);
         });
 
         it('ensures models extend Eloquent Model', function (): void {
             expect('App\Models')
-                ->toExtend(\Illuminate\Database\Eloquent\Model::class);
+                ->toExtend(Model::class);
         });
 
         it('ensures models use HasFactory trait', function (): void {
             expect('App\Models')
-                ->toUse(\Illuminate\Database\Eloquent\Factories\HasFactory::class);
+                ->toUse(HasFactory::class);
         });
 
         it('ensures models have proper naming conventions', function (): void {
@@ -42,14 +91,14 @@ describe('Application Architecture', function (): void {
         it('ensures controllers have proper structure', function (): void {
             expect('App\Http\Controllers')
                 ->toOnlyUse([
-                    \Illuminate\Http\Request::class,
-                    \Illuminate\Http\Response::class,
-                    \Illuminate\Http\RedirectResponse::class,
-                    \Illuminate\Http\JsonResponse::class,
-                    \Illuminate\Routing\Controller::class,
-                    \Illuminate\Foundation\Auth\Access\AuthorizesRequests::class,
-                    \Illuminate\Foundation\Validation\ValidatesRequests::class,
-                    \Illuminate\View\View::class,
+                    Request::class,
+                    Response::class,
+                    RedirectResponse::class,
+                    JsonResponse::class,
+                    Controller::class,
+                    AuthorizesRequests::class,
+                    ValidatesRequests::class,
+                    View::class,
                     'App\Models',
                     'App\Http\Requests',
                     'App\Enums',
@@ -65,15 +114,15 @@ describe('Application Architecture', function (): void {
         it('ensures auth controllers follow Laravel conventions', function (): void {
             expect('App\Http\Controllers\Auth')
                 ->toOnlyUse([
-                    \Illuminate\Http\Request::class,
-                    \Illuminate\Http\RedirectResponse::class,
-                    \Illuminate\View\View::class,
-                    \Illuminate\Auth\Events\Registered::class,
-                    \Illuminate\Support\Facades\Auth::class,
-                    \Illuminate\Support\Facades\Hash::class,
+                    Request::class,
+                    RedirectResponse::class,
+                    View::class,
+                    Registered::class,
+                    Auth::class,
+                    Hash::class,
                     'Illuminate\Validation\Rules',
                     \App\Http\Controllers\Controller::class,
-                    \App\Models\User::class,
+                    User::class,
                     'App\Http\Requests\Auth',
                     'App\Providers\RouteServiceProvider',
                 ]);
@@ -83,7 +132,7 @@ describe('Application Architecture', function (): void {
     describe('Requests Architecture', function (): void {
         it('ensures requests have proper structure', function (): void {
             expect('App\Http\Requests')
-                ->toExtend(\Illuminate\Foundation\Http\FormRequest::class)
+                ->toExtend(FormRequest::class)
                 ->toHaveMethod('rules')
                 ->toHaveMethod('authorize');
         });
@@ -91,8 +140,8 @@ describe('Application Architecture', function (): void {
         it('ensures request classes follow naming conventions', function (): void {
             expect('App\Http\Requests')
                 ->toOnlyUse([
-                    \Illuminate\Foundation\Http\FormRequest::class,
-                    \Illuminate\Validation\Rule::class,
+                    FormRequest::class,
+                    Rule::class,
                     'App\Models',
                     'App\Enums',
                 ]);
@@ -116,15 +165,15 @@ describe('Application Architecture', function (): void {
         it('ensures middleware follows Laravel conventions', function (): void {
             expect('App\Http\Middleware')
                 ->toOnlyUse([
-                    \Illuminate\Http\Request::class,
-                    \Illuminate\Http\Response::class,
+                    Request::class,
+                    Response::class,
                     \Symfony\Component\HttpFoundation\Response::class,
                     'Closure',
-                    \Illuminate\Auth\Middleware\Authenticate::class,
-                    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-                    \Illuminate\Http\Middleware\TrustProxies::class,
-                    \Illuminate\Routing\Middleware\SubstituteBindings::class,
-                    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                    Authenticate::class,
+                    VerifyCsrfToken::class,
+                    TrustProxies::class,
+                    SubstituteBindings::class,
+                    ShareErrorsFromSession::class,
                     'App\Models',
                 ]);
         });
@@ -135,8 +184,8 @@ describe('Application Architecture', function (): void {
             expect('App\Observers')
                 ->toOnlyUse([
                     'App\Models',
-                    \Illuminate\Support\Facades\Log::class,
-                    \Spatie\Activitylog\Models\Activity::class,
+                    Log::class,
+                    Activity::class,
                 ]);
         });
     });
@@ -144,7 +193,7 @@ describe('Application Architecture', function (): void {
     describe('Providers Architecture', function (): void {
         it('ensures providers extend ServiceProvider', function (): void {
             expect('App\Providers')
-                ->toExtend(\Illuminate\Support\ServiceProvider::class)
+                ->toExtend(ServiceProvider::class)
                 ->toHaveMethod('register')
                 ->toHaveMethod('boot');
         });
@@ -152,18 +201,18 @@ describe('Application Architecture', function (): void {
         it('ensures providers follow Laravel conventions', function (): void {
             expect('App\Providers')
                 ->toOnlyUse([
-                    \Illuminate\Support\ServiceProvider::class,
-                    \Illuminate\Support\Facades\Gate::class,
-                    \Illuminate\Foundation\Support\Providers\AuthServiceProvider::class,
-                    \Illuminate\Cache\RateLimiting\Limit::class,
-                    \Illuminate\Http\Request::class,
-                    \Illuminate\Support\Facades\RateLimiter::class,
-                    \Illuminate\Support\Facades\Route::class,
-                    \Illuminate\Foundation\Support\Providers\RouteServiceProvider::class,
-                    \Illuminate\Auth\Notifications\ResetPassword::class,
+                    ServiceProvider::class,
+                    Gate::class,
+                    AuthServiceProvider::class,
+                    Limit::class,
+                    Request::class,
+                    RateLimiter::class,
+                    Route::class,
+                    RouteServiceProvider::class,
+                    ResetPassword::class,
                     'App\Models',
                     'App\Observers',
-                    \BezhanSalleh\LanguageSwitch\LanguageSwitch::class,
+                    LanguageSwitch::class,
                 ]);
         });
     });
@@ -173,12 +222,12 @@ describe('Application Architecture', function (): void {
             expect('App\Filament\Resources')
                 ->toOnlyUse([
                     'Filament\Forms',
-                    \Filament\Resources\Resource::class,
+                    Resource::class,
                     'Filament\Tables',
                     'Filament\Actions',
                     'Filament\Infolists',
-                    \Illuminate\Database\Eloquent\Builder::class,
-                    \Illuminate\Database\Eloquent\SoftDeletingScope::class,
+                    Builder::class,
+                    SoftDeletingScope::class,
                     'App\Models',
                     'App\Enums',
                     'App\Filament\Resources',
@@ -206,14 +255,14 @@ describe('Application Architecture', function (): void {
             expect('Tests')
                 ->toOnlyUse([
                     \PHPUnit\Framework\TestCase::class,
-                    \Illuminate\Foundation\Testing\TestCase::class,
-                    \Illuminate\Foundation\Testing\RefreshDatabase::class,
-                    \Illuminate\Foundation\Testing\WithFaker::class,
+                    TestCase::class,
+                    RefreshDatabase::class,
+                    WithFaker::class,
                     \Tests\TestCase::class,
                     'App\Models',
                     'App\Enums',
                     'Laravel\Dusk\Browser',
-                    \Carbon\Carbon::class,
+                    Carbon::class,
                     'Illuminate\Support\Facades',
                 ]);
         });
@@ -233,21 +282,21 @@ describe('Application Architecture', function (): void {
         it('ensures migrations follow proper structure', function (): void {
             expect('Database\Migrations')
                 ->toOnlyUse([
-                    \Illuminate\Database\Migrations\Migration::class,
-                    \Illuminate\Database\Schema\Blueprint::class,
-                    \Illuminate\Support\Facades\Schema::class,
+                    Migration::class,
+                    Blueprint::class,
+                    Schema::class,
                 ]);
         });
 
         it('ensures factories follow proper structure', function (): void {
             expect('Database\Factories')
-                ->toExtend(\Illuminate\Database\Eloquent\Factories\Factory::class)
+                ->toExtend(Factory::class)
                 ->toHaveMethod('definition');
         });
 
         it('ensures seeders follow proper structure', function (): void {
             expect('Database\Seeders')
-                ->toExtend(\Illuminate\Database\Seeder::class)
+                ->toExtend(Seeder::class)
                 ->toHaveMethod('run');
         });
     });
@@ -267,7 +316,7 @@ describe('Application Architecture', function (): void {
         it('ensures proper authorization is used', function (): void {
             expect('App\Http\Controllers')
                 ->toOnlyUse([
-                    \Illuminate\Foundation\Auth\Access\AuthorizesRequests::class,
+                    AuthorizesRequests::class,
                 ])
                 ->ignoring(\App\Http\Controllers\Controller::class);
         });

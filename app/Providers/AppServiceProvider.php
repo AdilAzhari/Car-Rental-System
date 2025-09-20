@@ -24,7 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register repositories
+        $this->app->singleton(\App\Repositories\VehicleRepository::class);
+
+        // Register services
+        $this->app->singleton(\App\Services\TransactionService::class);
     }
 
     /**

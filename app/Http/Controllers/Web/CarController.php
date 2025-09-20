@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,9 +34,9 @@ class CarController extends Controller
                         'location' => $car->location,
                     ];
                 });
-        } catch (\Exception $e) {
+        } catch (Exception) {
             // If database tables don't exist yet, return empty array
-            $cars = collect([]);
+            $cars = collect();
         }
 
         return Inertia::render('Home', [

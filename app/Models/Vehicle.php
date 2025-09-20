@@ -321,6 +321,39 @@ class Vehicle extends Model
             ->limit($limit);
     }
 
+    /**
+     * Get the featured image URL with proper fallback logic
+     */
+    public function getFeaturedImageUrl(): ?string
+    {
+        // Priority 1: Primary image from images relationship
+        if ($this->relationLoaded('images') && $this->images->isNotEmpty()) {
+            $primaryImage = $this->images->where('is_primary', true)->first();
+            if ($primaryImage) {
+                return \Storage::url($primaryImage->image_path);
+            }
+
+            // Fallback to first image if no primary
+            $firstImage = $this->images->first();
+            if ($firstImage) {
+                return \Storage::url($firstImage->image_path);
+            }
+        }
+
+        // Priority 2: featured_image field
+        if ($this->featured_image) {
+            return \Storage::url($this->featured_image);
+        }
+
+        // Priority 3: First image from gallery_images array
+        if ($this->gallery_images && is_array($this->gallery_images) && count($this->gallery_images) > 0) {
+            return \Storage::url($this->gallery_images[0]);
+        }
+
+        // No image available
+        return null;
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

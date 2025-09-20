@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'booking.owner' => \App\Http\Middleware\BookingOwnershipMiddleware::class,
+            'vehicle.owner' => \App\Http\Middleware\VehicleOwnershipMiddleware::class,
         ]);
 
         //

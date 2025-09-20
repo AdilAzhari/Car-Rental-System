@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Models\User;
 use App\Models\Vehicle;
+use App\Notifications\VehicleCreated;
 
 class VehicleObserver
 {
@@ -12,12 +14,12 @@ class VehicleObserver
     public function created(Vehicle $vehicle): void
     {
         // Notify the vehicle owner about the new vehicle
-        $vehicle->owner->notify(new \App\Notifications\VehicleCreated($vehicle));
+        $vehicle->owner->notify(new VehicleCreated($vehicle));
 
         // Also notify the first user (assuming it's an admin) as a fallback
-        $firstUser = \App\Models\User::first();
+        $firstUser = User::first();
         if ($firstUser && $firstUser->id !== $vehicle->owner_id) {
-            $firstUser->notify(new \App\Notifications\VehicleCreated($vehicle));
+            $firstUser->notify(new VehicleCreated($vehicle));
         }
     }
 
@@ -41,14 +43,6 @@ class VehicleObserver
      * Handle the Vehicle "restored" event.
      */
     public function restored(Vehicle $vehicle): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Vehicle "force deleted" event.
-     */
-    public function forceDeleted(Vehicle $vehicle): void
     {
         //
     }

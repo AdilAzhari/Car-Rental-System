@@ -1,82 +1,121 @@
 <template>
   <div class="min-h-screen bg-background">
     <!-- Navigation -->
-    <nav class="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
-      <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <Link href="/" class="flex items-center space-x-2 group">
-            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-all duration-200">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-              </svg>
+    <nav class="bg-white/90 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
+      <div class="container mx-auto px-4 lg:px-6">
+        <div class="flex justify-between items-center h-18">
+          <!-- Enhanced Logo -->
+          <Link href="/" class="flex items-center space-x-3 group">
+            <div class="relative">
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-300 shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full"></div>
             </div>
-            <span class="text-xl font-bold text-primary">
-              RentLux
-            </span>
+            <div>
+              <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                CarZen
+              </span>
+              <p class="text-xs text-gray-500 font-medium -mt-1">Premium Rentals</p>
+            </div>
           </Link>
 
-          <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center space-x-8">
+          <!-- Enhanced Desktop Navigation -->
+          <div class="hidden lg:flex items-center space-x-1">
             <Link
               href="/"
-              class="text-foreground hover:text-primary transition-fast font-medium"
-              :class="{ 'text-primary': $page.url === '/' }"
+              class="nav-link"
+              :class="{ 'nav-link-active': $page.url === '/' }"
             >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
               Home
             </Link>
             <Link
               href="/cars"
-              class="text-foreground hover:text-primary transition-fast font-medium"
-              :class="{ 'text-primary': $page.url.startsWith('/cars') }"
+              class="nav-link"
+              :class="{ 'nav-link-active': $page.url.startsWith('/cars') }"
             >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+              </svg>
               Vehicles
             </Link>
             <template v-if="$page.props.auth?.user">
               <Link
                 href="/my-bookings"
-                class="text-foreground hover:text-primary transition-fast font-medium"
-                :class="{ 'text-primary': $page.url.startsWith('/my-bookings') }"
+                class="nav-link"
+                :class="{ 'nav-link-active': $page.url.startsWith('/my-bookings') }"
               >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
                 My Bookings
               </Link>
               <Link
                 href="/dashboard"
-                class="text-foreground hover:text-primary transition-fast font-medium"
-                :class="{ 'text-primary': $page.url.startsWith('/dashboard') }"
+                class="nav-link"
+                :class="{ 'nav-link-active': $page.url.startsWith('/dashboard') }"
               >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
                 Dashboard
               </Link>
             </template>
-            <a href="#contact" class="text-foreground hover:text-primary transition-fast font-medium">
+            <a href="#contact" class="nav-link">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
               Contact
             </a>
           </div>
 
-          <!-- User Menu -->
-          <div class="flex items-center space-x-3">
+          <!-- Enhanced User Menu -->
+          <div class="flex items-center space-x-4">
             <template v-if="$page.props.auth?.user">
-              <!-- Phone Number -->
-              <div class="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
-                <span>(555) 123-4567</span>
+              <!-- Notifications -->
+              <div class="relative">
+                <button class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200 relative">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5 5-5m-5 5H6"/>
+                  </svg>
+                  <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                </button>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="hidden lg:flex items-center gap-2">
+                <Link href="/cars" class="action-button">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                  Rent Now
+                </Link>
               </div>
 
               <!-- User Dropdown -->
               <div class="relative" ref="userDropdown">
                 <button
                   @click="showUserMenu = !showUserMenu"
-                  class="flex items-center space-x-3 text-foreground hover:text-primary transition-colors duration-200"
+                  class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
                 >
-                  <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                    <span class="text-sm font-medium text-white">
-                      {{ $page.props.auth?.user?.name?.charAt(0).toUpperCase() }}
-                    </span>
+                  <div class="relative">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-200">
+                      <span class="text-sm font-bold text-white">
+                        {{ $page.props.auth?.user?.name?.charAt(0).toUpperCase() }}
+                      </span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-white rounded-full"></div>
                   </div>
-                  <span class="hidden sm:block font-medium">{{ $page.props.auth?.user?.name }}</span>
-                  <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="hidden sm:block text-left">
+                    <p class="font-semibold text-gray-900 text-sm">{{ $page.props.auth?.user?.name }}</p>
+                    <p class="text-xs text-gray-500">Premium Member</p>
+                  </div>
+                  <svg class="w-4 h-4 transition-transform duration-200 text-gray-400" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
@@ -114,13 +153,13 @@
             <template v-else>
               <Link
                 href="/login"
-                class="text-foreground hover:text-primary font-medium transition-colors duration-200"
+                class="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-50"
               >
                 Sign In
               </Link>
               <Link
                 href="/register"
-                class="hero-button px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 hover:shadow-lg shadow-blue-200"
               >
                 Get Started
               </Link>
@@ -372,5 +411,27 @@ onUnmounted(() => {
 .mobile-menu-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Navigation Styles */
+.nav-link {
+  @apply flex items-center gap-2 px-4 py-2.5 rounded-xl text-gray-600 font-medium transition-all duration-200 hover:text-blue-600 hover:bg-blue-50/50 relative;
+}
+
+.nav-link-active {
+  @apply text-blue-600 bg-blue-50 font-semibold;
+}
+
+.nav-link-active::after {
+  content: '';
+  @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full;
+}
+
+.action-button {
+  @apply flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 text-sm;
+}
+
+.h-18 {
+  height: 4.5rem;
 }
 </style>

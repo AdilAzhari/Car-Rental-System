@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Inertia\Response;
 
 class BookingController extends Controller
 {
 
-    public function index()
+    public function index(): Response
     {
         $bookings = Booking::with(['vehicle', 'vehicle.images'])
             ->where('renter_id', auth()->id())
@@ -22,7 +23,7 @@ class BookingController extends Controller
         ]);
     }
 
-    public function show(Booking $booking)
+    public function show(Booking $booking): Response
     {
         // Ensure user can only see their own bookings
         if ($booking->renter_id !== auth()->id()) {
@@ -36,7 +37,7 @@ class BookingController extends Controller
         ]);
     }
 
-    public function paymentReturn(Booking $booking)
+    public function paymentReturn(Booking $booking): Response
     {
         // This endpoint handles payment return callbacks from payment gateways
         $booking->load(['vehicle', 'payments']);

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\CarRental\Booking;
-use App\Models\CarRental\Payment;
+use App\Models\Booking;
+use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class PaymentController extends Controller
             $booking = Booking::findOrFail($request->booking_id);
 
             // Check if user owns this booking
-            if ($booking->user_id !== $request->user()->id) {
+            if ($booking->renter_id !== $request->user()->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access to booking.',
@@ -75,7 +75,7 @@ class PaymentController extends Controller
             $booking = Booking::with('payments')->findOrFail($bookingId);
 
             // Check if user owns this booking
-            if ($booking->user_id !== $request->user()->id) {
+            if ($booking->renter_id !== $request->user()->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access to booking.',
@@ -155,7 +155,7 @@ class PaymentController extends Controller
             $booking = Booking::findOrFail($request->booking_id);
 
             // Check if user owns this booking
-            if ($booking->user_id !== $request->user()->id) {
+            if ($booking->renter_id !== $request->user()->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access to booking.',
@@ -167,7 +167,7 @@ class PaymentController extends Controller
                 'currency' => 'MYR',
                 'metadata' => [
                     'booking_id' => $booking->id,
-                    'user_id' => $booking->user_id,
+                    'user_id' => $booking->renter_id,
                 ],
                 'automatic_payment_methods' => [
                     'enabled' => true,

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Random\RandomException;
 
 uses(RefreshDatabase::class);
 
@@ -73,12 +74,12 @@ describe('Activity Log Management', function (): void {
                 'password' => 'password',
             ]);
 
-            $log = Log::where('user_id', $this->renter->id)
+            $log = Log::query()->where('user_id', $this->renter->id)
                 ->where('action', 'user_login')
                 ->first();
 
-            expect($log)->not->toBeNull();
-            expect($log->ip_address)->not->toBeNull();
+            expect($log)->not->toBeNull()
+                ->and($log->ip_address)->not->toBeNull();
         });
 
         it('logs vehicle creation activities', function (): void {
@@ -95,12 +96,12 @@ describe('Activity Log Management', function (): void {
             $this->actingAs($this->owner)
                 ->post('/admin/vehicles', $vehicleData);
 
-            $log = Log::where('user_id', $this->owner->id)
+            $log = Log::query()->where('user_id', $this->owner->id)
                 ->where('action', 'vehicle_created')
                 ->first();
 
-            expect($log)->not->toBeNull();
-            expect($log->model_type)->toBe('Vehicle');
+            expect($log)->not->toBeNull()
+                ->and($log->model_type)->toBe('Vehicle');
         });
 
         it('logs booking status changes', function (): void {
@@ -111,13 +112,13 @@ describe('Activity Log Management', function (): void {
             ]);
 
             $this->actingAs($this->admin)
-                ->patch("/admin/bookings/{$booking->id}", [
+                ->patch("/admin/bookings/$booking->id", [
                     'status' => 'confirmed',
                 ]);
 
-            $log = Log::where('action', 'booking_status_changed')->first();
-            expect($log)->not->toBeNull();
-            expect($log->model_id)->toBe($booking->id);
+            $log = Log::query()->where('action', 'booking_status_changed')->first();
+            expect($log)->not->toBeNull()
+                ->and($log->model_id)->toBe($booking->id);
         });
 
         it('stores request details in log', function (): void {
@@ -129,10 +130,10 @@ describe('Activity Log Management', function (): void {
                 'ip_address' => '192.168.1.1',
             ]);
 
-            $log = Log::where('action', 'vehicle_updated')->first();
-            expect($log->request_data)->toContain('daily_rate');
-            expect($log->user_agent)->toBe('Mozilla/5.0 Test Browser');
-            expect($log->ip_address)->toBe('192.168.1.1');
+            $log = Log::query()->where('action', 'vehicle_updated')->first();
+            expect($log->request_data)->toContain('daily_rate')
+                ->and($log->user_agent)->toBe('Mozilla/5.0 Test Browser')
+                ->and($log->ip_address)->toBe('192.168.1.1');
         });
     });
 
@@ -180,9 +181,9 @@ describe('Activity Log Management', function (): void {
                 'password' => 'wrongpassword',
             ]);
 
-            $log = Log::where('action', 'login_failed')->first();
-            expect($log)->not->toBeNull();
-            expect($log->ip_address)->not->toBeNull();
+            $log = Log::query()->where('action', 'login_failed')->first();
+            expect($log)->not->toBeNull()
+                ->and($log->ip_address)->not->toBeNull();
         });
 
         it('logs suspicious activity patterns', function (): void {
@@ -244,7 +245,7 @@ describe('Activity Log Management', function (): void {
             $to = Carbon::today()->format('Y-m-d');
 
             $this->actingAs($this->admin)
-                ->get("/admin/activity-logs/export?from={$from}&to={$to}&format=csv")
+                ->get("/admin/activity-logs/export?from=$from&to=$to&format=csv")
                 ->assertSuccessful();
         });
     });
@@ -265,7 +266,9 @@ describe('Activity Log Management', function (): void {
                 ->assertSuccessful();
         });
 
-        it('tracks API response times', function (): void {
+        it(/**
+         * @throws RandomException
+         */ 'tracks API response times', function (): void {
             Log::factory(5)->create([
                 'action' => 'api_request',
                 'request_data' => json_encode([

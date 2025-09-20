@@ -244,10 +244,31 @@ const loadVehicles = async () => {
     loading.value = true
     try {
         const response = await axios.get('/api/cars')
-        vehicles.value = response.data.data || response.data
+        vehicles.value = response.data.data || response.data || []
+
+        // Ensure each vehicle has required properties
+        vehicles.value = vehicles.value.map(vehicle => ({
+            ...vehicle,
+            featured_image: vehicle.featured_image || null,
+            gallery_images: vehicle.gallery_images || [],
+            images: vehicle.images || [],
+            average_rating: vehicle.average_rating || 0,
+            total_reviews: vehicle.total_reviews || 0,
+            features: vehicle.features || [],
+            is_available: vehicle.is_available ?? true
+        }))
     } catch (error) {
         console.error('Error fetching vehicles:', error)
         vehicles.value = []
+
+        // Show user-friendly error message (you can replace with toast notification)
+        if (error.response?.status === 404) {
+            console.log('No vehicles found')
+        } else if (error.response?.status >= 500) {
+            console.log('Server error. Please try again later.')
+        } else {
+            console.log('Failed to load vehicles. Please check your connection.')
+        }
     } finally {
         loading.value = false
     }

@@ -47,6 +47,8 @@
                                 :src="getImageUrl(allImages[currentImageIndex])"
                                 :alt="`${car.make} ${car.model}`"
                                 class="w-full h-full object-cover cursor-pointer transition-opacity duration-300"
+                                loading="eager"
+                                decoding="async"
                                 @click="openImageModal"
                             >
 
@@ -395,12 +397,17 @@ const allImages = computed(() => {
 // Methods
 const getImageUrl = (imagePath) => {
     if (!imagePath) return null
+
     // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
         return imagePath
     }
+
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath
+
     // Construct URL for storage path
-    return `/storage/${imagePath}`
+    return `/storage/${cleanPath}`
 }
 
 const fetchCar = async (carId) => {
