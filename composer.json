@@ -6,9 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
-        "ext-pgsql": "*",
         "filament/filament": "^4.0",
-        "heroku/heroku-buildpack-php": "*",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
