@@ -7,18 +7,19 @@
           <!-- Enhanced Logo -->
           <Link href="/" class="flex items-center space-x-3 group">
             <div class="relative">
-              <div class="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-300 shadow-lg">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-              </div>
+              <img
+                src="/images/logo.jpg"
+                alt="SENTIENTS A.I Logo"
+                class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-cover shadow-lg transform group-hover:scale-105 transition-all duration-300"
+                @error="handleImageError"
+              />
               <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full"></div>
             </div>
             <div>
-              <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                CarZen
+              <span class="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                SENTIENTS A.I
               </span>
-              <p class="text-xs text-gray-500 font-medium -mt-1">Premium Rentals</p>
+              <p class="hidden sm:block text-xs text-gray-500 font-medium -mt-1">Car Rental System</p>
             </div>
           </Link>
 
@@ -76,6 +77,8 @@
 
           <!-- Enhanced User Menu -->
           <div class="flex items-center space-x-4">
+            <!-- Language Switcher -->
+            <LanguageSwitcher />
             <template v-if="$page.props.auth?.user">
               <!-- Notifications -->
               <div class="relative">
@@ -231,7 +234,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                   </svg>
-                  <span>info@rentlux.com</span>
+                  <span>info@sentients.ai</span>
                 </div>
                 <Link
                   href="/logout"
@@ -263,7 +266,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                   </svg>
-                  <span>info@rentlux.com</span>
+                  <span>info@sentients.ai</span>
                 </div>
                 <Link
                   href="/login"
@@ -297,16 +300,17 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Brand -->
           <div class="col-span-1 md:col-span-2">
-            <div class="flex items-center space-x-2 mb-4">
-              <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-                </svg>
-              </div>
-              <span class="text-xl font-bold">RentLux</span>
+            <div class="flex items-center space-x-3 mb-4">
+              <img
+                src="/images/logo.jpg"
+                alt="SENTIENTS A.I Logo"
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover shadow-md"
+                @error="handleImageError"
+              />
+              <span class="text-xl font-bold">SENTIENTS A.I</span>
             </div>
             <p class="text-muted-foreground max-w-md">
-              Premium car rental service with the best vehicles and unmatched customer experience. Your journey begins here.
+              AI-powered car rental platform delivering intelligent vehicle solutions with unmatched customer experience.
             </p>
           </div>
 
@@ -349,7 +353,7 @@
         </div>
 
         <div class="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2025 RentLux. All rights reserved.</p>
+          <p>&copy; 2025 SENTIENTS A.I. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -369,6 +373,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
@@ -379,6 +384,13 @@ const handleClickOutside = (event) => {
   if (userDropdown.value && !userDropdown.value.contains(event.target)) {
     showUserMenu.value = false
   }
+}
+
+// Handle image loading errors
+const handleImageError = (event) => {
+  console.warn('Logo image failed to load:', event.target.src)
+  // Fallback to a default SVG if image fails to load
+  event.target.style.display = 'none'
 }
 
 onMounted(() => {

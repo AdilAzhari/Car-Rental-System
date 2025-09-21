@@ -11,14 +11,14 @@ enum UserRole: string
     public function label(): string
     {
         return match ($this) {
-            self::ADMIN => 'Administrator',
-            self::OWNER => 'Vehicle Owner',
-            self::RENTER => 'Renter',
+            self::ADMIN => __('enums.user_role.admin'),
+            self::OWNER => __('enums.user_role.owner'),
+            self::RENTER => __('enums.user_role.renter'),
         };
     }
 
     public static function values(): array
     {
-        return array_map(fn (\App\Enums\UserRole $case) => $case->value, self::cases());
+        return array_map(fn (UserRole $case) => $case->value, self::cases());
     }
 }

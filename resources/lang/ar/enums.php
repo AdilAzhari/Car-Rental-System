@@ -26,7 +26,6 @@ return [
         'ongoing' => 'جاري',
         'completed' => 'مكتمل',
         'cancelled' => 'ملغي',
-        'unpaid' => 'غير مدفوع'
     ],
 
     'user_role' => [
@@ -73,5 +72,12 @@ return [
         'convertible' => 'قابل للطي',
         'sports' => 'رياضي',
     ],
+
+    'user_status' => [
+        'pending' => 'في انتظار الموافقة',
+        'approved' => 'موافق عليه',
+        'rejected' => 'مرفوض',
+        'active' => 'مفعل'
+    ]
 
 ];

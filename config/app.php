@@ -133,8 +133,8 @@ return [
     |
     */
 
-    'currency' => env('APP_CURRENCY', 'USD'),
-    'currency_symbol' => env('APP_CURRENCY_SYMBOL', '$'),
+    'currency' => env('APP_CURRENCY', 'MYR'),
+    'currency_symbol' => env('APP_CURRENCY_SYMBOL', 'RM'),
     'currency_position' => env('APP_CURRENCY_POSITION', 'before'), // 'before' or 'after'
 
     /*

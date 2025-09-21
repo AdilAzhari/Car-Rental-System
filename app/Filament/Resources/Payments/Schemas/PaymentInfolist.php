@@ -25,7 +25,7 @@ class PaymentInfolist
 
                         TextEntry::make('amount')
                             ->label('Amount')
-                            ->money(config('app.currency', 'USD')),
+                            ->money(config('app.currency', 'MYR')),
 
                         TextEntry::make('method')
                             ->label('Payment Method')

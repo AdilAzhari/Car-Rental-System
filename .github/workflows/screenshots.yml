@@ -1,0 +1,187 @@
+name: Generate Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'resources/js/**'
+      - 'resources/css/**'
+      - 'resources/views/**'
+
+jobs:
+  generate-screenshots:
+    name: Generate Application Screenshots
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: car_rental_screenshots
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libnss3-dev \
+          libgconf-2-4 \
+          libxss1 \
+          libasound2 \
+          libxtst6 \
+          libgtk-3-0 \
+          libdrm2 \
+          libxcomposite1 \
+          libxdamage1 \
+          libxrandr2 \
+          libgbm1 \
+          libatk-bridge2.0-0
+
+    - name: Copy environment file
+      run: cp .env.example .env
+
+    - name: Configure environment
+      run: |
+        sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+        sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+        sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
+        sed -i 's/DB_DATABASE=.*/DB_DATABASE=car_rental_screenshots/' .env
+        sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
+        sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+        echo "APP_URL=http://localhost:8000" >> .env
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Install NPM dependencies
+      run: npm ci
+
+    - name: Generate application key
+      run: php artisan key:generate
+
+    - name: Run database migrations and seed
+      run: |
+        php artisan migrate --force
+        php artisan db:seed --force
+
+    - name: Build frontend assets
+      run: npm run build
+
+    - name: Install Playwright
+      run: npx playwright install chromium
+
+    - name: Start Laravel server
+      run: |
+        php artisan serve --host=0.0.0.0 --port=8000 &
+        sleep 10
+
+    - name: Create screenshots directory
+      run: mkdir -p screenshots
+
+    - name: Generate screenshots with Playwright
+      run: |
+        cat > screenshot-generator.js << 'EOF'
+        const { chromium } = require('playwright');
+
+        (async () => {
+          const browser = await chromium.launch();
+          const context = await browser.newContext({
+            viewport: { width: 1920, height: 1080 }
+          });
+          const page = await context.newPage();
+
+          // Helper function to take screenshot
+          const takeScreenshot = async (url, filename, description) => {
+            try {
+              await page.goto(url, { waitUntil: 'networkidle' });
+              await page.waitForTimeout(2000); // Wait for animations
+              await page.screenshot({
+                path: `screenshots/${filename}`,
+                fullPage: false
+              });
+              console.log(`✅ Generated: ${filename} - ${description}`);
+            } catch (error) {
+              console.log(`❌ Failed: ${filename} - ${error.message}`);
+            }
+          };
+
+          // Create admin user and login
+          await page.goto('http://localhost:8000/admin/login');
+          await page.fill('input[name="email"]', 'admin@example.com');
+          await page.fill('input[name="password"]', 'password');
+          await page.click('button[type="submit"]');
+          await page.waitForURL('**/admin**');
+
+          // Generate admin screenshots
+          await takeScreenshot('http://localhost:8000/admin', 'dashboard.png', 'Admin Dashboard');
+          await takeScreenshot('http://localhost:8000/admin/vehicles', 'vehicles.png', 'Vehicle Management');
+          await takeScreenshot('http://localhost:8000/admin/bookings', 'bookings.png', 'Booking Management');
+          await takeScreenshot('http://localhost:8000/admin/users', 'users.png', 'User Management');
+          await takeScreenshot('http://localhost:8000/admin/payments', 'payments.png', 'Payment Management');
+
+          // Logout and take public screenshots
+          await page.goto('http://localhost:8000/admin/logout', { method: 'POST' });
+
+          // Public pages
+          await takeScreenshot('http://localhost:8000', 'homepage.png', 'Homepage');
+          await takeScreenshot('http://localhost:8000/cars', 'cars-listing.png', 'Car Listings');
+
+          // Mobile screenshots
+          await context.setViewport({ width: 375, height: 812 });
+          await takeScreenshot('http://localhost:8000', 'mobile.png', 'Mobile Homepage');
+
+          await browser.close();
+        })();
+        EOF
+
+        npx playwright install
+        node screenshot-generator.js
+
+    - name: Create optimized screenshots
+      run: |
+        # Install imagemagick for optimization
+        sudo apt-get install -y imagemagick
+
+        # Optimize screenshots
+        for file in screenshots/*.png; do
+          if [ -f "$file" ]; then
+            mogrify -resize 1200x800> -quality 85 "$file"
+            echo "Optimized: $file"
+          fi
+        done
+
+    - name: Upload screenshots as artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: application-screenshots
+        path: screenshots/
+        retention-days: 30
+
+    - name: Commit screenshots to repository
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add screenshots/
+        git diff --staged --quiet || git commit -m "📸 Update application screenshots [skip ci]"
+        git push

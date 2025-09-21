@@ -71,7 +71,7 @@ class RecentBookingsWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label(__('widgets.amount'))
-                    ->money(config('app.currency', 'USD'))
+                    ->money(config('app.currency', 'MYR'))
                     ->sortable()
                     ->weight('bold')
                     ->color('success'),

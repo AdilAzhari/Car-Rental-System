@@ -611,4 +611,27 @@ return [
     'review_updated_body' => 'تم تحديث تفاصيل التقييم بنجاح.',
     'review_added_successfully' => 'تم إضافة التقييم بنجاح',
     'review_added_body' => 'تم إضافة التقييم وهو في انتظار الموافقة.',
+
+    // Vehicle filter options
+    'economy' => 'اقتصادي',
+    'compact' => 'صغير الحجم',
+    'midsize' => 'متوسط الحجم',
+    'fullsize' => 'كبير الحجم',
+    'luxury' => 'فاخر',
+    'suv' => 'دفع رباعي',
+
+    // Transmission options
+    'automatic' => 'أوتوماتيك',
+    'manual' => 'يدوي',
+    'cvt' => 'ناقل حركة متغير باستمرار',
+
+    // Status options
+    'published' => 'منشور',
+    'draft' => 'مسودة',
+    'under_maintenance' => 'تحت الصيانة',
+    'archived' => 'مؤرشف',
+
+    // Availability options
+    'available' => 'متاح',
+    'not_available' => 'غير متاح',
 ];

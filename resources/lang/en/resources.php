@@ -622,21 +622,28 @@ return [
     'show_review' => 'Show Review',
     'payment_id' => 'Payment ID',
 
-    // Static dropdowns and options that need translation
+    // Vehicle filter options
     'economy' => 'Economy',
     'compact' => 'Compact',
     'midsize' => 'Midsize',
+    'fullsize' => 'Full-size',
     'luxury' => 'Luxury',
     'suv' => 'SUV',
+
+    // Transmission options
     'automatic' => 'Automatic',
     'manual' => 'Manual',
     'cvt' => 'CVT',
-    'available' => 'Available',
-    'not_available' => 'Not Available',
-    'under_maintenance' => 'Under Maintenance',
+
+    // Status options
     'published' => 'Published',
     'draft' => 'Draft',
+    'under_maintenance' => 'Under Maintenance',
     'archived' => 'Archived',
+
+    // Availability options
+    'available' => 'Available',
+    'not_available' => 'Not Available',
 
     // Activity Log Specific Translations
     'activity_overview' => 'Activity Overview',

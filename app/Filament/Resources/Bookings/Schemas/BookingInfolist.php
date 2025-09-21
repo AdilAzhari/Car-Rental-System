@@ -76,7 +76,7 @@ class BookingInfolist
                                 TextEntry::make('total_amount')
                                     ->label(__('resources.total_amount'))
                                     ->icon('heroicon-m-currency-dollar')
-                                    ->money(config('app.currency', 'USD'))
+                                    ->money(config('app.currency', 'MYR'))
                                     ->size('lg')
                                     ->weight(FontWeight::Bold)
                                     ->color('success'),
@@ -171,20 +171,20 @@ class BookingInfolist
                                 TextEntry::make('total_amount')
                                     ->label(__('resources.total_amount'))
                                     ->icon('heroicon-m-currency-dollar')
-                                    ->money(config('app.currency', 'USD'))
+                                    ->money(config('app.currency', 'MYR'))
                                     ->weight(FontWeight::Bold)
                                     ->color('success'),
 
                                 TextEntry::make('deposit_amount')
                                     ->label(__('resources.deposit'))
                                     ->icon('heroicon-m-shield-check')
-                                    ->money(config('app.currency', 'USD'))
+                                    ->money(config('app.currency', 'MYR'))
                                     ->placeholder('No deposit required'),
 
                                 TextEntry::make('commission_amount')
                                     ->label(__('resources.commission'))
                                     ->icon('heroicon-m-percent-badge')
-                                    ->money(config('app.currency', 'USD'))
+                                    ->money(config('app.currency', 'MYR'))
                                     ->placeholder('No commission'),
                             ]),
 

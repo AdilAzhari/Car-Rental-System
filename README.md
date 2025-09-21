@@ -13,6 +13,34 @@
 
 This enterprise-grade car rental management system provides a complete solution for rental businesses of all sizes. Built with modern web technologies and best practices, it offers intuitive interfaces for both administrators and customers, comprehensive reporting, and seamless integrations.
 
+## Screenshots
+
+### 🎯 Admin Dashboard & Analytics
+![Dashboard Overview](screenshots/dashboard.png)
+*Real-time business metrics, revenue tracking, and fleet monitoring with interactive charts*
+
+### 🚗 Fleet Management
+![Vehicle Management](screenshots/vehicles.png)
+*Comprehensive vehicle inventory with advanced filtering, status tracking, and bulk operations*
+
+### 📅 Booking System
+![Booking Calendar](screenshots/calendar.png)
+*Visual booking management with drag-and-drop functionality and availability timeline*
+
+### 💰 Payment Processing
+![Payment Management](screenshots/payments.png)
+*Transaction tracking, invoice generation, and multi-gateway payment support*
+
+### 👥 User Management
+![User Administration](screenshots/users.png)
+*Customer profiles, role management, and verification workflows*
+
+### 📱 Mobile Responsive
+![Mobile Interface](screenshots/mobile.png)
+*Fully responsive design optimized for tablets and mobile devices*
+
+*Note: Screenshots showcase the application with **Malaysian Ringgit (RM)** currency and **bilingual Arabic/English** interface*
+
 ## Table of Contents
 
 - [Features](#features)
@@ -47,7 +75,8 @@ This enterprise-grade car rental management system provides a complete solution 
 
 ### User Experience
 - **Responsive Design** - Mobile-first interface optimized for all devices
-- **Multi-language Support** - Internationalization with Arabic and English support
+- **Multi-language Support** - Full internationalization with Arabic and English support
+- **MYR Currency Integration** - Built-in Malaysian Ringgit (RM) support with flexible currency system
 - **Interactive Calendar** - Visual booking management with drag-and-drop functionality
 - **Real-time Updates** - Live form calculations and instant status updates
 - **Advanced Search** - Powerful filtering and search capabilities across all modules
@@ -293,6 +322,9 @@ npm run build
 | `APP_NAME` | Application name | Car Rental System | Yes |
 | `APP_ENV` | Environment (local/production) | local | Yes |
 | `APP_DEBUG` | Debug mode | false | Yes |
+| `APP_CURRENCY` | Default currency code | MYR | Yes |
+| `APP_CURRENCY_SYMBOL` | Currency symbol | RM | Yes |
+| `APP_CURRENCY_POSITION` | Symbol position (before/after) | before | Yes |
 | `DB_*` | Database credentials | - | Yes |
 | `MAIL_*` | Email configuration | - | Recommended |
 | `REDIS_*` | Redis configuration | - | Optional |

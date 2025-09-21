@@ -14,11 +14,11 @@ class CurrencyHelper
 
         if (!$currencyConfig) {
             // Fallback to default currency if specified currency is not supported
-            $currency = config('app.currency', 'USD');
+            $currency = config('app.currency', 'MYR');
             $currencyConfig = config("app.currencies.{$currency}");
         }
 
-        $symbol = $currencyConfig['symbol'] ?? config('app.currency_symbol', '$');
+        $symbol = $currencyConfig['symbol'] ?? config('app.currency_symbol', 'RM');
         $position = $currencyConfig['position'] ?? config('app.currency_position', 'before');
         $decimalPlaces = $currencyConfig['decimal_places'] ?? 2;
 
@@ -37,7 +37,7 @@ class CurrencyHelper
         $currency = $currency ?? config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
 
-        return $currencyConfig['symbol'] ?? config('app.currency_symbol', '$');
+        return $currencyConfig['symbol'] ?? config('app.currency_symbol', 'RM');
     }
 
     /**
@@ -45,7 +45,7 @@ class CurrencyHelper
      */
     public static function getCurrency(): string
     {
-        return config('app.currency', 'USD');
+        return config('app.currency', 'MYR');
     }
 
     /**

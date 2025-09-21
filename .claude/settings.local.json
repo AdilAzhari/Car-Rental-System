@@ -57,7 +57,13 @@
       "Bash(railway variables set:*)",
       "Bash(railway add:*)",
       "Bash(git config:*)",
-      "Bash(del databasemigrations2025_09_20_121316_add_calculated_fields_to_car_rental_bookings_table.php)"
+      "Bash(del databasemigrations2025_09_20_121316_add_calculated_fields_to_car_rental_bookings_table.php)",
+      "Bash(git log:*)",
+      "Bash(npm install:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(powershell:*)",
+      "Bash(make:*)"
     ],
     "deny": [],
     "ask": []

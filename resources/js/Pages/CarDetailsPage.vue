@@ -1,18 +1,72 @@
 <template>
     <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <header class="bg-white shadow">
+        <!-- Enhanced Header -->
+        <header class="bg-white shadow-lg border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <button @click="goBack" class="flex items-center text-gray-600 hover:text-gray-900">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Left Section: Brand + Navigation -->
+                    <div class="flex items-center space-x-8">
+                        <!-- Brand -->
+                        <div class="flex items-center">
+                            <img
+                                src="/images/logo.jpg"
+                                alt="SENTIENTS A.I Logo"
+                                class="w-10 h-10 rounded-xl object-cover shadow-md mr-3"
+                                @error="handleImageError"
+                            />
+                            <div>
+                                <h1 class="text-xl font-bold text-gray-900">SENTIENTS A.I</h1>
+                                <p class="text-xs text-gray-500">Car Rental System</p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Breadcrumb -->
+                        <nav class="hidden md:flex items-center space-x-2 text-sm">
+                            <button @click="goToHome" class="text-gray-500 hover:text-blue-600 transition-colors">
+                                Home
+                            </button>
+                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                            <button @click="goBack" class="text-gray-500 hover:text-blue-600 transition-colors">
+                                Cars
+                            </button>
+                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                            <span class="text-gray-900 font-medium">
+                                {{ car ? `${car.make} ${car.model}` : 'Vehicle Details' }}
+                            </span>
+                        </nav>
+                    </div>
+
+                    <!-- Center: Back Button (Mobile) -->
+                    <button @click="goBack" class="md:hidden flex items-center text-gray-600 hover:text-blue-600 transition-colors font-medium">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Cars
+                        Back
                     </button>
-                    <div class="flex items-center space-x-4">
-                        <a href="/login" class="text-gray-600 hover:text-gray-900">Sign In</a>
-                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Sign Up</a>
+
+                    <!-- Right Section: Actions -->
+                    <div class="flex items-center space-x-3">
+                        <!-- Contact/Support -->
+                        <button class="hidden sm:flex items-center text-gray-600 hover:text-blue-600 transition-colors">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            <span class="text-sm">Support</span>
+                        </button>
+
+                        <!-- Auth Buttons -->
+                        <div class="flex items-center space-x-2">
+                            <a href="/login" class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2 text-sm font-medium">
+                                Sign In
+                            </a>
+                            <a href="/register" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-sm">
+                                Sign Up
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -243,10 +297,13 @@
 
                 <!-- Booking Sidebar -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-lg shadow-sm sticky top-8">
-                        <div class="mb-4">
-                            <div class="text-3xl font-bold text-gray-900">${{ car.daily_rate }}</div>
-                            <div class="text-gray-600">per day</div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm sticky top-8 border border-gray-100">
+                        <div class="mb-6">
+                            <div class="flex items-baseline">
+                                <span class="text-3xl font-bold text-gray-900">RM {{ car.daily_rate }}</span>
+                                <span class="text-gray-600 ml-2">/ day</span>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-1">Malaysian Ringgit (MYR)</div>
                         </div>
 
                         <div class="space-y-4 mb-6">
@@ -273,15 +330,16 @@
                             </div>
                         </div>
 
-                        <div v-if="bookingDays > 0" class="border-t border-gray-200 pt-4 mb-4">
-                            <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                <span>${{ car.daily_rate }} x {{ bookingDays }} days</span>
-                                <span>${{ totalPrice.toFixed(2) }}</span>
+                        <div v-if="bookingDays > 0" class="border-t border-gray-200 pt-4 mb-6">
+                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                <span>RM {{ car.daily_rate }} x {{ bookingDays }} {{ bookingDays === 1 ? 'day' : 'days' }}</span>
+                                <span>RM {{ totalPrice.toFixed(2) }}</span>
                             </div>
-                            <div class="flex justify-between font-bold text-gray-900">
+                            <div class="flex justify-between items-center font-bold text-gray-900 text-lg">
                                 <span>Total</span>
-                                <span>${{ totalPrice.toFixed(2) }}</span>
+                                <span>RM {{ totalPrice.toFixed(2) }}</span>
                             </div>
+                            <div class="text-xs text-gray-500 mt-1">Taxes and fees included</div>
                         </div>
 
                         <button
@@ -495,6 +553,10 @@ const closeImageModal = () => {
 
 const goBack = () => {
     router.visit('/cars')
+}
+
+const goToHome = () => {
+    router.visit('/')
 }
 
 // Keyboard navigation

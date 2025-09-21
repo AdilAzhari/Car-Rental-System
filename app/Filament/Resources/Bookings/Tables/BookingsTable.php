@@ -57,7 +57,7 @@ class BookingsTable
 
                 TextColumn::make('total_amount')
                     ->label(__('resources.total_amount'))
-                    ->money(config('app.currency', 'USD'))
+                    ->money(config('app.currency', 'MYR'))
                     ->sortable(),
 
                 BadgeColumn::make('status')

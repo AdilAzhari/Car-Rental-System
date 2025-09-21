@@ -13,11 +13,11 @@ enum BookingStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::CONFIRMED => 'Confirmed',
-            self::ONGOING => 'Ongoing',
-            self::COMPLETED => 'Completed',
-            self::CANCELLED => 'Cancelled',
+            self::PENDING => __('enums.booking_status.pending'),
+            self::CONFIRMED => __('enums.booking_status.confirmed'),
+            self::ONGOING => __('enums.booking_status.ongoing'),
+            self::COMPLETED => __('enums.booking_status.completed'),
+            self::CANCELLED => __('enums.booking_status.cancelled'),
         };
     }
 

@@ -23,14 +23,14 @@
         <div class="animate-fade-in-up">
           <h1 class="text-6xl md:text-8xl font-black mb-8 leading-tight">
             <span class="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-              Premium Car Rental
+              {{ $t('hero.title') }}
             </span>
             <span class="block text-4xl md:text-6xl bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent font-bold mt-4">
-              Redefined
+              {{ $t('hero.subtitle') }}
             </span>
           </h1>
           <p class="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-white/90 leading-relaxed">
-            Experience luxury, comfort, and reliability with our premium fleet. Your perfect journey starts here.
+            {{ $t('hero.description') }}
           </p>
         </div>
 
@@ -43,13 +43,13 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                Pickup Location
+                {{ $t('search.pickup_location') }}
               </label>
               <select v-model="searchForm.location" class="premium-input w-full">
-                <option value="">Select location</option>
-                <option value="downtown">Downtown</option>
-                <option value="airport">Airport</option>
-                <option value="suburb">Suburb</option>
+                <option value="">{{ $t('search.select_location') }}</option>
+                <option value="downtown">{{ $t('locations.downtown') }}</option>
+                <option value="airport">{{ $t('locations.airport') }}</option>
+                <option value="suburb">{{ $t('locations.suburb') }}</option>
               </select>
             </div>
 
@@ -58,7 +58,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                Pickup Date
+                {{ $t('search.pickup_date') }}
               </label>
               <input
                 v-model="searchForm.startDate"
@@ -73,7 +73,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                Return Date
+                {{ $t('search.return_date') }}
               </label>
               <input
                 v-model="searchForm.endDate"
@@ -88,14 +88,14 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                 </svg>
-                Vehicle Type
+                {{ $t('search.vehicle_type') }}
               </label>
               <select v-model="searchForm.vehicleType" class="premium-input w-full">
-                <option value="">Any type</option>
-                <option value="economy">Economy</option>
-                <option value="standard">Standard</option>
-                <option value="luxury">Luxury</option>
-                <option value="suv">SUV</option>
+                <option value="">{{ $t('search.any_type') }}</option>
+                <option value="economy">{{ $t('vehicle_types.economy') }}</option>
+                <option value="standard">{{ $t('vehicle_types.standard') }}</option>
+                <option value="luxury">{{ $t('vehicle_types.luxury') }}</option>
+                <option value="suv">{{ $t('vehicle_types.suv') }}</option>
               </select>
             </div>
           </div>
@@ -107,7 +107,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
-            Search Vehicles
+            {{ $t('hero.search_vehicles') }}
           </button>
         </div>
 
@@ -117,13 +117,13 @@
             href="/cars"
             class="hero-button px-8 py-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
           >
-            Browse All Vehicles
+            {{ $t('hero.browse_all') }}
           </Link>
           <button
             @click="scrollToFeatures"
             class="bg-white/10 backdrop-blur-sm text-white border border-white/20 px-8 py-4 rounded-lg font-semibold hover:bg-white/20 transition-all duration-200"
           >
-            Learn More
+            {{ $t('hero.learn_more') }}
           </button>
         </div>
       </div>
@@ -134,10 +134,10 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-4xl md:text-5xl font-display font-bold text-secondary-900 mb-4">
-            Why Choose CarRent?
+            {{ $t('features.title') }}
           </h2>
           <p class="text-xl text-secondary-600 max-w-3xl mx-auto">
-            We provide exceptional service and premium vehicles to make your journey unforgettable.
+            {{ $t('features.description') }}
           </p>
         </div>
 
@@ -158,48 +158,56 @@
       </div>
     </section>
 
-    <!-- Popular Cars Section -->
+    <!-- Why Choose Us Section -->
     <section id="vehicles" class="py-20 bg-gray-50">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
           <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Popular Vehicles
+            {{ $t('vehicles.why_choose_title') }}
           </h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our most loved vehicles, perfect for any occasion.
+            {{ $t('vehicles.why_choose_description') }}
           </p>
         </div>
 
-        <div v-if="popularCars.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <VehicleCard
-            v-for="car in popularCars"
-            :key="car.id"
-            :vehicle="car"
-            @view-details="(id) => $inertia.visit(`/cars/${id}`)"
-            @reserve-now="(id) => $inertia.visit(`/cars/${id}`)"
-            class="transform hover:scale-105 transition-all duration-300"
-          />
-        </div>
-
-        <div v-else class="text-center py-12">
-          <div class="animate-pulse">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div v-for="i in 6" :key="i" class="bg-white rounded-2xl shadow-soft p-6">
-                <div class="h-48 bg-secondary-200 rounded-xl mb-4"></div>
-                <div class="h-4 bg-secondary-200 rounded mb-2"></div>
-                <div class="h-4 bg-secondary-200 rounded w-3/4 mb-4"></div>
-                <div class="h-10 bg-secondary-200 rounded"></div>
-              </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          <div class="text-center p-8 bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
             </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('benefits.verified_vehicles') }}</h3>
+            <p class="text-gray-600">{{ $t('benefits.verified_description') }}</p>
+          </div>
+
+          <div class="text-center p-8 bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('benefits.best_prices') }}</h3>
+            <p class="text-gray-600">{{ $t('benefits.prices_description') }}</p>
+          </div>
+
+          <div class="text-center p-8 bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25A9.75 9.75 0 0121.75 12A9.75 9.75 0 0112 21.75 9.75 9.75 0 012.25 12A9.75 9.75 0 0112 2.25zm0 0V12m0 0h9.75"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('benefits.instant_booking') }}</h3>
+            <p class="text-gray-600">{{ $t('benefits.booking_description') }}</p>
           </div>
         </div>
 
-        <div class="text-center mt-12">
+        <div class="text-center">
           <Link
             href="/cars"
             class="inline-flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-200 transform hover:scale-105 shadow-colored"
           >
-            View All Cars
+            {{ $t('vehicles.explore_fleet') }}
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
             </svg>
@@ -229,23 +237,23 @@
     <section class="py-20 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-4xl md:text-5xl font-display font-bold mb-6">
-          Ready to Hit the Road?
+          {{ $t('cta.ready_title') }}
         </h2>
         <p class="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-          Join thousands of satisfied customers who trust CarRent for their transportation needs. Book your perfect car today!
+          {{ $t('cta.ready_description') }}
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/cars"
             class="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold hover:bg-primary-50 transition-all duration-200 transform hover:scale-105 shadow-soft"
           >
-            Browse Cars Now
+            {{ $t('cta.browse_now') }}
           </Link>
           <Link
             href="/register"
             class="bg-accent-500 text-white px-8 py-4 rounded-xl font-semibold hover:bg-accent-600 transition-all duration-200 transform hover:scale-105"
           >
-            Create Account
+            {{ $t('cta.create_account') }}
           </Link>
         </div>
       </div>
@@ -256,17 +264,14 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
+import { useI18n } from 'vue-i18n'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import ImageCarousel from '@/Components/ImageCarousel.vue'
-import VehicleCard from '@/Components/VehicleCard.vue'
 
-// Props
-const props = defineProps({
-  cars: {
-    type: Array,
-    default: () => []
-  }
-})
+// Initialize i18n
+const { t } = useI18n()
+
+// No props needed since we removed car listing functionality
 
 // Reactive data
 const searchForm = ref({
@@ -283,9 +288,7 @@ const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })
 
-const popularCars = computed(() => {
-  return props.cars.slice(0, 6) || []
-})
+// Removed popularCars computed since we no longer show car listings on home page
 
 // Hero images for background carousel
 const heroImages = [
@@ -297,30 +300,30 @@ const heroImages = [
 ]
 
 // Data
-const features = [
+const features = computed(() => [
   {
-    title: 'Premium Fleet',
-    description: 'Choose from our collection of luxury vehicles, all maintained to the highest standards for your comfort and safety.',
+    title: t('features.premium_fleet.title'),
+    description: t('features.premium_fleet.description'),
     icon: 'CarIcon'
   },
   {
-    title: '24/7 Support',
-    description: 'Our dedicated support team is available around the clock to assist you with any questions or concerns.',
+    title: t('features.support_24_7.title'),
+    description: t('features.support_24_7.description'),
     icon: 'SupportIcon'
   },
   {
-    title: 'Best Prices',
-    description: 'Competitive rates with transparent pricing. No hidden fees, just honest pricing for exceptional service.',
+    title: t('features.best_prices.title'),
+    description: t('features.best_prices.description'),
     icon: 'PriceIcon'
   }
-]
+])
 
-const stats = [
-  { value: '10K+', label: 'Happy Customers' },
-  { value: '500+', label: 'Premium Cars' },
-  { value: '50+', label: 'Locations' },
-  { value: '24/7', label: 'Support' }
-]
+const stats = computed(() => [
+  { value: '10K+', label: t('stats.happy_customers') },
+  { value: '500+', label: t('stats.premium_cars') },
+  { value: '50+', label: t('stats.locations') },
+  { value: '24/7', label: t('stats.support') }
+])
 
 // Icon components
 const CarIcon = {

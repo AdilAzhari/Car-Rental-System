@@ -12,10 +12,10 @@ enum UserStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::APPROVED => 'Approved',
-            self::REJECTED => 'Rejected',
-            self::ACTIVE => 'Active',
+            self::PENDING => __('enums.user_status.pending'),
+            self::APPROVED => __('enums.user_status.approved'),
+            self::REJECTED => __('enums.user_status.rejected'),
+            self::ACTIVE => __('enums.user_status.active'),
         };
     }
 

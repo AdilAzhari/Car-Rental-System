@@ -35,9 +35,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('SENTIENTS A.I')
-//            ->brandLogo(asset('images/logo.jpg'))
+            ->brandLogo(asset('images/logo.jpg'))
             ->darkModeBrandLogo(asset('images/logo.jpg'))
-            ->brandLogoHeight('2rem')
+            ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/logo.jpg'))
             ->login()
             ->colors([
