@@ -11,7 +11,6 @@ use App\Policies\BookingPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\VehiclePolicy;
-use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
@@ -50,20 +49,5 @@ class AppServiceProvider extends ServiceProvider
 
         // Vehicle::observe(VehicleObserver::class);
 
-        //         Configure Language Switch
-        LanguageSwitch::configureUsing(function (LanguageSwitch $switch): void {
-            $switch
-                ->locales(['ar', 'en'])
-                ->labels([
-                    'ar' => 'العربية',
-                    'en' => 'English',
-                ])
-                ->flags([
-                    'ar' => asset('images/flags/sa.svg'),
-                    'en' => asset('images/flags/us.svg'),
-                ])
-                ->displayLocale('name')
-                ->circular();
-        });
     }
 }
