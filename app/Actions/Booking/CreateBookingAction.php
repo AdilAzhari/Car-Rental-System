@@ -6,7 +6,6 @@ use App\Models\Booking;
 use App\Models\Vehicle;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class CreateBookingAction
@@ -29,13 +28,13 @@ class CreateBookingAction
         Log::info('🔧 CREATE BOOKING ACTION STARTED', [
             'user_id' => auth()->id(),
             'booking_data' => $bookingDTO->toArray(),
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         return $this->transactionService->executeWithRetry(function () use ($bookingDTO) {
             Log::info('📊 DATABASE TRANSACTION STARTED', [
                 'user_id' => auth()->id(),
-                'car_id' => $bookingDTO->carId
+                'car_id' => $bookingDTO->carId,
             ]);
 
             try {
@@ -44,7 +43,7 @@ class CreateBookingAction
                     'user_id' => auth()->id(),
                     'car_id' => $bookingDTO->carId,
                     'start_date' => $bookingDTO->startDate->toDateString(),
-                    'end_date' => $bookingDTO->endDate->toDateString()
+                    'end_date' => $bookingDTO->endDate->toDateString(),
                 ]);
 
                 $vehicle = $this->validateAvailability->execute(
@@ -59,7 +58,7 @@ class CreateBookingAction
                     'vehicle_model' => $vehicle->model,
                     'daily_rate' => $vehicle->daily_rate,
                     'vehicle_status' => $vehicle->status,
-                    'is_available' => $vehicle->is_available
+                    'is_available' => $vehicle->is_available,
                 ]);
 
                 // Calculate booking details using DTO
@@ -72,7 +71,7 @@ class CreateBookingAction
                     'user_id' => auth()->id(),
                     'start_date' => $bookingDTO->startDate->toDateString(),
                     'end_date' => $bookingDTO->endDate->toDateString(),
-                    'calculation' => $calculation->toArray()
+                    'calculation' => $calculation->toArray(),
                 ]);
 
                 // Determine initial status based on payment method
@@ -85,7 +84,7 @@ class CreateBookingAction
                 Log::info('💳 PAYMENT METHOD & STATUS', [
                     'user_id' => auth()->id(),
                     'payment_method' => $bookingDTO->paymentMethod,
-                    'initial_status' => $initialStatus
+                    'initial_status' => $initialStatus,
                 ]);
 
                 // Determine payment status based on payment method
@@ -113,7 +112,7 @@ class CreateBookingAction
                 Log::info('📝 CREATING BOOKING WITH DATA', [
                     'user_id' => auth()->id(),
                     'booking_data' => $bookingData,
-                    'auth_user' => auth()->user()->toArray()
+                    'auth_user' => auth()->user()->toArray(),
                 ]);
 
                 // Create booking
@@ -124,7 +123,7 @@ class CreateBookingAction
                     'booking_id' => $booking->id,
                     'booking_exists_in_db' => Booking::where('id', $booking->id)->exists(),
                     'created_at' => $booking->created_at,
-                    'booking_data' => $booking->toArray()
+                    'booking_data' => $booking->toArray(),
                 ]);
 
                 // Process payment for card payments
@@ -133,41 +132,41 @@ class CreateBookingAction
                         'user_id' => auth()->id(),
                         'booking_id' => $booking->id,
                         'payment_method' => $bookingDTO->paymentMethod,
-                        'payment_method_id' => $bookingDTO->paymentMethodId
+                        'payment_method_id' => $bookingDTO->paymentMethodId,
                     ]);
 
                     $paymentResult = $this->paymentService->processPayment(
                         $booking,
                         [
                             'payment_method' => $bookingDTO->paymentMethod,
-                            'payment_method_id' => $bookingDTO->paymentMethodId
+                            'payment_method_id' => $bookingDTO->paymentMethodId,
                         ]
                     );
 
                     Log::info('💳 PAYMENT PROCESSING RESULT', [
                         'user_id' => auth()->id(),
                         'booking_id' => $booking->id,
-                        'payment_result' => $paymentResult
+                        'payment_result' => $paymentResult,
                     ]);
 
                     if ($paymentResult['success']) {
                         $booking->update([
                             'status' => 'confirmed',
-                            'payment_status' => 'paid'
+                            'payment_status' => 'paid',
                         ]);
                         Log::info('✅ BOOKING STATUS UPDATED TO CONFIRMED', [
                             'user_id' => auth()->id(),
-                            'booking_id' => $booking->id
+                            'booking_id' => $booking->id,
                         ]);
                     } else {
                         $booking->update([
                             'status' => 'payment_failed',
-                            'payment_status' => 'unpaid'
+                            'payment_status' => 'unpaid',
                         ]);
                         Log::error('❌ PAYMENT FAILED - STATUS UPDATED', [
                             'user_id' => auth()->id(),
                             'booking_id' => $booking->id,
-                            'payment_message' => $paymentResult['message'] ?? 'Payment failed'
+                            'payment_message' => $paymentResult['message'] ?? 'Payment failed',
                         ]);
                         throw new \Exception($paymentResult['message'] ?? 'Payment failed');
                     }
@@ -185,7 +184,7 @@ class CreateBookingAction
                     'final_status' => $finalBooking->status,
                     'booking_persisted' => Booking::where('id', $finalBooking->id)->exists(),
                     'transaction_completed' => true,
-                    'event_dispatched' => true
+                    'event_dispatched' => true,
                 ]);
 
                 return $finalBooking;
@@ -197,7 +196,7 @@ class CreateBookingAction
                     'error_file' => $e->getFile(),
                     'error_line' => $e->getLine(),
                     'stack_trace' => $e->getTraceAsString(),
-                    'booking_data' => $bookingDTO->toArray()
+                    'booking_data' => $bookingDTO->toArray(),
                 ]);
                 throw $e;
             }

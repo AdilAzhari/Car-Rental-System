@@ -2,8 +2,8 @@
 
 use App\Models\User;
 use App\Models\Vehicle;
-use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Dusk\Browser;
 
 uses(RefreshDatabase::class);
 
@@ -11,12 +11,12 @@ describe('Complete Application Flow E2E Tests', function () {
     beforeEach(function () {
         $this->owner = User::factory()->owner()->create([
             'email' => 'owner@example.com',
-            'password' => bcrypt('password123')
+            'password' => bcrypt('password123'),
         ]);
 
         $this->renter = User::factory()->renter()->create([
             'email' => 'renter@example.com',
-            'password' => bcrypt('password123')
+            'password' => bcrypt('password123'),
         ]);
 
         $this->vehicle = Vehicle::factory()->create([
@@ -27,7 +27,7 @@ describe('Complete Application Flow E2E Tests', function () {
             'daily_rate' => 100,
             'is_available' => true,
             'status' => 'published',
-            'featured_image' => 'vehicles/toyota-camry.jpg'
+            'featured_image' => 'vehicles/toyota-camry.jpg',
         ]);
     });
 
@@ -151,12 +151,12 @@ describe('Complete Application Flow E2E Tests', function () {
         $this->browse(function (Browser $browser1, Browser $browser2) {
             $renter1 = User::factory()->renter()->create([
                 'email' => 'renter1@example.com',
-                'password' => bcrypt('password123')
+                'password' => bcrypt('password123'),
             ]);
 
             $renter2 = User::factory()->renter()->create([
                 'email' => 'renter2@example.com',
-                'password' => bcrypt('password123')
+                'password' => bcrypt('password123'),
             ]);
 
             // Renter 1 starts booking process
@@ -192,7 +192,7 @@ describe('Complete Application Flow E2E Tests', function () {
     it('completes admin management workflow', function () {
         $admin = User::factory()->admin()->create([
             'email' => 'admin@example.com',
-            'password' => bcrypt('password123')
+            'password' => bcrypt('password123'),
         ]);
 
         $this->browse(function (Browser $browser) use ($admin) {
@@ -210,7 +210,7 @@ describe('Complete Application Flow E2E Tests', function () {
                 ->assertSee($this->renter->name)
 
             // 3. View User Details
-                ->click('[data-testid="view-user-' . $this->owner->id . '"]')
+                ->click('[data-testid="view-user-'.$this->owner->id.'"]')
                 ->waitForText('User Details')
                 ->assertSee($this->owner->email)
                 ->assertSee('owner')
@@ -222,7 +222,7 @@ describe('Complete Application Flow E2E Tests', function () {
                 ->assertSee('published')
 
             // 5. Approve/Reject Vehicle
-                ->click('[data-testid="approve-vehicle-' . $this->vehicle->id . '"]')
+                ->click('[data-testid="approve-vehicle-'.$this->vehicle->id.'"]')
                 ->waitForText('Vehicle approved')
                 ->assertSee('approved')
 
@@ -276,7 +276,7 @@ describe('Complete Application Flow E2E Tests', function () {
         Vehicle::factory()->count(50)->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $this->browse(function (Browser $browser) {

@@ -149,10 +149,10 @@ class BookingsTable
                         ]);
 
                         // Add a note to special_requests if provided
-                        if (!empty($data['notes'])) {
+                        if (! empty($data['notes'])) {
                             $existingNotes = $record->special_requests;
                             $record->update([
-                                'special_requests' => $existingNotes ? $existingNotes . "\n\nAdmin Notes: " . $data['notes'] : "Admin Notes: " . $data['notes']
+                                'special_requests' => $existingNotes ? $existingNotes."\n\nAdmin Notes: ".$data['notes'] : 'Admin Notes: '.$data['notes'],
                             ]);
                         }
                     }),
@@ -180,7 +180,7 @@ class BookingsTable
                         ]);
 
                         // Create a payment record if one doesn't exist
-                        if (!$record->payments()->exists()) {
+                        if (! $record->payments()->exists()) {
                             $record->payments()->create([
                                 'amount' => $record->total_amount,
                                 'payment_method' => $record->payment_method ?: 'cash',
@@ -194,7 +194,7 @@ class BookingsTable
                             $payment = $record->payments()->latest()->first();
                             $payment->update([
                                 'status' => 'paid',
-                                'notes' => ($payment->notes ? $payment->notes . "\n\n" : '') . 'Admin confirmed: ' . $data['payment_notes'],
+                                'notes' => ($payment->notes ? $payment->notes."\n\n" : '').'Admin confirmed: '.$data['payment_notes'],
                                 'processed_at' => now(),
                             ]);
                         }

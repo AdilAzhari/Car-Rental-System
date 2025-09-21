@@ -60,8 +60,6 @@ class PaymentStatsWidget extends BaseWidget
             ->whereYear('created_at', now()->year)
             ->sum('amount');
 
-
-
         // Average payment amount
         $averagePayment = (clone $baseQuery)
             ->where('payment_status', PaymentStatus::CONFIRMED)

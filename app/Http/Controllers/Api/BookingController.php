@@ -9,7 +9,6 @@ use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -30,21 +29,21 @@ class BookingController extends Controller
             'request_data' => $request->safe()->all(),
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         $validatedData = $request->getValidatedDataWithComputed();
 
         Log::info('✅ VALIDATION PASSED', [
             'user_id' => auth()->id(),
-            'validated_data' => $validatedData
+            'validated_data' => $validatedData,
         ]);
 
         try {
             Log::info('🔧 CALLING CREATE BOOKING ACTION', [
                 'user_id' => auth()->id(),
                 'action_class' => get_class($this->createBookingAction),
-                'data' => $validatedData
+                'data' => $validatedData,
             ]);
 
             $booking = $this->createBookingAction->execute($validatedData);
@@ -55,7 +54,7 @@ class BookingController extends Controller
                 'booking_status' => $booking->status,
                 'vehicle_id' => $booking->vehicle_id,
                 'total_amount' => $booking->total_amount,
-                'created_at' => $booking->created_at
+                'created_at' => $booking->created_at,
             ]);
 
             $response = [
@@ -68,7 +67,7 @@ class BookingController extends Controller
             if ($validatedData['payment_method'] === 'cash') {
                 Log::info('💰 CASH PAYMENT - ADDING ADMIN CONTACT', [
                     'booking_id' => $booking->id,
-                    'user_id' => auth()->id()
+                    'user_id' => auth()->id(),
                 ]);
 
                 $response['admin_contact'] = [
@@ -84,7 +83,7 @@ class BookingController extends Controller
             Log::info('📤 SENDING SUCCESS RESPONSE', [
                 'user_id' => auth()->id(),
                 'booking_id' => $booking->id,
-                'response_status' => 201
+                'response_status' => 201,
             ]);
 
             return response()->json($response, 201);
@@ -93,7 +92,7 @@ class BookingController extends Controller
             Log::error('❌ VALIDATION EXCEPTION', [
                 'user_id' => auth()->id(),
                 'errors' => $e->errors(),
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
             throw $e;
         } catch (Exception $e) {
@@ -104,7 +103,7 @@ class BookingController extends Controller
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
-                'validated_data' => $validatedData
+                'validated_data' => $validatedData,
             ]);
 
             return response()->json([

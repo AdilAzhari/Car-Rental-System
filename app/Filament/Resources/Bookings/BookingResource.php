@@ -78,8 +78,8 @@ class BookingResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->when(auth()->user()->role === 'renter', fn($query) => $query->where('renter_id', auth()->id()))
-            ->when(auth()->user()->role === 'owner', fn($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
+            ->when(auth()->user()->role === 'renter', fn ($query) => $query->where('renter_id', auth()->id()))
+            ->when(auth()->user()->role === 'owner', fn ($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
                 $vehicleQuery->where('owner_id', auth()->id());
             }));
     }

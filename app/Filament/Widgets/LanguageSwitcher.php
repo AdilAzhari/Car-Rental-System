@@ -9,7 +9,7 @@ class LanguageSwitcher extends Widget
 {
     protected string $view = 'filament.widgets.language-switcher';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = -3;
 
@@ -26,13 +26,13 @@ class LanguageSwitcher extends Widget
             'en' => [
                 'name' => 'English',
                 'flag' => '🇺🇸',
-                'native' => 'English'
+                'native' => 'English',
             ],
             'ar' => [
-                'name' => 'Arabic', 
+                'name' => 'Arabic',
                 'flag' => '🇸🇦',
-                'native' => 'العربية'
-            ]
+                'native' => 'العربية',
+            ],
         ];
     }
 

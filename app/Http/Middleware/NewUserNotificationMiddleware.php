@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Filament\Actions\Action;
-use Illuminate\Http\Request;
 use Filament\Notifications\Notification;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class NewUserNotificationMiddleware
@@ -37,7 +37,7 @@ class NewUserNotificationMiddleware
                     ->send();
 
                 // Check if they need to change password
-                if (!$user->has_changed_default_password && $user->created_at->diffInDays(now()) >= 1) {
+                if (! $user->has_changed_default_password && $user->created_at->diffInDays(now()) >= 1) {
                     Notification::make()
                         ->title(__('notifications.password_reminder_title'))
                         ->body(__('notifications.password_reminder_admin_message'))

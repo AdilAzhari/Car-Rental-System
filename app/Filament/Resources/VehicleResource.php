@@ -623,11 +623,11 @@ class VehicleResource extends Resource
         $user = auth()->user();
 
         return parent::getEloquentQuery()
-            ->when($user && $user->role === UserRole::OWNER, fn($query) => $query->where('owner_id', $user->id))
-            ->when($user && $user->role === UserRole::RENTER, fn($query) =>
+            ->when($user && $user->role === UserRole::OWNER, fn ($query) => $query->where('owner_id', $user->id))
+            ->when($user && $user->role === UserRole::RENTER, fn ($query) =>
                 // Renters can only see published and available vehicles
                 $query->where('status', VehicleStatus::PUBLISHED->value)->where('is_available', true))
-            ->when(! $user, fn($query) =>
+            ->when(! $user, fn ($query) =>
                 // If no authenticated user, return empty results
                 $query->whereRaw('1 = 0'));
     }

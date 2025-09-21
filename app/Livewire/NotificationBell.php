@@ -9,6 +9,7 @@ use Livewire\Component;
 class NotificationBell extends Component
 {
     public $unreadCount = 0;
+
     public $notifications = [];
 
     public function mount(): void

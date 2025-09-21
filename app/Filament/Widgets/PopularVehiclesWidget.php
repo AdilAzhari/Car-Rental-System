@@ -67,7 +67,7 @@ class PopularVehiclesWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('total_revenue')
                     ->label(__('widgets.revenue'))
-                    ->state(fn($record) => $record->bookings()
+                    ->state(fn ($record) => $record->bookings()
                         ->where('status', 'completed')
                         ->sum('total_amount'))
                     ->money(config('app.currency', 'MYR'))

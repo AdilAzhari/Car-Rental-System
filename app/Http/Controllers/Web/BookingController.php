@@ -5,12 +5,10 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class BookingController extends Controller
 {
-
     public function index(): Response
     {
         $bookings = Booking::with(['vehicle', 'vehicle.images'])
@@ -19,7 +17,7 @@ class BookingController extends Controller
             ->paginate(10);
 
         return Inertia::render('MyBookingsPage', [
-            'bookings' => $bookings
+            'bookings' => $bookings,
         ]);
     }
 
@@ -33,7 +31,7 @@ class BookingController extends Controller
         $booking->load(['vehicle', 'vehicle.images', 'vehicle.owner', 'payments']);
 
         return Inertia::render('BookingDetailsPage', [
-            'booking' => $booking
+            'booking' => $booking,
         ]);
     }
 
@@ -44,7 +42,7 @@ class BookingController extends Controller
 
         return Inertia::render('PaymentReturn', [
             'booking' => $booking,
-            'message' => 'Payment processing completed. Please check your booking status.'
+            'message' => 'Payment processing completed. Please check your booking status.',
         ]);
     }
 }

@@ -57,7 +57,7 @@ return [
         'e_wallet' => 'محفظة إلكترونية',
         'paypal' => 'PayPal',
         'stripe' => 'Stripe',
-        'visa' => 'Visa'
+        'visa' => 'Visa',
     ],
 
     'vehicle_category' => [
@@ -77,7 +77,7 @@ return [
         'pending' => 'في انتظار الموافقة',
         'approved' => 'موافق عليه',
         'rejected' => 'مرفوض',
-        'active' => 'مفعل'
-    ]
+        'active' => 'مفعل',
+    ],
 
 ];

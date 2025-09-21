@@ -47,6 +47,6 @@ readonly class BookingCalculationDTO
 
     public function getFormattedTotal(): string
     {
-        return $this->currency . ' ' . number_format($this->totalAmount, 2);
+        return $this->currency.' '.number_format($this->totalAmount, 2);
     }
 }

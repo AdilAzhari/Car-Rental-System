@@ -271,7 +271,7 @@ class ActivityLogResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.until')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $query, array $data): Builder => $query
                         ->when(
                             $data['created_from'],
                             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),

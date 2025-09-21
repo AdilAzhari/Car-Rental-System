@@ -14,7 +14,7 @@ class CreateBooking extends CreateRecord
     {
         // If no renter_id is provided and user is admin, they can create bookings for others
         // If user is renter, set them as the renter
-        if (!isset($data['renter_id']) && auth()->user()->role === UserRole::RENTER) {
+        if (! isset($data['renter_id']) && auth()->user()->role === UserRole::RENTER) {
             $data['renter_id'] = auth()->id();
         }
 

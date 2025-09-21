@@ -6,16 +6,16 @@ use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\UserRole;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Carbon\Carbon;
 
 class BookingForm
 {
@@ -37,9 +37,8 @@ class BookingForm
 
                                 Select::make('vehicle_id')
                                     ->label(__('resources.vehicle'))
-                                    ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q)
-                                            => $q->where('status', 'published')->where('is_available', true)
-                                        )
+                                    ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('status', 'published')->where('is_available', true)
+                                    )
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Vehicle $record): string => "$record->make $record->model ($record->plate_number)")
                                     ->searchable(['make', 'model', 'plate_number'])
@@ -164,7 +163,7 @@ class BookingForm
         $endDate = $get('end_date');
         $dailyRate = $get('daily_rate');
 
-        if (!$startDate || !$endDate || !$dailyRate) {
+        if (! $startDate || ! $endDate || ! $dailyRate) {
             return;
         }
 

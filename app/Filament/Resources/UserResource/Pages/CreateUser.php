@@ -27,13 +27,13 @@ class CreateUser extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Generate a default password if not provided
-        if (!isset($data['password']) || empty($data['password'])) {
+        if (! isset($data['password']) || empty($data['password'])) {
             $data['password'] = Hash::make('password123');
         }
 
         // Set default values
         $data['email_verified_at'] = $data['is_verified'] ? now() : null;
-        
+
         return $data;
     }
 

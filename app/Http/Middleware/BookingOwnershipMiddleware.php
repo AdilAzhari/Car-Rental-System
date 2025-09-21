@@ -17,13 +17,13 @@ class BookingOwnershipMiddleware
     {
         $bookingId = $request->route('booking') ?? $request->route('id') ?? $request->booking_id;
 
-        if (!$bookingId) {
+        if (! $bookingId) {
             throw BookingException::unauthorized(0, auth()->id());
         }
 
         $booking = Booking::with(['vehicle'])->find($bookingId);
 
-        if (!$booking) {
+        if (! $booking) {
             throw BookingException::unauthorized($bookingId, auth()->id());
         }
 
@@ -34,7 +34,7 @@ class BookingOwnershipMiddleware
             || $booking->vehicle->owner_id === $user->id
             || $user->hasRole('admin');
 
-        if (!$isAuthorized) {
+        if (! $isAuthorized) {
             throw BookingException::unauthorized($bookingId, $user->id);
         }
 

@@ -231,10 +231,10 @@ describe('Vehicle Search and Filtering', function (): void {
             'renter_id' => $renter->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            'status' => 'confirmed'
+            'status' => 'confirmed',
         ]);
 
-        $response = $this->getJson('/api/cars?start_date=' . now()->addDays(6)->toDateString() . '&end_date=' . now()->addDays(8)->toDateString());
+        $response = $this->getJson('/api/cars?start_date='.now()->addDays(6)->toDateString().'&end_date='.now()->addDays(8)->toDateString());
 
         $response->assertSuccessful();
         $data = $response->json('data');
@@ -261,8 +261,8 @@ describe('Vehicle Search and Filtering', function (): void {
                 'meta' => [
                     'current_page',
                     'per_page',
-                    'total'
-                ]
+                    'total',
+                ],
             ]);
 
         expect($response->json('data'))->toHaveCount(10);
@@ -285,8 +285,8 @@ describe('Vehicle Details API', function (): void {
         $response->assertSuccessful()
             ->assertJsonStructure([
                 'data' => [
-                    'featured_image_url'
-                ]
+                    'featured_image_url',
+                ],
             ]);
 
         expect($response->json('data.featured_image_url'))->toBe('/storage/vehicles/test-car.jpg');
@@ -303,13 +303,13 @@ describe('Vehicle Details API', function (): void {
         VehicleImage::factory()->create([
             'vehicle_id' => $vehicle->id,
             'image_path' => 'vehicles/primary.jpg',
-            'is_primary' => true
+            'is_primary' => true,
         ]);
 
         VehicleImage::factory()->create([
             'vehicle_id' => $vehicle->id,
             'image_path' => 'vehicles/secondary.jpg',
-            'is_primary' => false
+            'is_primary' => false,
         ]);
 
         $response = $this->getJson("/api/cars/{$vehicle->id}");
@@ -321,10 +321,10 @@ describe('Vehicle Details API', function (): void {
                         '*' => [
                             'id',
                             'image_path',
-                            'is_primary'
-                        ]
-                    ]
-                ]
+                            'is_primary',
+                        ],
+                    ],
+                ],
             ]);
 
         $images = $response->json('data.images');
@@ -335,7 +335,7 @@ describe('Vehicle Details API', function (): void {
     it('includes owner information', function (): void {
         $owner = User::factory()->create([
             'name' => 'John Doe',
-            'email' => 'john@example.com'
+            'email' => 'john@example.com',
         ]);
 
         $vehicle = Vehicle::factory()->create([
@@ -352,9 +352,9 @@ describe('Vehicle Details API', function (): void {
                     'owner' => [
                         'id' => $owner->id,
                         'name' => 'John Doe',
-                        'email' => 'john@example.com'
-                    ]
-                ]
+                        'email' => 'john@example.com',
+                    ],
+                ],
             ]);
     });
 
@@ -402,6 +402,7 @@ describe('Repository Integration', function (): void {
 
         assertPerformance(function () use ($repository) {
             $request = new \Illuminate\Http\Request(['per_page' => 20]);
+
             return $repository->searchWithFilters($request);
         }, 1000, 20); // Max 1 second, 20MB memory
     });

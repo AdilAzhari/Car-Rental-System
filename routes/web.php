@@ -4,13 +4,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\CarController;
 use App\Http\Controllers\Web\ReservationController;
-use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Simple status route for testing
-Route::get('/status', function() {
+Route::get('/status', function () {
     return response()->json([
         'status' => 'OK',
         'timestamp' => now()->toISOString(),
@@ -21,12 +20,12 @@ Route::get('/status', function() {
 });
 
 // Test route for debugging
-Route::get('/test-inertia', function() {
+Route::get('/test-inertia', function () {
     return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
 });
 
 // Test route for basic Laravel functionality
-Route::get('/test-json', function() {
+Route::get('/test-json', function () {
     return response()->json([
         'message' => 'Laravel is working',
         'timestamp' => now(),
@@ -37,7 +36,7 @@ Route::get('/test-json', function() {
 });
 
 // Test route for view resolution
-Route::get('/test-view', function() {
+Route::get('/test-view', function () {
     return view('app-simple', ['message' => 'Test view works']);
 });
 
@@ -161,7 +160,6 @@ Route::middleware('auth')->get('/debug-filament-auth-protected', function () {
 
     return response()->json($response, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.filament.auth.protected');
-
 
 Route::get('/status', function () {
     return response()->json(['status' => 'ok'], 200);

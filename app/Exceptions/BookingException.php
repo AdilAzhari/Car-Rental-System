@@ -51,7 +51,7 @@ class BookingException extends Exception
     public static function paymentFailed(int $bookingId, string $reason): self
     {
         return new self(
-            'Payment processing failed: ' . $reason,
+            'Payment processing failed: '.$reason,
             ['booking_id' => $bookingId, 'payment_reason' => $reason],
             402
         );

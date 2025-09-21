@@ -8,7 +8,7 @@ return [
     'language' => 'اللغة',
     'switch_to' => 'التبديل إلى',
     'change_language' => 'تغيير اللغة',
-    
+
     // Navigation
     'navigation' => [
         'dashboard' => 'لوحة التحكم',
@@ -24,14 +24,14 @@ return [
         'activity_logs' => 'سجل الأنشطة',
         'settings' => 'الإعدادات',
     ],
-    
+
     // User Roles
     'roles' => [
         'admin' => 'مدير',
         'owner' => 'مالك مركبة',
         'renter' => 'مستأجر',
     ],
-    
+
     // Status
     'status' => [
         'active' => 'نشط',
@@ -44,7 +44,7 @@ return [
         'ongoing' => 'جاري',
         'cancelled' => 'ملغي',
     ],
-    
+
     // Common Actions
     'actions' => [
         'create' => 'إنشاء',
@@ -60,7 +60,7 @@ return [
         'export' => 'تصدير',
         'import' => 'استيراد',
     ],
-    
+
     // Forms
     'form' => [
         'required_field' => 'هذا الحقل مطلوب',
@@ -68,7 +68,7 @@ return [
         'password_min_length' => 'كلمة المرور يجب أن تكون على الأقل :min أحرف',
         'password_confirmation' => 'تأكيد كلمة المرور لا يتطابق',
     ],
-    
+
     // Messages
     'messages' => [
         'success_create' => 'تم الإنشاء بنجاح',

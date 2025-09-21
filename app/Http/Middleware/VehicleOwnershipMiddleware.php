@@ -17,13 +17,13 @@ class VehicleOwnershipMiddleware
     {
         $vehicleId = $request->route('vehicle') ?? $request->route('id') ?? $request->vehicle_id ?? $request->car_id;
 
-        if (!$vehicleId) {
+        if (! $vehicleId) {
             throw VehicleException::unauthorized(0, auth()->id());
         }
 
         $vehicle = Vehicle::find($vehicleId);
 
-        if (!$vehicle) {
+        if (! $vehicle) {
             throw VehicleException::notFound($vehicleId);
         }
 
@@ -32,7 +32,7 @@ class VehicleOwnershipMiddleware
         // Check if user is the vehicle owner or admin
         $isAuthorized = $vehicle->owner_id === $user->id || $user->hasRole('admin');
 
-        if (!$isAuthorized) {
+        if (! $isAuthorized) {
             throw VehicleException::unauthorized($vehicleId, $user->id);
         }
 

@@ -9,10 +9,7 @@ use App\Filament\Widgets\RecentBookingsWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\UserStatsWidget;
 use App\Filament\Widgets\VehicleStatsWidget;
-use App\Http\Middleware\LocalizationMiddleware;
-use App\Http\Middleware\NewUserNotificationMiddleware;
 use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
@@ -21,7 +18,6 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -51,11 +47,10 @@ class AdminPanelProvider extends PanelProvider
                 'panels::topbar.end',
                 fn (): string => view('filament.hooks.language-switcher')->render()
             )
-
-             ->renderHook(
-                 'panels::user-menu.start',
-                 fn (): string => view('filament.hooks.user-menu')->render()
-             )
+            ->renderHook(
+                'panels::user-menu.start',
+                fn (): string => view('filament.hooks.user-menu')->render()
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

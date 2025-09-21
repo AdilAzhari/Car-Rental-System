@@ -183,6 +183,6 @@ return [
             'position' => 'before',
             'decimal_places' => 2,
         ],
-    ]
+    ],
 
 ];

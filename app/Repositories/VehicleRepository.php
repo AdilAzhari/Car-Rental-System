@@ -46,7 +46,7 @@ class VehicleRepository
 
     public function checkAvailability(int $vehicleId, string $startDate, string $endDate): bool
     {
-        return !Vehicle::query()->findOrFail($vehicleId)
+        return ! Vehicle::query()->findOrFail($vehicleId)
             ->bookings()
             ->where('status', '!=', 'cancelled')
             ->where(function ($query) use ($startDate, $endDate): void {
@@ -81,7 +81,7 @@ class VehicleRepository
             'bookings as completed_bookings_count' => function ($query): void {
                 $query->where('status', 'completed');
             },
-            'reviews'
+            'reviews',
         ])
             ->withAvg('reviews', 'rating')
             ->withSum('bookings as total_revenue', 'total_amount')

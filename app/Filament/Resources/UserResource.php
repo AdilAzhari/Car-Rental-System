@@ -293,7 +293,7 @@ class UserResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.joined_until')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $query, array $data): Builder => $query
                         ->when(
                             $data['created_from'],
                             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
@@ -349,10 +349,10 @@ class UserResource extends Resource
         $user = auth()->user();
 
         return parent::getEloquentQuery()
-            ->when($user && $user->role !== UserRole::ADMIN, fn($query) =>
+            ->when($user && $user->role !== UserRole::ADMIN, fn ($query) =>
                 // Non-admin users can only see their own profile
                 $query->where('id', $user->id))
-            ->when(! $user, fn($query) =>
+            ->when(! $user, fn ($query) =>
                 // If no authenticated user, return empty results
                 $query->whereRaw('1 = 0'));
     }

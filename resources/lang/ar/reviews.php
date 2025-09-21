@@ -5,7 +5,7 @@ return [
     'title' => 'إدارة التقييمات',
     'singular' => 'تقييم',
     'plural' => 'تقييمات',
-    
+
     // Review Fields
     'fields' => [
         'reviewer' => 'المقيم',
@@ -26,7 +26,7 @@ return [
         'created_at' => 'تاريخ الإنشاء',
         'updated_at' => 'تاريخ التحديث',
     ],
-    
+
     // Review Sections
     'sections' => [
         'review_overview' => 'نظرة عامة على التقييم',
@@ -39,7 +39,7 @@ return [
         'review_categories' => 'فئات التقييم',
         'review_status_moderation' => 'حالة التقييم والاعتدال',
     ],
-    
+
     // Rating Options
     'rating_options' => [
         '1' => '1 نجمة (سيء جداً)',
@@ -48,14 +48,14 @@ return [
         '4' => '4 نجوم (جيد)',
         '5' => '5 نجوم (ممتاز)',
     ],
-    
+
     // Recommendation Options
     'recommendation_options' => [
         'yes' => 'نعم، أوصي بها',
         'no' => 'لا، لا أوصي بها',
         'maybe' => 'ربما، بشروط',
     ],
-    
+
     // Status Options
     'status_options' => [
         'pending' => 'في انتظار المراجعة',
@@ -63,14 +63,14 @@ return [
         'rejected' => 'مرفوض',
         'flagged' => 'مبلغ عنه للمراجعة',
     ],
-    
+
     // Visibility Options
     'visibility_options' => [
         'public' => 'عام (مرئي للجميع)',
         'private' => 'خاص (للإدارة فقط)',
         'hidden' => 'مخفي',
     ],
-    
+
     // Messages
     'messages' => [
         'review_created' => 'تم إنشاء التقييم بنجاح',
@@ -80,14 +80,14 @@ return [
         'review_rejected' => 'تم رفض التقييم',
         'review_flagged' => 'تم الإبلاغ عن التقييم',
     ],
-    
+
     // Placeholders
     'placeholders' => [
         'title' => 'ملخص موجز للتقييم',
         'review_text' => 'ما رأيك في تجربة تأجير المركبة؟',
         'admin_notes' => 'ملاحظات داخلية حول هذا التقييم...',
     ],
-    
+
     // Helper Text
     'helper_text' => [
         'rating' => 'تقييم من 1 (سيء) إلى 5 (ممتاز) نجوم',

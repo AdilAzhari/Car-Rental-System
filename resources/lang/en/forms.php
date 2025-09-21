@@ -26,7 +26,7 @@ return [
         'select' => 'Select',
         'choose' => 'Choose',
     ],
-    
+
     // Form Labels
     'labels' => [
         'required' => 'Required',
@@ -39,7 +39,7 @@ return [
         'browse_files' => 'Browse files',
         'no_file_selected' => 'No file selected',
     ],
-    
+
     // Form Messages
     'messages' => [
         'saved_successfully' => 'Saved successfully',
@@ -51,7 +51,7 @@ return [
         'confirm_delete' => 'Are you sure you want to delete this item?',
         'unsaved_changes' => 'You have unsaved changes',
     ],
-    
+
     // Validation Messages
     'validation' => [
         'required_field' => 'This field is required',

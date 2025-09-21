@@ -3,7 +3,7 @@
 return [
     'singular' => 'User',
     'plural' => 'Users',
-    
+
     'sections' => [
         'personal_information' => 'Personal Information',
         'account_settings' => 'Account Settings',
@@ -11,7 +11,7 @@ return [
         'verification_status' => 'Verification Status',
         'profile_details' => 'Profile Details',
     ],
-    
+
     'fields' => [
         'name' => 'Full Name',
         'email' => 'Email Address',
@@ -31,13 +31,13 @@ return [
         'is_active' => 'Account Active',
         'profile_photo' => 'Profile Photo',
     ],
-    
+
     'roles' => [
         'admin' => 'Administrator',
         'owner' => 'Vehicle Owner',
         'customer' => 'Customer',
     ],
-    
+
     'status' => [
         'active' => 'Active',
         'inactive' => 'Inactive',

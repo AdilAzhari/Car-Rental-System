@@ -229,7 +229,6 @@ class PaymentService
         ];
     }
 
-
     /**
      * Map Stripe payment status to our internal status
      */

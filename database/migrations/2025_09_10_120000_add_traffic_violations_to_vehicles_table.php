@@ -14,7 +14,7 @@ return new class extends Migration
             $table->integer('total_violations_count')->default(0)->after('violations_last_checked');
             $table->decimal('total_fines_amount', 10, 2)->default(0)->after('total_violations_count');
             $table->boolean('has_pending_violations')->default(false)->after('total_fines_amount');
-            
+
             $table->index(['has_pending_violations']);
             $table->index(['violations_last_checked']);
         });
@@ -25,13 +25,13 @@ return new class extends Migration
         Schema::table('car_rental_vehicles', function (Blueprint $table) {
             $table->dropIndex(['has_pending_violations']);
             $table->dropIndex(['violations_last_checked']);
-            
+
             $table->dropColumn([
                 'traffic_violations',
                 'violations_last_checked',
                 'total_violations_count',
                 'total_fines_amount',
-                'has_pending_violations'
+                'has_pending_violations',
             ]);
         });
     }

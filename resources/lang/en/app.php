@@ -8,7 +8,7 @@ return [
     'language' => 'Language',
     'switch_to' => 'Switch to',
     'change_language' => 'Change Language',
-    
+
     // Navigation
     'navigation' => [
         'dashboard' => 'Dashboard',
@@ -24,14 +24,14 @@ return [
         'activity_logs' => 'Activity Logs',
         'settings' => 'Settings',
     ],
-    
+
     // User Roles
     'roles' => [
         'admin' => 'Administrator',
         'owner' => 'Vehicle Owner',
         'renter' => 'Renter',
     ],
-    
+
     // Status
     'status' => [
         'active' => 'Active',
@@ -44,7 +44,7 @@ return [
         'ongoing' => 'Ongoing',
         'cancelled' => 'Cancelled',
     ],
-    
+
     // Common Actions
     'actions' => [
         'create' => 'Create',
@@ -60,7 +60,7 @@ return [
         'export' => 'Export',
         'import' => 'Import',
     ],
-    
+
     // Forms
     'form' => [
         'required_field' => 'This field is required',
@@ -68,7 +68,7 @@ return [
         'password_min_length' => 'Password must be at least :min characters',
         'password_confirmation' => 'Password confirmation does not match',
     ],
-    
+
     // Messages
     'messages' => [
         'success_create' => 'Created successfully',

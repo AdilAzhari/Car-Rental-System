@@ -26,7 +26,7 @@ describe('Architectural Integration Tests', function () {
             'is_available' => true,
             'status' => 'published',
             'transmission' => 'automatic',
-            'daily_rate' => 100
+            'daily_rate' => 100,
         ]);
 
         Vehicle::factory()->create([
@@ -34,13 +34,13 @@ describe('Architectural Integration Tests', function () {
             'is_available' => true,
             'status' => 'published',
             'transmission' => 'manual',
-            'daily_rate' => 80
+            'daily_rate' => 80,
         ]);
 
         $repository = app(VehicleRepository::class);
         $request = new Request([
             'transmission' => 'automatic',
-            'price_min' => 90
+            'price_min' => 90,
         ]);
 
         $results = $repository->searchWithFilters($request);
@@ -54,7 +54,7 @@ describe('Architectural Integration Tests', function () {
             'owner_id' => $this->owner->id,
             'is_available' => true,
             'status' => 'published',
-            'daily_rate' => 100
+            'daily_rate' => 100,
         ]);
 
         $dto = new CreateBookingDTO(
@@ -83,7 +83,7 @@ describe('Architectural Integration Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -91,7 +91,7 @@ describe('Architectural Integration Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         $response->assertSuccessful();
@@ -106,7 +106,7 @@ describe('Architectural Integration Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $transactionService = app(TransactionService::class);
@@ -125,7 +125,7 @@ describe('Architectural Integration Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => false, // Not available
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -133,7 +133,7 @@ describe('Architectural Integration Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         $response->assertStatus(400)
@@ -141,8 +141,8 @@ describe('Architectural Integration Tests', function () {
                 'success' => false,
                 'error_type' => 'vehicle_error',
                 'context' => [
-                    'vehicle_id' => $vehicle->id
-                ]
+                    'vehicle_id' => $vehicle->id,
+                ],
             ]);
     });
 
@@ -152,7 +152,7 @@ describe('Architectural Integration Tests', function () {
             'owner_id' => $this->owner->id,
             'is_available' => true,
             'status' => 'published',
-            'daily_rate' => 120.50
+            'daily_rate' => 120.50,
         ]);
 
         // Full flow: API → FormRequest → DTO → Action → Repository → Transaction → Event
@@ -164,7 +164,7 @@ describe('Architectural Integration Tests', function () {
                 'payment_method' => 'visa',
                 'payment_method_id' => 'pm_test_123',
                 'pickup_location' => 'Main Office',
-                'special_requests' => 'Child seat required'
+                'special_requests' => 'Child seat required',
             ]);
 
         // Verify API response
@@ -172,7 +172,7 @@ describe('Architectural Integration Tests', function () {
             ->assertJsonStructure([
                 'success',
                 'message',
-                'booking' => ['data']
+                'booking' => ['data'],
             ]);
 
         // Verify database state
@@ -201,7 +201,7 @@ describe('Performance Integration Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => User::factory()->create()->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $renter1 = User::factory()->create();
@@ -215,7 +215,7 @@ describe('Performance Integration Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDays(5)->toDateString(),
                 'end_date' => now()->addDays(7)->toDateString(),
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         $responses[] = $this->actingAs($renter2)
@@ -223,12 +223,12 @@ describe('Performance Integration Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDays(6)->toDateString(),
                 'end_date' => now()->addDays(8)->toDateString(),
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         // One should succeed, one should fail due to date conflict
-        $successCount = collect($responses)->filter(fn($r) => $r->successful())->count();
-        $conflictCount = collect($responses)->filter(fn($r) => $r->status() === 409)->count();
+        $successCount = collect($responses)->filter(fn ($r) => $r->successful())->count();
+        $conflictCount = collect($responses)->filter(fn ($r) => $r->status() === 409)->count();
 
         expect($successCount)->toBe(1)
             ->and($conflictCount)->toBe(1)
@@ -241,13 +241,13 @@ describe('Performance Integration Tests', function () {
         $vehicles = Vehicle::factory(10)->create([
             'owner_id' => $owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $renter = User::factory()->create();
 
         // Test repository performance
-        assertPerformance(function () use ($renter) {
+        assertPerformance(function () {
             $repository = app(VehicleRepository::class);
             $request = new Request(['per_page' => 10]);
 

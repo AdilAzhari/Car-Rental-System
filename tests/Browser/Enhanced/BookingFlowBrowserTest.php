@@ -9,7 +9,7 @@ describe('Booking Flow Browser Tests', function () {
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create([
             'email' => 'renter@test.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
 
         $this->vehicle = Vehicle::factory()->create([
@@ -19,7 +19,7 @@ describe('Booking Flow Browser Tests', function () {
             'year' => 2023,
             'daily_rate' => 100,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
     });
 
@@ -33,7 +33,7 @@ describe('Booking Flow Browser Tests', function () {
                 ->waitForText('Dashboard')
                 ->visit('/cars')
                 ->assertSee('Toyota Camry')
-                ->click('@vehicle-card-' . $this->vehicle->id)
+                ->click('@vehicle-card-'.$this->vehicle->id)
                 ->waitForText('Vehicle Details')
                 ->assertSee('$100')
                 ->click('@reserve-button')
@@ -118,7 +118,7 @@ describe('Vehicle Search and Filtering', function () {
             'seats' => 5,
             'daily_rate' => 100,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         Vehicle::factory()->create([
@@ -130,7 +130,7 @@ describe('Vehicle Search and Filtering', function () {
             'seats' => 5,
             'daily_rate' => 80,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
     });
 
@@ -179,7 +179,7 @@ describe('Enhanced UI Components', function () {
         $this->vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'featured_image' => 'test-image.jpg',
-            'gallery_images' => ['image1.jpg', 'image2.jpg', 'image3.jpg']
+            'gallery_images' => ['image1.jpg', 'image2.jpg', 'image3.jpg'],
         ]);
     });
 

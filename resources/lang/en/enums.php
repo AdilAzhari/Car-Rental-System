@@ -58,7 +58,7 @@ return [
         'e_wallet' => 'E-Wallet',
         'paypal' => 'PayPal',
         'stripe' => 'Stripe',
-        'visa' => 'Visa'
+        'visa' => 'Visa',
     ],
 
     'vehicle_category' => [

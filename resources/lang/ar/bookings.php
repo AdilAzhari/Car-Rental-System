@@ -5,7 +5,7 @@ return [
     'title' => 'إدارة الحجوزات',
     'singular' => 'حجز',
     'plural' => 'حجوزات',
-    
+
     // Booking Fields
     'fields' => [
         'booking_number' => 'رقم الحجز',
@@ -33,7 +33,7 @@ return [
         'driver_age' => 'عمر السائق',
         'additional_drivers' => 'سائقون إضافيون',
     ],
-    
+
     // Booking Sections
     'sections' => [
         'booking_overview' => 'نظرة عامة على الحجز',
@@ -43,7 +43,7 @@ return [
         'payment_details' => 'تفاصيل الدفع',
         'additional_information' => 'معلومات إضافية',
     ],
-    
+
     // Booking Status
     'status_options' => [
         'pending' => 'في الانتظار',
@@ -53,7 +53,7 @@ return [
         'cancelled' => 'ملغي',
         'expired' => 'منتهي الصلاحية',
     ],
-    
+
     // Payment Status
     'payment_status_options' => [
         'pending' => 'في الانتظار',
@@ -62,7 +62,7 @@ return [
         'refunded' => 'مسترد',
         'failed' => 'فشل',
     ],
-    
+
     // Messages
     'messages' => [
         'booking_created' => 'تم إنشاء الحجز بنجاح',

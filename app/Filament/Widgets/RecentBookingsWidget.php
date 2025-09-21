@@ -2,8 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\BookingStatus;
-use App\Helpers\CurrencyHelper;
 use App\Models\Booking;
 use Filament\Actions\Action;
 use Filament\Tables;
@@ -67,7 +65,7 @@ class RecentBookingsWidget extends BaseWidget
                         'primary' => 'completed',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn ($state) => __('widgets.status_' . $state)),
+                    ->formatStateUsing(fn ($state) => __('widgets.status_'.$state)),
 
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label(__('widgets.amount'))

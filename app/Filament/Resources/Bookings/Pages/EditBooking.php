@@ -40,10 +40,10 @@ class EditBooking extends EditRecord
                         'status' => 'confirmed',
                     ]);
 
-                    if (!empty($data['notes'])) {
+                    if (! empty($data['notes'])) {
                         $existingNotes = $this->record->special_requests;
                         $this->record->update([
-                            'special_requests' => $existingNotes ? $existingNotes . "\n\nAdmin Notes: " . $data['notes'] : "Admin Notes: " . $data['notes']
+                            'special_requests' => $existingNotes ? $existingNotes."\n\nAdmin Notes: ".$data['notes'] : 'Admin Notes: '.$data['notes'],
                         ]);
                     }
 
@@ -72,7 +72,7 @@ class EditBooking extends EditRecord
                         'payment_status' => 'paid',
                     ]);
 
-                    if (!$this->record->payments()->exists()) {
+                    if (! $this->record->payments()->exists()) {
                         $this->record->payments()->create([
                             'amount' => $this->record->total_amount,
                             'payment_method' => $this->record->payment_method ?: 'cash',
@@ -85,7 +85,7 @@ class EditBooking extends EditRecord
                         $payment = $this->record->payments()->latest()->first();
                         $payment->update([
                             'status' => 'paid',
-                            'notes' => ($payment->notes ? $payment->notes . "\n\n" : '') . 'Admin confirmed: ' . $data['payment_notes'],
+                            'notes' => ($payment->notes ? $payment->notes."\n\n" : '').'Admin confirmed: '.$data['payment_notes'],
                             'processed_at' => now(),
                         ]);
                     }

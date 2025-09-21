@@ -5,7 +5,7 @@ return [
     'title' => 'إدارة سجل الأنشطة',
     'singular' => 'نشاط',
     'plural' => 'سجل الأنشطة',
-    
+
     // Activity Log Fields
     'fields' => [
         'id' => 'معرف السجل',
@@ -21,7 +21,7 @@ return [
         'user' => 'المستخدم',
         'role' => 'الدور',
     ],
-    
+
     // Activity Sections
     'sections' => [
         'activity_overview' => 'نظرة عامة على النشاط',
@@ -30,7 +30,7 @@ return [
         'activity_properties' => 'خصائص النشاط',
         'activity_information' => 'معلومات النشاط',
     ],
-    
+
     // Event Types
     'events' => [
         'created' => 'إنشاء',
@@ -40,7 +40,7 @@ return [
         'logged_in' => 'تسجيل دخول',
         'logged_out' => 'تسجيل خروج',
     ],
-    
+
     // Subject Types
     'subject_types' => [
         'User' => 'مستخدم',
@@ -50,7 +50,7 @@ return [
         'Payment' => 'دفعة',
         'System' => 'النظام',
     ],
-    
+
     // Filters
     'filters' => [
         'log_type' => 'نوع السجل',
@@ -62,7 +62,7 @@ return [
         'created_from' => 'من',
         'created_until' => 'إلى',
     ],
-    
+
     // Messages
     'messages' => [
         'activity_deleted' => 'تم حذف النشاط بنجاح',
@@ -70,7 +70,7 @@ return [
         'no_properties' => 'لا توجد خصائص',
         'items_count' => ':count عنصر',
     ],
-    
+
     // Activity Descriptions
     'descriptions' => [
         'vehicle_added' => 'تمت إضافة المركبة إلى النظام',

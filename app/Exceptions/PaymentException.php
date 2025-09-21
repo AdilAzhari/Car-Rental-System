@@ -29,7 +29,7 @@ class PaymentException extends Exception
     public static function processingFailed(string $reason, ?array $details = null): self
     {
         return new self(
-            'Payment processing failed: ' . $reason,
+            'Payment processing failed: '.$reason,
             ['reason' => $reason, 'details' => $details],
             402
         );
@@ -56,7 +56,7 @@ class PaymentException extends Exception
     public static function refundFailed(int $paymentId, string $reason): self
     {
         return new self(
-            'Refund processing failed: ' . $reason,
+            'Refund processing failed: '.$reason,
             ['payment_id' => $paymentId, 'reason' => $reason],
             402
         );
@@ -74,7 +74,7 @@ class PaymentException extends Exception
     public static function gatewayError(string $gateway, string $error): self
     {
         return new self(
-            'Payment gateway error: ' . $error,
+            'Payment gateway error: '.$error,
             ['gateway' => $gateway, 'error' => $error],
             502
         );

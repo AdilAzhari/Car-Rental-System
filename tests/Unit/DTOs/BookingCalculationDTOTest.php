@@ -39,7 +39,7 @@ describe('BookingCalculationDTO', function () {
 
         expect($array)->toHaveKeys([
             'daily_rate', 'total_days', 'subtotal',
-            'insurance_fee', 'tax_amount', 'total_amount', 'currency'
+            'insurance_fee', 'tax_amount', 'total_amount', 'currency',
         ]);
         expect($array['daily_rate'])->toBeString();
         expect($array['total_amount'])->toBeString();

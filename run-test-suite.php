@@ -6,7 +6,6 @@
  * This script runs the complete test suite for the Car Rental System
  * covering all architectural patterns and components.
  */
-
 class TestSuiteRunner
 {
     private array $testGroups = [
@@ -14,38 +13,38 @@ class TestSuiteRunner
             'description' => 'Unit Tests - Models, DTOs, Services',
             'path' => 'tests/Unit',
             'parallel' => true,
-            'timeout' => 60
+            'timeout' => 60,
         ],
         'integration' => [
             'description' => 'Integration Tests - Architectural Patterns',
             'path' => 'tests/Integration',
             'parallel' => false,
-            'timeout' => 120
+            'timeout' => 120,
         ],
         'feature' => [
             'description' => 'Feature Tests - API Endpoints',
             'path' => 'tests/Feature',
             'parallel' => true,
-            'timeout' => 180
+            'timeout' => 180,
         ],
         'frontend' => [
             'description' => 'Frontend Tests - Vue.js Components',
             'path' => 'tests/Frontend',
             'parallel' => true,
-            'timeout' => 120
+            'timeout' => 120,
         ],
         'browser' => [
             'description' => 'Browser Tests - E2E User Flows',
             'path' => 'tests/Browser',
             'parallel' => false,
-            'timeout' => 300
+            'timeout' => 300,
         ],
         'performance' => [
             'description' => 'Performance Tests - Load & Speed',
             'path' => 'tests/Performance',
             'parallel' => false,
-            'timeout' => 600
-        ]
+            'timeout' => 600,
+        ],
     ];
 
     private array $results = [];
@@ -58,8 +57,9 @@ class TestSuiteRunner
         $parallel = $options['parallel'] ?? false;
 
         foreach ($groups as $group) {
-            if (!isset($this->testGroups[$group])) {
+            if (! isset($this->testGroups[$group])) {
                 $this->output("❌ Unknown test group: {$group}", 'error');
+
                 continue;
             }
 
@@ -94,6 +94,7 @@ class TestSuiteRunner
 
                 if ($options['stop_on_failure'] ?? false) {
                     $this->output("\n🛑 Stopping due to failure", 'error');
+
                     return;
                 }
             }
@@ -173,18 +174,18 @@ class TestSuiteRunner
             [
                 0 => ['pipe', 'r'],
                 1 => ['pipe', 'w'],
-                2 => ['pipe', 'w']
+                2 => ['pipe', 'w'],
             ],
             $pipes,
             getcwd(),
             null
         );
 
-        if (!is_resource($process)) {
+        if (! is_resource($process)) {
             return [
                 'success' => false,
                 'output' => 'Failed to start process',
-                'duration' => 0
+                'duration' => 0,
             ];
         }
 
@@ -199,10 +200,11 @@ class TestSuiteRunner
 
             if (microtime(true) - $startTime > $timeout) {
                 proc_terminate($process);
+
                 return [
                     'success' => false,
                     'output' => "Test timeout after {$timeout} seconds",
-                    'duration' => $timeout
+                    'duration' => $timeout,
                 ];
             }
         }
@@ -212,34 +214,34 @@ class TestSuiteRunner
 
         return [
             'success' => $exitCode === 0,
-            'output' => $output . $error,
-            'duration' => $duration
+            'output' => $output.$error,
+            'duration' => $duration,
         ];
     }
 
     private function displayHeader(): void
     {
-        $this->output("
+        $this->output('
 ╔══════════════════════════════════════════════════════════════╗
 ║                  CAR RENTAL SYSTEM TEST SUITE               ║
 ║                      Comprehensive Testing                  ║
 ╚══════════════════════════════════════════════════════════════╝
-", 'header');
+', 'header');
 
-        $this->output("🎯 Test Coverage Areas:", 'info');
-        $this->output("   • Unit Tests (Models, DTOs, Repositories, Services, Events)");
-        $this->output("   • Integration Tests (Architectural Patterns)");
-        $this->output("   • Feature Tests (API Endpoints, Web Controllers)");
-        $this->output("   • Frontend Tests (Vue.js Components, Pages)");
-        $this->output("   • Browser Tests (E2E User Flows, Complete Application Flow)");
-        $this->output("   • Performance Tests (Load & Speed, Database Performance)");
-        $this->output("");
+        $this->output('🎯 Test Coverage Areas:', 'info');
+        $this->output('   • Unit Tests (Models, DTOs, Repositories, Services, Events)');
+        $this->output('   • Integration Tests (Architectural Patterns)');
+        $this->output('   • Feature Tests (API Endpoints, Web Controllers)');
+        $this->output('   • Frontend Tests (Vue.js Components, Pages)');
+        $this->output('   • Browser Tests (E2E User Flows, Complete Application Flow)');
+        $this->output('   • Performance Tests (Load & Speed, Database Performance)');
+        $this->output('');
     }
 
     private function displaySummary(): void
     {
-        $this->output("\n" . str_repeat('=', 60), 'dim');
-        $this->output("📊 TEST SUITE SUMMARY", 'header');
+        $this->output("\n".str_repeat('=', 60), 'dim');
+        $this->output('📊 TEST SUITE SUMMARY', 'header');
         $this->output(str_repeat('=', 60), 'dim');
 
         $totalTests = 0;
@@ -266,7 +268,7 @@ class TestSuiteRunner
             $percentage = $groupTotal > 0 ? round(($groupPassed / $groupTotal) * 100, 1) : 0;
 
             $this->output(sprintf(
-                "%s %s: %d/%d passed (%.1f%%) in %.2fs",
+                '%s %s: %d/%d passed (%.1f%%) in %.2fs',
                 $status,
                 ucfirst($group),
                 $groupPassed,
@@ -282,7 +284,7 @@ class TestSuiteRunner
         $overallStatus = $totalPassed === $totalTests ? '🎉' : '⚠️';
 
         $this->output(sprintf(
-            "%s OVERALL: %d/%d tests passed (%.1f%%) in %.2fs",
+            '%s OVERALL: %d/%d tests passed (%.1f%%) in %.2fs',
             $overallStatus,
             $totalPassed,
             $totalTests,
@@ -306,13 +308,13 @@ class TestSuiteRunner
             'error' => "\033[1;31m",     // Bright red
             'warning' => "\033[1;33m",   // Bright yellow
             'dim' => "\033[0;37m",       // Gray
-            'default' => "\033[0m"       // Reset
+            'default' => "\033[0m",       // Reset
         ];
 
         $color = $colors[$type] ?? $colors['default'];
         $reset = $colors['default'];
 
-        echo $color . $message . $reset . "\n";
+        echo $color.$message.$reset."\n";
     }
 }
 
@@ -370,10 +372,10 @@ if (php_sapi_name() === 'cli') {
         }
     }
 
-    if (!empty($groups)) {
+    if (! empty($groups)) {
         $options['groups'] = $groups;
     }
 
-    $runner = new TestSuiteRunner();
+    $runner = new TestSuiteRunner;
     $runner->runFullSuite($options);
 }

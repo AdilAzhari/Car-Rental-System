@@ -51,7 +51,7 @@ describe('CreateBookingDTO', function () {
         expect($array)->toHaveKeys([
             'car_id', 'renter_id', 'start_date', 'end_date',
             'duration_days', 'payment_method', 'payment_method_id',
-            'pickup_location', 'dropoff_location', 'special_requests'
+            'pickup_location', 'dropoff_location', 'special_requests',
         ]);
         expect($array['car_id'])->toBe(1);
         expect($array['start_date'])->toBe('2025-01-01');

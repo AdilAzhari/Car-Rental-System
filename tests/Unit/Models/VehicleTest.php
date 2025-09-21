@@ -133,13 +133,13 @@ describe('Vehicle Model', function (): void {
             VehicleImage::factory()->create([
                 'vehicle_id' => $this->vehicle->id,
                 'image_path' => 'vehicles/primary.jpg',
-                'is_primary' => true
+                'is_primary' => true,
             ]);
 
             VehicleImage::factory()->create([
                 'vehicle_id' => $this->vehicle->id,
                 'image_path' => 'vehicles/secondary.jpg',
-                'is_primary' => false
+                'is_primary' => false,
             ]);
 
             $this->vehicle->load('images');
@@ -152,7 +152,7 @@ describe('Vehicle Model', function (): void {
             VehicleImage::factory()->create([
                 'vehicle_id' => $this->vehicle->id,
                 'image_path' => 'vehicles/first.jpg',
-                'is_primary' => false
+                'is_primary' => false,
             ]);
 
             $this->vehicle->load('images');
@@ -164,7 +164,7 @@ describe('Vehicle Model', function (): void {
         it('falls back to featured_image field', function (): void {
             $vehicle = Vehicle::factory()->create([
                 'owner_id' => $this->user->id,
-                'featured_image' => 'vehicles/featured.jpg'
+                'featured_image' => 'vehicles/featured.jpg',
             ]);
 
             $url = $vehicle->getFeaturedImageUrl();
@@ -176,7 +176,7 @@ describe('Vehicle Model', function (): void {
             $vehicle = Vehicle::factory()->create([
                 'owner_id' => $this->user->id,
                 'featured_image' => null,
-                'gallery_images' => ['vehicles/gallery1.jpg', 'vehicles/gallery2.jpg']
+                'gallery_images' => ['vehicles/gallery1.jpg', 'vehicles/gallery2.jpg'],
             ]);
 
             $url = $vehicle->getFeaturedImageUrl();
@@ -188,7 +188,7 @@ describe('Vehicle Model', function (): void {
             $vehicle = Vehicle::factory()->create([
                 'owner_id' => $this->user->id,
                 'featured_image' => null,
-                'gallery_images' => null
+                'gallery_images' => null,
             ]);
 
             expect($vehicle->getFeaturedImageUrl())->toBeNull();
@@ -205,14 +205,14 @@ describe('Vehicle Model', function (): void {
                 'owner_id' => $this->owner->id,
                 'is_available' => true,
                 'status' => VehicleStatus::PUBLISHED->value,
-                'insurance_expiry' => now()->addYear()
+                'insurance_expiry' => now()->addYear(),
             ]);
 
             Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
                 'is_available' => false,
                 'status' => VehicleStatus::PUBLISHED->value,
-                'insurance_expiry' => now()->addYear()
+                'insurance_expiry' => now()->addYear(),
             ]);
 
             $availableVehicles = Vehicle::availableForRent()->get();
@@ -224,13 +224,13 @@ describe('Vehicle Model', function (): void {
         it('filters vehicles by owner', function (): void {
             Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
-                'status' => VehicleStatus::PUBLISHED->value
+                'status' => VehicleStatus::PUBLISHED->value,
             ]);
 
             $otherOwner = User::factory()->owner()->create();
             Vehicle::factory()->create([
                 'owner_id' => $otherOwner->id,
-                'status' => VehicleStatus::PUBLISHED->value
+                'status' => VehicleStatus::PUBLISHED->value,
             ]);
 
             $ownerVehicles = Vehicle::byOwner($this->owner->id)->get();
@@ -242,17 +242,17 @@ describe('Vehicle Model', function (): void {
         it('filters by price range', function (): void {
             $vehicle1 = Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
-                'daily_rate' => 50
+                'daily_rate' => 50,
             ]);
 
             $vehicle2 = Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
-                'daily_rate' => 100
+                'daily_rate' => 100,
             ]);
 
             $vehicle3 = Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
-                'daily_rate' => 200
+                'daily_rate' => 200,
             ]);
 
             $midRangeVehicles = Vehicle::priceRange(90, 110)->where('owner_id', $this->owner->id)->get();
@@ -266,14 +266,14 @@ describe('Vehicle Model', function (): void {
                 'owner_id' => $this->owner->id,
                 'is_available' => true,
                 'status' => VehicleStatus::PUBLISHED->value,
-                'insurance_expiry' => now()->addYear()
+                'insurance_expiry' => now()->addYear(),
             ]);
 
             $vehicle2 = Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
                 'is_available' => true,
                 'status' => VehicleStatus::PUBLISHED->value,
-                'insurance_expiry' => now()->addYear()
+                'insurance_expiry' => now()->addYear(),
             ]);
 
             $renter = User::factory()->renter()->create();
@@ -284,7 +284,7 @@ describe('Vehicle Model', function (): void {
                 'renter_id' => $renter->id,
                 'start_date' => now()->addDays(5),
                 'end_date' => now()->addDays(7),
-                'status' => 'confirmed'
+                'status' => 'confirmed',
             ]);
 
             $availableVehicles = Vehicle::availableForRent(

@@ -1,6 +1,5 @@
 <?php
 
-use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Vehicle;

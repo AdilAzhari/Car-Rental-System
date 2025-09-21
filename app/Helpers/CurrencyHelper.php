@@ -12,7 +12,7 @@ class CurrencyHelper
         $currency = $currency ?? config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
 
-        if (!$currencyConfig) {
+        if (! $currencyConfig) {
             // Fallback to default currency if specified currency is not supported
             $currency = config('app.currency', 'MYR');
             $currencyConfig = config("app.currencies.{$currency}");
@@ -25,8 +25,8 @@ class CurrencyHelper
         $formattedAmount = number_format($amount, $decimalPlaces);
 
         return $position === 'before'
-            ? $symbol . $formattedAmount
-            : $formattedAmount . $symbol;
+            ? $symbol.$formattedAmount
+            : $formattedAmount.$symbol;
     }
 
     /**

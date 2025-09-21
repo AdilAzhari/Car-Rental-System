@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 class TransactionService
 {
     private const MAX_RETRIES = 3;
+
     private const RETRY_DELAY_MS = 100;
 
     public function executeWithRetry(Closure $callback, int $maxRetries = self::MAX_RETRIES): mixed
@@ -54,16 +55,16 @@ class TransactionService
     public function executeWithLock(string $lockName, Closure $callback, int $timeout = 10): mixed
     {
         return DB::transaction(function () use ($lockName, $callback, $timeout) {
-            $lockAcquired = DB::select("SELECT GET_LOCK(?, ?) as acquired", [$lockName, $timeout]);
+            $lockAcquired = DB::select('SELECT GET_LOCK(?, ?) as acquired', [$lockName, $timeout]);
 
-            if (!$lockAcquired[0]->acquired) {
+            if (! $lockAcquired[0]->acquired) {
                 throw new \RuntimeException("Could not acquire lock: {$lockName}");
             }
 
             try {
                 return $callback();
             } finally {
-                DB::select("SELECT RELEASE_LOCK(?)", [$lockName]);
+                DB::select('SELECT RELEASE_LOCK(?)', [$lockName]);
             }
         });
     }

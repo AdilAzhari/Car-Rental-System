@@ -14,6 +14,7 @@ enum PaymentStatus: string
     case PROCESSING = 'processing';
 
     case UNPAID = 'unpaid';
+
     /**
      * Get all enum values
      */

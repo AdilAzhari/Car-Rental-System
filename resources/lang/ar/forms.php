@@ -26,7 +26,7 @@ return [
         'select' => 'تحديد',
         'choose' => 'اختيار',
     ],
-    
+
     // Form Labels
     'labels' => [
         'required' => 'مطلوب',
@@ -39,7 +39,7 @@ return [
         'browse_files' => 'تصفح الملفات',
         'no_file_selected' => 'لم يتم تحديد ملف',
     ],
-    
+
     // Form Messages
     'messages' => [
         'saved_successfully' => 'تم الحفظ بنجاح',
@@ -51,7 +51,7 @@ return [
         'confirm_delete' => 'هل أنت متأكد من حذف هذا العنصر؟',
         'unsaved_changes' => 'لديك تغييرات غير محفوظة',
     ],
-    
+
     // Validation Messages
     'validation' => [
         'required_field' => 'هذا الحقل مطلوب',

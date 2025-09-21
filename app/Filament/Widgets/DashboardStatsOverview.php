@@ -73,11 +73,11 @@ class DashboardStatsOverview extends BaseWidget
         $reviewsThisMonth = Review::where('created_at', '>=', $currentMonth)->count();
 
         // Generate chart data for the last 7 days
-        $last7Days = collect(range(0, 6))->map(fn($i) => now()->subDays($i)->format('Y-m-d'))->reverse();
+        $last7Days = collect(range(0, 6))->map(fn ($i) => now()->subDays($i)->format('Y-m-d'))->reverse();
 
-        $bookingChart = $last7Days->map(fn($date) => Booking::whereDate('created_at', $date)->count())->toArray();
+        $bookingChart = $last7Days->map(fn ($date) => Booking::whereDate('created_at', $date)->count())->toArray();
 
-        $revenueChart = $last7Days->map(fn($date) => Payment::where('payment_status', 'confirmed')
+        $revenueChart = $last7Days->map(fn ($date) => Payment::where('payment_status', 'confirmed')
             ->whereDate('created_at', $date)
             ->sum('amount'))->toArray();
 

@@ -22,7 +22,7 @@ describe('VehicleRepository', function () {
             'transmission' => 'automatic',
             'fuel_type' => 'petrol',
             'seats' => 5,
-            'daily_rate' => 100
+            'daily_rate' => 100,
         ]);
 
         $vehicle2 = Vehicle::factory()->create([
@@ -32,14 +32,14 @@ describe('VehicleRepository', function () {
             'transmission' => 'manual',
             'fuel_type' => 'hybrid',
             'seats' => 7,
-            'daily_rate' => 150
+            'daily_rate' => 150,
         ]);
 
         $request = new Request([
             'transmission' => 'automatic',
             'price_min' => 50,
             'price_max' => 120,
-            'per_page' => 10
+            'per_page' => 10,
         ]);
 
         $results = $this->repository->searchWithFilters($request);
@@ -56,7 +56,7 @@ describe('VehicleRepository', function () {
         Review::factory()->create([
             'vehicle_id' => $vehicle->id,
             'renter_id' => $this->renter->id,
-            'rating' => 5
+            'rating' => 5,
         ]);
 
         $result = $this->repository->findWithDetails($vehicle->id);
@@ -79,7 +79,7 @@ describe('VehicleRepository', function () {
             'renter_id' => $this->renter->id,
             'start_date' => '2025-01-10',
             'end_date' => '2025-01-15',
-            'status' => 'confirmed'
+            'status' => 'confirmed',
         ]);
 
         // Check availability for overlapping dates
@@ -121,21 +121,21 @@ describe('VehicleRepository', function () {
             'vehicle_id' => $vehicle->id,
             'renter_id' => $this->renter->id,
             'status' => 'completed',
-            'total_amount' => 500
+            'total_amount' => 500,
         ]);
 
         Booking::factory()->create([
             'vehicle_id' => $vehicle->id,
             'renter_id' => $this->renter->id,
             'status' => 'pending',
-            'total_amount' => 300
+            'total_amount' => 300,
         ]);
 
         // Create reviews
         Review::factory()->create([
             'vehicle_id' => $vehicle->id,
             'renter_id' => $this->renter->id,
-            'rating' => 4.5
+            'rating' => 4.5,
         ]);
 
         $stats = $this->repository->getVehicleStatistics($vehicle->id);
@@ -143,7 +143,7 @@ describe('VehicleRepository', function () {
         expect($stats)->toHaveKeys([
             'total_bookings', 'completed_bookings',
             'total_reviews', 'average_rating',
-            'total_revenue', 'occupancy_rate'
+            'total_revenue', 'occupancy_rate',
         ]);
         expect($stats['total_bookings'])->toBe(2);
         expect($stats['completed_bookings'])->toBe(1);
@@ -155,7 +155,7 @@ describe('VehicleRepository', function () {
         // Vehicle with expired insurance
         $expiredInsurance = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
-            'insurance_expiry' => now()->subDays(5)
+            'insurance_expiry' => now()->subDays(5),
         ]);
 
         // Vehicle with low rating
@@ -166,13 +166,13 @@ describe('VehicleRepository', function () {
         Review::factory()->create([
             'vehicle_id' => $lowRatedVehicle->id,
             'renter_id' => $this->renter->id,
-            'rating' => 1
+            'rating' => 1,
         ]);
 
         // Vehicle with no issues
         Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
-            'insurance_expiry' => now()->addYear()
+            'insurance_expiry' => now()->addYear(),
         ]);
 
         $needingAttention = $this->repository->getVehiclesNeedingAttention($this->owner->id);
@@ -187,13 +187,13 @@ describe('VehicleRepository', function () {
         $popular = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $unpopular = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         // Create more bookings for popular vehicle

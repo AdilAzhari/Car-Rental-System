@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\DatabaseMessage;
 
 class WelcomeNewUser extends Notification implements ShouldQueue
 {
@@ -25,12 +24,12 @@ class WelcomeNewUser extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject(__('notifications.welcome_subject'))
-                    ->greeting(__('notifications.welcome_greeting', ['name' => $notifiable->name]))
-                    ->line(__('notifications.welcome_message'))
-                    ->line(__('notifications.welcome_security_notice'))
-                    ->action(__('notifications.update_profile_action'), url('/admin/profile'))
-                    ->line(__('notifications.welcome_thank_you'));
+            ->subject(__('notifications.welcome_subject'))
+            ->greeting(__('notifications.welcome_greeting', ['name' => $notifiable->name]))
+            ->line(__('notifications.welcome_message'))
+            ->line(__('notifications.welcome_security_notice'))
+            ->action(__('notifications.update_profile_action'), url('/admin/profile'))
+            ->line(__('notifications.welcome_thank_you'));
     }
 
     public function toDatabase(object $notifiable): array

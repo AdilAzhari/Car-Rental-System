@@ -1,7 +1,6 @@
 <?php
 
 use App\Events\BookingCreated;
-use App\Exceptions\BookingException;
 use App\Exceptions\VehicleException;
 use App\Models\Booking;
 use App\Models\User;
@@ -21,7 +20,7 @@ describe('BookingController Enhanced Tests', function () {
             'owner_id' => $this->owner->id,
             'is_available' => true,
             'status' => 'published',
-            'daily_rate' => 100
+            'daily_rate' => 100,
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -32,7 +31,7 @@ describe('BookingController Enhanced Tests', function () {
                 'payment_method' => 'visa',
                 'payment_method_id' => 'pm_test_123',
                 'pickup_location' => 'Downtown Office',
-                'special_requests' => 'Need GPS and child seat'
+                'special_requests' => 'Need GPS and child seat',
             ]);
 
         $response->assertSuccessful()
@@ -43,9 +42,9 @@ describe('BookingController Enhanced Tests', function () {
                     'data' => [
                         'id', 'status', 'total_amount',
                         'start_date', 'end_date',
-                        'pickup_location', 'special_requests'
-                    ]
-                ]
+                        'pickup_location', 'special_requests',
+                    ],
+                ],
             ]);
 
         expect(Booking::count())->toBe(1);
@@ -59,7 +58,7 @@ describe('BookingController Enhanced Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $this->actingAs($this->renter)
@@ -67,7 +66,7 @@ describe('BookingController Enhanced Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         Event::assertDispatched(BookingCreated::class, function ($event) {
@@ -80,7 +79,7 @@ describe('BookingController Enhanced Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => false,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -88,13 +87,13 @@ describe('BookingController Enhanced Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
-                'payment_method' => 'visa'
+                'payment_method' => 'visa',
             ]);
 
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
-                'error_type' => 'vehicle_error'
+                'error_type' => 'vehicle_error',
             ]);
     });
 
@@ -102,7 +101,7 @@ describe('BookingController Enhanced Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         // Create existing booking
@@ -111,7 +110,7 @@ describe('BookingController Enhanced Tests', function () {
             'renter_id' => $this->renter->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            'status' => 'confirmed'
+            'status' => 'confirmed',
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -119,7 +118,7 @@ describe('BookingController Enhanced Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDays(6)->toDateString(),
                 'end_date' => now()->addDays(8)->toDateString(),
-                'payment_method' => 'visa'
+                'payment_method' => 'visa',
             ]);
 
         $response->assertStatus(409)
@@ -127,8 +126,8 @@ describe('BookingController Enhanced Tests', function () {
                 'success' => false,
                 'error_type' => 'booking_error',
                 'context' => [
-                    'vehicle_id' => $vehicle->id
-                ]
+                    'vehicle_id' => $vehicle->id,
+                ],
             ]);
     });
 
@@ -136,7 +135,7 @@ describe('BookingController Enhanced Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         // Test missing payment_method_id for visa payment
@@ -145,7 +144,7 @@ describe('BookingController Enhanced Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
-                'payment_method' => 'visa'
+                'payment_method' => 'visa',
                 // Missing payment_method_id
             ]);
 
@@ -158,7 +157,7 @@ describe('BookingController Enhanced Tests', function () {
             'owner_id' => $this->owner->id,
             'is_available' => true,
             'status' => 'published',
-            'daily_rate' => 120.50
+            'daily_rate' => 120.50,
         ]);
 
         $response = $this->actingAs($this->renter)
@@ -166,7 +165,7 @@ describe('BookingController Enhanced Tests', function () {
                 'car_id' => $vehicle->id,
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(4)->toDateString(), // 4 days
-                'payment_method' => 'cash'
+                'payment_method' => 'cash',
             ]);
 
         $response->assertSuccessful();
@@ -185,7 +184,7 @@ describe('BookingController Enhanced Tests', function () {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         // Simulate a scenario where booking creation might fail
@@ -196,7 +195,7 @@ describe('BookingController Enhanced Tests', function () {
                 'start_date' => now()->addDay()->toDateString(),
                 'end_date' => now()->addDays(2)->toDateString(),
                 'payment_method' => 'visa',
-                'payment_method_id' => 'pm_test_123'
+                'payment_method_id' => 'pm_test_123',
             ]);
 
         if ($response->successful()) {
@@ -217,7 +216,7 @@ describe('Booking Authorization Middleware', function () {
         $this->vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
         $this->booking = Booking::factory()->create([
             'vehicle_id' => $this->vehicle->id,
-            'renter_id' => $this->renter->id
+            'renter_id' => $this->renter->id,
         ]);
     });
 
@@ -242,7 +241,7 @@ describe('Booking Authorization Middleware', function () {
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'error_type' => 'booking_error'
+                'error_type' => 'booking_error',
             ]);
     });
 

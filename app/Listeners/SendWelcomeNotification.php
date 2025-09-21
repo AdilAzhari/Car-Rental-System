@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Notifications\WelcomeNewUser;
 use App\Notifications\PasswordChangeReminder;
+use App\Notifications\WelcomeNewUser;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,16 +25,16 @@ class SendWelcomeNotification implements ShouldQueue
         // Only send welcome notification for new users
         if ($user->is_new_user) {
             // Send welcome notification
-            $user->notify(new WelcomeNewUser());
+            $user->notify(new WelcomeNewUser);
 
             // Schedule password change reminder for 7 days later if they haven't changed it
-            if (!$user->has_changed_default_password) {
-                $user->notify((new PasswordChangeReminder())->delay(now()->addDays(7)));
+            if (! $user->has_changed_default_password) {
+                $user->notify((new PasswordChangeReminder)->delay(now()->addDays(7)));
             }
 
             // Update last login time
             $user->update([
-                'last_login_at' => now()
+                'last_login_at' => now(),
             ]);
         }
     }

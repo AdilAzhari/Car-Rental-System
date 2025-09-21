@@ -13,7 +13,7 @@ class ReservationController extends Controller
 {
     public function create(): Response
     {
-        return Inertia::render('Reservations/Create',[]);
+        return Inertia::render('Reservations/Create', []);
     }
 
     public function reserve(Request $request, int $id): Response

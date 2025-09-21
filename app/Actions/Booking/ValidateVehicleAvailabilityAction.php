@@ -25,7 +25,7 @@ class ValidateVehicleAvailabilityAction
 
         // Check if vehicle is available for booking
         if (! $vehicle->is_available || $vehicle->status !== VehicleStatus::PUBLISHED) {
-            throw VehicleException::notAvailable($vehicleId, 'Vehicle status: ' . $vehicle->status->value);
+            throw VehicleException::notAvailable($vehicleId, 'Vehicle status: '.$vehicle->status->value);
         }
 
         // Check insurance expiry
@@ -34,7 +34,7 @@ class ValidateVehicleAvailabilityAction
         }
 
         // Check for overlapping bookings using repository
-        if (!$this->vehicleRepository->checkAvailability($vehicleId, $startDate, $endDate)) {
+        if (! $this->vehicleRepository->checkAvailability($vehicleId, $startDate, $endDate)) {
             throw BookingException::dateConflict($vehicleId, $startDate, $endDate);
         }
 

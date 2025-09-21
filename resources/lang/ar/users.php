@@ -5,7 +5,7 @@ return [
     'title' => 'إدارة المستخدمين',
     'singular' => 'مستخدم',
     'plural' => 'مستخدمون',
-    
+
     // User Fields
     'fields' => [
         'name' => 'الاسم الكامل',
@@ -31,7 +31,7 @@ return [
         'preferred_language' => 'اللغة المفضلة',
         'notification_preferences' => 'تفضيلات الإشعارات',
     ],
-    
+
     // User Sections
     'sections' => [
         'personal_information' => 'المعلومات الشخصية',
@@ -39,7 +39,7 @@ return [
         'location_information' => 'معلومات الموقع',
         'driver_information' => 'معلومات السائق',
     ],
-    
+
     // User Status
     'status_options' => [
         'active' => 'نشط',
@@ -47,14 +47,14 @@ return [
         'suspended' => 'معلق',
         'pending' => 'في الانتظار',
     ],
-    
+
     // User Roles
     'role_options' => [
         'admin' => 'مدير النظام',
         'owner' => 'مالك مركبة',
         'renter' => 'مستأجر',
     ],
-    
+
     // Messages
     'messages' => [
         'user_created' => 'تم إنشاء المستخدم بنجاح',

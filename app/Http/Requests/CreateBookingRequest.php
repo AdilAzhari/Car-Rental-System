@@ -32,13 +32,13 @@ class CreateBookingRequest extends FormRequest
                 'required',
                 'date',
                 'after:today',
-                'before:' . now()->addYear()->format('Y-m-d'),
+                'before:'.now()->addYear()->format('Y-m-d'),
             ],
             'end_date' => [
                 'required',
                 'date',
                 'after:start_date',
-                'before:' . now()->addYear()->format('Y-m-d'),
+                'before:'.now()->addYear()->format('Y-m-d'),
             ],
             'payment_method' => [
                 'required',
@@ -112,7 +112,7 @@ class CreateBookingRequest extends FormRequest
         }
 
         // Set dropoff location to pickup location if not provided
-        if ($this->pickup_location && !$this->dropoff_location) {
+        if ($this->pickup_location && ! $this->dropoff_location) {
             $this->merge([
                 'dropoff_location' => $this->pickup_location,
             ]);
