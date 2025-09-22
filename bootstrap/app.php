@@ -32,5 +32,16 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (Throwable $e, $request) {
+            // Ensure proper error handling for different environments
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Something went wrong.',
+                    'error' => app()->environment('local') ? $e->getMessage() : 'Internal Server Error',
+                ], 500);
+            }
+
+            // Let Laravel handle the default rendering with our custom error views
+            return null;
+        });
     })->create();

@@ -63,7 +63,10 @@
       "Bash(docker:*)",
       "Bash(docker-compose:*)",
       "Bash(powershell:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(git stash:*)",
+      "Bash(for brand in tesla kia honda gmc ford lexus nissan mazda toyota chevrolet)",
+      "Bash(do echo \"=== $brand ===\")"
     ],
     "deny": [],
     "ask": []
