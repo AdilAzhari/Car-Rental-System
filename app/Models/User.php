@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser
         'license_number',
         'id_document_path',
         'license_document_path',
+        'avatar',
         'is_verified',
         'date_of_birth',
         'address',

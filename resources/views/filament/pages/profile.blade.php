@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 <x-filament-panels::page>
     @if(auth()->user()->is_new_user)
         <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -19,13 +23,52 @@
         </div>
     @endif
 
+    <!-- Profile Avatar Section -->
+    <div class="mb-6 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div class="flex items-center space-x-6">
+            <div class="flex-shrink-0">
+                @if(auth()->user()->avatar)
+                    <img class="h-20 w-20 rounded-full object-cover ring-4 ring-primary-500"
+                         src="{{ Storage::url(auth()->user()->avatar) }}"
+                         alt="{{ auth()->user()->name }}">
+                @else
+                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center ring-4 ring-primary-500">
+                        <span class="text-2xl font-bold text-white">
+                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                        </span>
+                    </div>
+                @endif
+            </div>
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white truncate">
+                    {{ auth()->user()->name ?? __('resources.unnamed_user') }}
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ auth()->user()->email }}
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ __('resources.member_since') }} {{ auth()->user()->created_at->format('F Y') }}
+                </p>
+            </div>
+            <div class="flex-shrink-0">
+                <button type="button"
+                        class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        onclick="document.getElementById('avatar-upload').click()">
+                    <x-heroicon-m-camera class="w-4 h-4 mr-2 inline" />
+                    {{ __('resources.change_photo') }}
+                </button>
+                <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+            </div>
+        </div>
+    </div>
+
     <form wire:submit="updateProfile">
         {{ $this->form }}
 
         <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center">
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('resources.profile_last_updated') }}: 
+                    {{ __('resources.profile_last_updated') }}:
                     <span class="font-medium">{{ auth()->user()->updated_at->diffForHumans() }}</span>
                 </div>
                 <div class="flex space-x-3">

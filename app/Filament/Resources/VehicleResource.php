@@ -423,7 +423,8 @@ class VehicleResource extends Resource
             ->columns([
                 ImageColumn::make('featured_image')
                     ->label(__('resources.image'))
-                    ->circular()
+                    ->size(80)
+                    ->square()
                     ->defaultImageUrl(url('/images/car-placeholder.jpg')),
 
                 TextColumn::make('make')

@@ -28,9 +28,9 @@ class PopularVehiclesWidget extends BaseWidget
             ->columns([
                 Tables\Columns\ImageColumn::make('featured_image')
                     ->label(__('widgets.image'))
-                    ->circular()
-                    ->defaultImageUrl(url('/images/car-placeholder.jpg'))
-                    ->size(50),
+                    ->size(80)
+                    ->square()
+                    ->defaultImageUrl(url('/images/car-placeholder.jpg')),
 
                 Tables\Columns\TextColumn::make('make')
                     ->label(__('widgets.vehicle'))
@@ -71,8 +71,7 @@ class PopularVehiclesWidget extends BaseWidget
                         ->where('status', 'completed')
                         ->sum('total_amount'))
                     ->money(config('app.currency', 'MYR'))
-                    ->color('success')
-                    ->sortable(),
+                    ->color('success'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(__('widgets.status'))

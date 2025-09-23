@@ -53,26 +53,52 @@ class Profile extends Page implements HasForms
     public function mount(): void
     {
         $user = auth()->user();
-        $this->form->fill([
+
+        // Ensure the data property is properly filled
+        $this->data = [
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
             'date_of_birth' => $user->date_of_birth?->format('Y-m-d'),
             'address' => $user->address,
             'license_number' => $user->license_number,
+            'avatar' => $user->avatar ? [$user->avatar] : [],
             'id_document_path' => $user->id_document_path ? [$user->id_document_path] : [],
             'license_document_path' => $user->license_document_path ? [$user->license_document_path] : [],
             'role' => $user->role?->value ?? 'renter',
             'status' => $user->status?->value ?? 'active',
             'is_verified' => $user->is_verified ?? false,
             'preferred_language' => app()->getLocale(),
-        ]);
+        ];
+
+        // Fill the form with the data
+        $this->form->fill($this->data);
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
+                // Profile Picture Section
+                Section::make(__('resources.profile_picture'))
+                    ->description(__('resources.profile_picture_description'))
+                    ->icon('heroicon-m-camera')
+                    ->schema([
+                        FileUpload::make('avatar')
+                            ->label(__('resources.profile_picture'))
+                            ->avatar()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('1:1')
+                            ->imageResizeTargetWidth('400')
+                            ->imageResizeTargetHeight('400')
+                            ->directory('avatars')
+                            ->visibility('public')
+                            ->maxSize(2048)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->helperText(__('resources.avatar_helper'))
+                            ->columnSpanFull(),
+                    ]),
+
                 // Personal Information Section
                 Section::make(__('resources.personal_information'))
                     ->description(__('resources.personal_information_description'))
@@ -85,7 +111,13 @@ class Profile extends Page implements HasForms
                                     ->required()
                                     ->maxLength(255)
                                     ->placeholder(__('resources.enter_full_name'))
-                                    ->helperText(__('resources.name_helper')),
+                                    ->helperText(__('resources.name_helper'))
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, $set) {
+                                        if (filled($state)) {
+                                            $set('name', trim($state));
+                                        }
+                                    }),
 
                                 TextInput::make('email')
                                     ->label(__('resources.email'))
@@ -293,6 +325,10 @@ class Profile extends Page implements HasForms
         }
 
         // Handle file upload arrays - FileUpload returns arrays, but we need strings for database
+        if (isset($data['avatar']) && is_array($data['avatar'])) {
+            $data['avatar'] = empty($data['avatar']) ? null : $data['avatar'][0];
+        }
+
         if (isset($data['id_document_path']) && is_array($data['id_document_path'])) {
             $data['id_document_path'] = empty($data['id_document_path']) ? null : $data['id_document_path'][0];
         }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\UserFavoritesController;
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,11 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         Route::post('/favorites', [UserFavoritesController::class, 'store']);
         Route::post('/favorites/toggle', [UserFavoritesController::class, 'toggle']);
         Route::delete('/favorites/{vehicleId}', [UserFavoritesController::class, 'destroy']);
+
+        // Image upload routes
+        Route::post('/upload/profile-image', [ImageUploadController::class, 'uploadProfileImage']);
+        Route::post('/upload/vehicle-image', [ImageUploadController::class, 'uploadVehicleImage']);
+        Route::delete('/upload/image', [ImageUploadController::class, 'deleteImage']);
     });
 
     // Critical financial operations - Strict rate limiting

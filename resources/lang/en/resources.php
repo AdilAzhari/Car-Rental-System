@@ -680,4 +680,12 @@ return [
     'until' => 'Until',
     'archive_selected' => 'Archive Selected',
     'system_management' => 'System Management',
+
+    // Profile-specific translations
+    'profile_picture' => 'Profile Picture',
+    'profile_picture_description' => 'Upload and manage your profile photo',
+    'avatar_helper' => 'Upload a square image for best results. Maximum 2MB. Supported formats: JPEG, PNG, WebP.',
+    'change_photo' => 'Change Photo',
+    'unnamed_user' => 'Unnamed User',
+    'member_since' => 'Member since',
 ];
