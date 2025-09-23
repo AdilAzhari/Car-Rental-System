@@ -46,6 +46,11 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Documentation Files
 - You must only create documentation files if explicitly requested by the user.
 
+## Git Commit Messages
+- NEVER include Claude Code attribution or co-authored-by Claude signatures in commit messages
+- Do NOT add any references to AI assistance, Claude Code, or similar attributions
+- Keep commit messages clean and professional without AI tool references
+
 
 === boost rules ===
 
