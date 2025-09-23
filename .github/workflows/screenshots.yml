@@ -171,7 +171,7 @@ jobs:
         done
 
     - name: Upload screenshots as artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: application-screenshots
         path: screenshots/
