@@ -3,11 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Throwable;
 use Inertia\Inertia;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
