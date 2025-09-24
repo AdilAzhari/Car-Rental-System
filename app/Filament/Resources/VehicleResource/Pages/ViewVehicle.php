@@ -9,6 +9,7 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -26,6 +27,21 @@ class ViewVehicle extends ViewRecord
         ];
     }
 
+    public function getView(): string
+    {
+        return 'filament.pages.vehicle-view';
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getRecord()->make . ' ' . $this->getRecord()->model . ' (' . $this->getRecord()->year . ')';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return __('resources.vehicle_details');
+    }
+
     public function infolist(Schema $schema): Schema
     {
         return $schema
@@ -35,11 +51,21 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         ImageEntry::make('featured_image')
                             ->label(__('resources.featured_image'))
+                            ->size(600) // Make featured image much larger
+                            ->square(false) // Allow rectangular images
+                            ->extraImgAttributes([
+                                'class' => 'rounded-lg shadow-lg transition-all duration-300',
+                            ])
                             ->columnSpanFull(),
 
                         ImageEntry::make('gallery_images')
                             ->label(__('resources.gallery'))
-                            ->stacked()
+                            ->stacked(false) // Show images in a grid instead of stacked
+                            ->size(200) // Medium size for gallery thumbnails
+                            ->square()
+                            ->extraImgAttributes([
+                                'class' => 'rounded-lg shadow-md transition-all duration-300',
+                            ])
                             ->columnSpanFull(),
                     ]),
 
@@ -161,6 +187,7 @@ class ViewVehicle extends ViewRecord
                             ->markdown(),
                     ])
                     ->collapsible(),
+
             ]);
     }
 }

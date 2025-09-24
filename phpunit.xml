@@ -3,11 +3,8 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-         processIsolation="false"
-         stopOnFailure="false"
          cacheDirectory=".phpunit.cache"
          executionOrder="random"
-         resolveDependencies="true"
          beStrictAboutOutputDuringTests="true"
          failOnRisky="true"
          failOnWarning="true"
@@ -29,10 +26,10 @@
             <directory>tests/Arch</directory>
         </testsuite>
     </testsuites>
-    
+
     <source>
         <include>
-            <directory suffix=".php">app</directory>
+            <directory>app</directory>
         </include>
         <exclude>
             <directory>app/Console/Commands</directory>
@@ -42,18 +39,19 @@
             <file>app/Providers/BroadcastServiceProvider.php</file>
         </exclude>
     </source>
-    
-    <coverage includeUncoveredFiles="true"
-              ignoreDeprecatedCodeUnits="true"
-              disableCodeCoverageIgnore="false">
+
+    <coverage
+        ignoreDeprecatedCodeUnits="true"
+    >
         <report>
             <clover outputFile="coverage/clover.xml"/>
-            <html outputDirectory="coverage/html" lowUpperBound="50" highLowerBound="80"/>
-            <text outputFile="coverage/coverage.txt" showUncoveredFiles="true" showOnlySummary="false"/>
+            <html outputDirectory="coverage/html" highLowerBound="80"/>
+<!--            <text outputFile="coverage/coverage.txt" showUncoveredFiles="true"/>-->
             <xml outputDirectory="coverage/xml"/>
+            <text outputFile="php://stdout" showUncoveredFiles="true"/>
         </report>
     </coverage>
-    
+
     <logging>
         <junit outputFile="coverage/junit.xml"/>
         <teamcity outputFile="coverage/teamcity.txt"/>

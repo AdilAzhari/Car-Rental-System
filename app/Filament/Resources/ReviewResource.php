@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Filament\Resources\ReviewResource\Pages;
 use App\Models\Review;
 use BackedEnum;
@@ -138,7 +140,7 @@ class ReviewResource extends Resource
                 TextColumn::make('vehicle.make')
                     ->label(__('resources.vehicle'))
                     ->formatStateUsing(fn ($record): string|array|null => $record->vehicle ? "{$record->vehicle->make} {$record->vehicle->model}" : __('resources.na'))
-                    ->searchable(['vehicles.make', 'vehicles.model']),
+                    ->searchable(['car_rental_vehicles.make', 'car_rental_vehicles.model']),
 
                 TextColumn::make('rating')
                     ->label(__('resources.rating'))
@@ -192,6 +194,12 @@ class ReviewResource extends Resource
                     ->label(__('resources.low_rating'))
                     ->query(fn (Builder $query): Builder => $query->where('rating', '<=', 2)),
             ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label(__('widgets.export'))
+                    ->color('success')
+                    ->icon('heroicon-m-arrow-down-tray'),
+            ])
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -200,6 +208,9 @@ class ReviewResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('bulk_export')
+                        ->label(__('widgets.export'))
+                        ->icon('heroicon-m-arrow-down-tray'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

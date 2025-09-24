@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Bookings\Tables;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -36,7 +38,7 @@ class BookingsTable
 
                 TextColumn::make('vehicle.model')
                     ->label(__('resources.vehicle'))
-                    ->formatStateUsing(fn ($record): string => $record->vehicle->make.' '.$record->vehicle->model)
+                    ->formatStateUsing(fn ($record): string => $record->vehicle ? ($record->vehicle->make.' '.$record->vehicle->model) : 'N/A')
                     ->searchable(['make', 'model'])
                     ->sortable(),
 
@@ -122,6 +124,12 @@ class BookingsTable
                         'bank_transfer' => 'Bank Transfer',
                     ])
                     ->multiple(),
+            ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label(__('widgets.export'))
+                    ->color('success')
+                    ->icon('heroicon-m-arrow-down-tray'),
             ])
             ->recordActions([
                 ViewAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner', 'renter'])),
@@ -240,6 +248,9 @@ class BookingsTable
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
+                    FilamentExportBulkAction::make('bulk_export')
+                        ->label(__('widgets.export'))
+                        ->icon('heroicon-m-arrow-down-tray'),
                 ]),
             ]);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
@@ -214,6 +216,8 @@ class UserResource extends Resource
 
                 BadgeColumn::make('role')
                     ->label(__('resources.role'))
+                    ->getStateUsing(fn ($record) => $record->role instanceof UserRole ? $record->role->value : (string) $record->role)
+                    ->formatStateUsing(fn ($state) => (string) $state)
                     ->colors([
                         'danger' => 'admin',
                         'warning' => 'owner',
@@ -303,6 +307,12 @@ class UserResource extends Resource
                             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                         )),
             ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label(__('widgets.export'))
+                    ->color('success')
+                    ->icon('heroicon-m-arrow-down-tray'),
+            ])
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -311,6 +321,9 @@ class UserResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('bulk_export')
+                        ->label(__('widgets.export'))
+                        ->icon('heroicon-m-arrow-down-tray'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

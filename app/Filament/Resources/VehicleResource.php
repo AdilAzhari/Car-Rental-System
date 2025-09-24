@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Enums\UserRole;
 use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
@@ -109,7 +111,7 @@ class VehicleResource extends Resource
                                     ->placeholder(__('resources.year_placeholder')),
                             ]),
 
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('plate_number')
                                     ->label(__('resources.license_plate'))
@@ -209,7 +211,7 @@ class VehicleResource extends Resource
                     ->description(__('resources.ownership_pricing_description'))
                     ->icon('heroicon-m-currency-dollar')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 Select::make('owner_id')
                                     ->label(__('resources.vehicle_owner'))
@@ -356,7 +358,7 @@ class VehicleResource extends Resource
                     ->description(__('resources.traffic_violations_description'))
                     ->icon('heroicon-m-exclamation-triangle')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 Toggle::make('has_pending_violations')
                                     ->label(__('resources.has_pending_violations'))
@@ -373,7 +375,7 @@ class VehicleResource extends Resource
                                     ->suffixIcon('heroicon-m-exclamation-circle'),
                             ]),
 
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('total_fines_amount')
                                     ->label(__('resources.total_fines_amount'))
@@ -461,6 +463,8 @@ class VehicleResource extends Resource
 
                 BadgeColumn::make('status')
                     ->label(__('resources.status'))
+                    ->getStateUsing(fn ($record) => $record->status instanceof VehicleStatus ? $record->status->value : (string) $record->status)
+                    ->formatStateUsing(fn ($state) => (string) $state)
                     ->colors([
                         'success' => VehicleStatus::PUBLISHED->value,
                         'warning' => VehicleStatus::DRAFT->value,
@@ -492,7 +496,7 @@ class VehicleResource extends Resource
                 BadgeColumn::make('has_pending_violations')
                     ->label(__('resources.traffic_violations'))
                     ->getStateUsing(function ($record): string {
-                        if (! $record->traffic_violations || empty($record->traffic_violations)) {
+                        if (empty($record->traffic_violations)) {
                             return __('vehicles.none');
                         }
 
@@ -554,6 +558,12 @@ class VehicleResource extends Resource
                         '0' => __('resources.not_available'),
                     ]),
             ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label(__('widgets.export'))
+                    ->color('success')
+                    ->icon('heroicon-m-arrow-down-tray'),
+            ])
             ->actions(array_filter([
                 ViewAction::make(),
                 EditAction::make(),
@@ -574,6 +584,9 @@ class VehicleResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('bulk_export')
+                        ->label(__('widgets.export'))
+                        ->icon('heroicon-m-arrow-down-tray'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
