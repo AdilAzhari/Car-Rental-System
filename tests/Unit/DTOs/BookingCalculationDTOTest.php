@@ -6,17 +6,18 @@ describe('BookingCalculationDTO', function (): void {
     it('calculates booking totals correctly', function (): void {
         $bookingCalculationDTO = BookingCalculationDTO::calculate(
             dailyRate: 100.0,
-            totalDays: 3,
-            insuranceRate: 0.10,
-            taxRate: 0.08
+            totalDays: 3
         );
 
-        expect($bookingCalculationDTO->dailyRate)->toBe(100.0);
-        expect($bookingCalculationDTO->totalDays)->toBe(3);
-        expect($bookingCalculationDTO->subtotal)->toBe(300.0);
-        expect($bookingCalculationDTO->insuranceFee)->toBe(30.0); // 10% of subtotal
-        expect($bookingCalculationDTO->taxAmount)->toBe(26.4); // 8% of (subtotal + insurance)
-        expect($bookingCalculationDTO->totalAmount)->toBe(356.4); // subtotal + insurance + tax
+        expect($bookingCalculationDTO->dailyRate)->toBe(100.0)
+            ->and($bookingCalculationDTO->totalDays)->toBe(3)
+            ->and($bookingCalculationDTO->subtotal)->toBe(300.0)
+            ->and($bookingCalculationDTO->insuranceFee)->toBe(30.0)
+            ->and($bookingCalculationDTO->taxAmount)->toBeCloseTo(26.4, 2)
+            ->and($bookingCalculationDTO->totalAmount)->toBeCloseTo(356.4, 2);
+        // 10% of subtotal
+        // 8% of (subtotal + insurance)
+        // subtotal + insurance + tax
     });
 
     it('handles zero days correctly', function (): void {
@@ -25,8 +26,8 @@ describe('BookingCalculationDTO', function (): void {
             totalDays: 0
         );
 
-        expect($bookingCalculationDTO->subtotal)->toBe(0.0);
-        expect($bookingCalculationDTO->totalAmount)->toBe(0.0);
+        expect($bookingCalculationDTO->subtotal)->toBe(0.0)
+            ->and($bookingCalculationDTO->totalAmount)->toBe(0.0);
     });
 
     it('converts to array with formatted amounts', function (): void {
@@ -40,10 +41,10 @@ describe('BookingCalculationDTO', function (): void {
         expect($array)->toHaveKeys([
             'daily_rate', 'total_days', 'subtotal',
             'insurance_fee', 'tax_amount', 'total_amount', 'currency',
-        ]);
-        expect($array['daily_rate'])->toBeString();
-        expect($array['total_amount'])->toBeString();
-        expect($array['currency'])->toBe('MYR');
+        ])
+            ->and($array['daily_rate'])->toBeString()->
+            expect($array['total_amount'])->toBeString()->
+            expect($array['currency'])->toBe('MYR');
     });
 
     it('formats total with currency', function (): void {

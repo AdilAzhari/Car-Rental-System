@@ -191,10 +191,15 @@ class VehicleRepository
     private function calculateOccupancyRate(Vehicle $vehicle): float
     {
         $daysInYear = 365;
-        $bookedDays = $vehicle->bookings()
+        $bookings = $vehicle->bookings()
             ->where('status', 'completed')
             ->where('created_at', '>=', now()->subYear())
-            ->sum(DB::raw('DATEDIFF(end_date, start_date) + 1'));
+            ->get();
+
+        $bookedDays = $bookings->sum(function ($booking) {
+            return \Carbon\Carbon::parse($booking->start_date)
+                ->diffInDays(\Carbon\Carbon::parse($booking->end_date)) + 1;
+        });
 
         return $bookedDays > 0 ? round(($bookedDays / $daysInYear) * 100, 2) : 0;
     }
