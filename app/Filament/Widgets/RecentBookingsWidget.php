@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Cache;
 
 class RecentBookingsWidget extends BaseWidget
 {
@@ -14,10 +15,12 @@ class RecentBookingsWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected static ?string $pollingInterval = '60s';
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(Booking::query()->with(['renter', 'vehicle'])->latest()->limit(10))
+            ->query($this->getOptimizedQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('widgets.booking_number'))
@@ -111,5 +114,21 @@ class RecentBookingsWidget extends BaseWidget
             ->heading(__('widgets.recent_bookings'))
             ->description(__('widgets.latest_bookings_activity'))
             ->poll('60s');
+    }
+
+    protected function getOptimizedQuery()
+    {
+        return Cache::remember('recent_bookings_widget_' . auth()->id(), 300, fn() => Booking::query()
+            ->with([
+                'renter:id,name',
+                'vehicle:id,owner_id,make,model'
+            ])
+            ->select([
+                'id', 'renter_id', 'vehicle_id', 'start_date', 'end_date',
+                'total_amount', 'status', 'created_at'
+            ])
+            ->latest()
+            ->limit(10)
+            ->get());
     }
 }
