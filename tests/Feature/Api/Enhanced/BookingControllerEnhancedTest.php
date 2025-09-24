@@ -69,7 +69,7 @@ describe('BookingController Enhanced Tests', function (): void {
                 'payment_method' => 'cash',
             ]);
 
-        Event::assertDispatched(BookingCreated::class, fn($event): bool => $event->booking instanceof Booking);
+        Event::assertDispatched(BookingCreated::class, fn ($event): bool => $event->booking instanceof Booking);
     });
 
     it('handles custom exceptions properly', function (): void {

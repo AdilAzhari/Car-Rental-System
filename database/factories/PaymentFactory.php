@@ -63,7 +63,7 @@ class PaymentFactory extends Factory
 
     public function refunded(): static
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'payment_status' => 'refunded',
             'refunded_at' => fake()->dateTimeBetween($attributes['processed_at'] ?? now()->subDays(30), 'now'),
             'refund_amount' => fake()->boolean(80) ? $attributes['amount'] : $attributes['amount'] * 0.5,

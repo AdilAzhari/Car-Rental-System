@@ -96,7 +96,7 @@ describe('Architectural Integration Tests', function (): void {
 
         $response->assertSuccessful();
 
-        Event::assertDispatched(BookingCreated::class, fn($event): bool => $event->booking instanceof Booking &&
+        Event::assertDispatched(BookingCreated::class, fn ($event): bool => $event->booking instanceof Booking &&
                $event->booking->payment_method === 'cash');
     });
 
@@ -111,7 +111,7 @@ describe('Architectural Integration Tests', function (): void {
         $vehicleRepository = app(VehicleRepository::class);
 
         // Test that repository calls work within transactions
-        $result = $transactionService->safeExecute(fn() => $vehicleRepository->findWithDetails($vehicle->id));
+        $result = $transactionService->safeExecute(fn () => $vehicleRepository->findWithDetails($vehicle->id));
 
         expect($result->id)->toBe($vehicle->id)
             ->and($result->relationLoaded('owner'))->toBeTrue();

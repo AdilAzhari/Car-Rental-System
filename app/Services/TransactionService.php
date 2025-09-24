@@ -75,7 +75,7 @@ class TransactionService
         $chunks = array_chunk($items, $batchSize);
 
         foreach ($chunks as $chunk) {
-            $chunkResults = $this->executeWithRetry(fn(): array => array_map($processor, $chunk));
+            $chunkResults = $this->executeWithRetry(fn (): array => array_map($processor, $chunk));
 
             $results = array_merge($results, $chunkResults);
         }

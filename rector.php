@@ -13,15 +13,15 @@ return RectorConfig::configure()
         __DIR__.'/config',
         __DIR__.'/routes',
         __DIR__.'/tests',
-        __DIR__ . '/database/factories',
-        __DIR__ . '/database/seeders',
+        __DIR__.'/database/factories',
+        __DIR__.'/database/seeders',
     ])
     ->withSkip([
         __DIR__.'/bootstrap/cache',
-        __DIR__ . '/storage/*',
-        __DIR__ . '/database/migrations/*',
-        __DIR__ . '/vendor/*',
-        __DIR__ . '/node_modules/*',
+        __DIR__.'/storage/*',
+        __DIR__.'/database/migrations/*',
+        __DIR__.'/vendor/*',
+        __DIR__.'/node_modules/*',
     ])
     ->withSets([
         LevelSetList::UP_TO_PHP_84,

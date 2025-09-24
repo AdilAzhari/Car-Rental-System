@@ -21,7 +21,7 @@ class CarController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->limit(20)
                 ->get()
-                ->map(fn($car): array => [
+                ->map(fn ($car): array => [
                     'id' => $car->id,
                     'make' => $car->make,
                     'model' => $car->model,

@@ -4,17 +4,13 @@ namespace App\Notifications;
 
 use App\Models\Vehicle;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class VehicleCreated extends Notification
 {
     use Queueable;
 
-    public function __construct(public Vehicle $vehicle)
-    {
-    }
+    public function __construct(public Vehicle $vehicle) {}
 
     public function via(object $notifiable): array
     {

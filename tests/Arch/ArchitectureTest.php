@@ -3,7 +3,6 @@
 use App\Models\User;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Carbon\Carbon;
-use Filament\Resources\Resource;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Notifications\ResetPassword;

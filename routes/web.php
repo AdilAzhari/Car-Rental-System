@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Simple status route for testing
-Route::get('/status', fn() => response()->json([
+Route::get('/status', fn () => response()->json([
     'status' => 'OK',
     'timestamp' => now()->toISOString(),
     'database' => 'Connected',
@@ -18,10 +18,10 @@ Route::get('/status', fn() => response()->json([
 ]));
 
 // Test route for debugging
-Route::get('/test-inertia', fn() => \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']));
+Route::get('/test-inertia', fn () => \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']));
 
 // Test route for basic Laravel functionality
-Route::get('/test-json', fn() => response()->json([
+Route::get('/test-json', fn () => response()->json([
     'message' => 'Laravel is working',
     'timestamp' => now(),
     'environment' => app()->environment(),
@@ -30,7 +30,7 @@ Route::get('/test-json', fn() => response()->json([
 ]));
 
 // Test route for view resolution
-Route::get('/test-view', fn(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory => view('app-simple', ['message' => 'Test view works']));
+Route::get('/test-view', fn (): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory => view('app-simple', ['message' => 'Test view works']));
 
 // Homepage - shows featured cars
 Route::get('/', [CarController::class, 'index']);
@@ -153,4 +153,4 @@ Route::middleware('auth')->get('/debug-filament-auth-protected', function () {
     return response()->json($response, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.filament.auth.protected');
 
-Route::get('/status', fn() => response()->json(['status' => 'ok'], 200));
+Route::get('/status', fn () => response()->json(['status' => 'ok'], 200));

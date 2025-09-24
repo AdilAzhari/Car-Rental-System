@@ -5,18 +5,19 @@ namespace App\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Override;
 
 class TranslationManager extends Page
 {
     protected static string|null|BackedEnum $navigationIcon = Heroicon::Language;
 
-    #[\Override]
+    #[Override]
     public function getView(): string
     {
         return 'filament.pages.translation-manager';
     }
 
-    #[\Override]
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('resources.system');
@@ -24,19 +25,19 @@ class TranslationManager extends Page
 
     protected static ?int $navigationSort = 99;
 
-    #[\Override]
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('Translation Manager');
     }
 
-    #[\Override]
+    #[Override]
     public function getTitle(): string
     {
         return __('Translation Manager');
     }
 
-    #[\Override]
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->role?->value === 'admin' || auth()->user()?->email === 'admin@example.com';
@@ -55,7 +56,7 @@ class TranslationManager extends Page
         return auth()->user()?->role?->value === 'admin' || auth()->user()?->email === 'admin@example.com';
     }
 
-    #[\Override]
+    #[Override]
     protected function getViewData(): array
     {
         return [
