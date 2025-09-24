@@ -3,8 +3,8 @@
 use App\DTOs\CreateBookingDTO;
 use Carbon\Carbon;
 
-describe('CreateBookingDTO', function () {
-    it('can be created from array', function () {
+describe('CreateBookingDTO', function (): void {
+    it('can be created from array', function (): void {
         $data = [
             'car_id' => 1,
             'renter_id' => 2,
@@ -18,21 +18,21 @@ describe('CreateBookingDTO', function () {
             'special_requests' => 'Need GPS',
         ];
 
-        $dto = CreateBookingDTO::fromArray($data);
+        $createBookingDTO = CreateBookingDTO::fromArray($data);
 
-        expect($dto->carId)->toBe(1);
-        expect($dto->renterId)->toBe(2);
-        expect($dto->startDate)->toBeInstanceOf(Carbon::class);
-        expect($dto->endDate)->toBeInstanceOf(Carbon::class);
-        expect($dto->durationDays)->toBe(3);
-        expect($dto->paymentMethod)->toBe('visa');
-        expect($dto->paymentMethodId)->toBe('pm_test123');
-        expect($dto->pickupLocation)->toBe('Downtown');
-        expect($dto->dropoffLocation)->toBe('Airport');
-        expect($dto->specialRequests)->toBe('Need GPS');
+        expect($createBookingDTO->carId)->toBe(1);
+        expect($createBookingDTO->renterId)->toBe(2);
+        expect($createBookingDTO->startDate)->toBeInstanceOf(Carbon::class);
+        expect($createBookingDTO->endDate)->toBeInstanceOf(Carbon::class);
+        expect($createBookingDTO->durationDays)->toBe(3);
+        expect($createBookingDTO->paymentMethod)->toBe('visa');
+        expect($createBookingDTO->paymentMethodId)->toBe('pm_test123');
+        expect($createBookingDTO->pickupLocation)->toBe('Downtown');
+        expect($createBookingDTO->dropoffLocation)->toBe('Airport');
+        expect($createBookingDTO->specialRequests)->toBe('Need GPS');
     });
 
-    it('can convert back to array', function () {
+    it('can convert back to array', function (): void {
         $dto = new CreateBookingDTO(
             carId: 1,
             renterId: 2,
@@ -58,7 +58,7 @@ describe('CreateBookingDTO', function () {
         expect($array['end_date'])->toBe('2025-01-03');
     });
 
-    it('validates date range correctly', function () {
+    it('validates date range correctly', function (): void {
         $futureStart = Carbon::tomorrow();
         $futureEnd = Carbon::tomorrow()->addDays(2);
 
@@ -78,7 +78,7 @@ describe('CreateBookingDTO', function () {
         expect($dto->isValidDateRange())->toBeTrue();
     });
 
-    it('detects invalid date range', function () {
+    it('detects invalid date range', function (): void {
         $dto = new CreateBookingDTO(
             carId: 1,
             renterId: 2,
@@ -95,7 +95,7 @@ describe('CreateBookingDTO', function () {
         expect($dto->isValidDateRange())->toBeFalse();
     });
 
-    it('determines when payment method ID is required', function () {
+    it('determines when payment method ID is required', function (): void {
         $visaDto = new CreateBookingDTO(
             carId: 1,
             renterId: 2,

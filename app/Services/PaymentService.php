@@ -43,7 +43,7 @@ class PaymentService
         try {
             $paymentIntent = PaymentIntent::create([
                 'amount' => CurrencyHelper::toCents($booking->total_amount),
-                'currency' => strtolower(config('app.currency', 'usd')),
+                'currency' => strtolower((string) config('app.currency', 'myr')),
                 'payment_method' => $paymentData['payment_method_id'] ?? null,
                 'confirmation_method' => 'manual',
                 'confirm' => true,

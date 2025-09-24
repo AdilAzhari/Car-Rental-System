@@ -32,12 +32,12 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (Throwable $e, $request) {
+        $exceptions->render(function (Throwable $throwable, $request) {
             // Ensure proper error handling for different environments
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Something went wrong.',
-                    'error' => app()->environment('local') ? $e->getMessage() : 'Internal Server Error',
+                    'error' => app()->environment('local') ? $throwable->getMessage() : 'Internal Server Error',
                 ], 500);
             }
 

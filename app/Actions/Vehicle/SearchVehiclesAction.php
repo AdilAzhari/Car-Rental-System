@@ -15,18 +15,18 @@ class SearchVehiclesAction
 
     public function execute(Request $request): AnonymousResourceCollection
     {
-        $searchDTO = \App\DTOs\VehicleSearchDTO::fromRequest($request);
-        $vehicles = $this->vehicleRepository->searchWithFilters($request);
+        \App\DTOs\VehicleSearchDTO::fromRequest($request);
+        $lengthAwarePaginator = $this->vehicleRepository->searchWithFilters($request);
 
-        return CarResource::collection($vehicles);
+        return CarResource::collection($lengthAwarePaginator);
     }
 
-    public function executeWithDTO(\App\DTOs\VehicleSearchDTO $searchDTO): AnonymousResourceCollection
+    public function executeWithDTO(\App\DTOs\VehicleSearchDTO $vehicleSearchDTO): AnonymousResourceCollection
     {
         // Convert DTO back to request-like structure for repository compatibility
-        $mockRequest = new Request($searchDTO->toArray());
-        $vehicles = $this->vehicleRepository->searchWithFilters($mockRequest);
+        $mockRequest = new Request($vehicleSearchDTO->toArray());
+        $lengthAwarePaginator = $this->vehicleRepository->searchWithFilters($mockRequest);
 
-        return CarResource::collection($vehicles);
+        return CarResource::collection($lengthAwarePaginator);
     }
 }

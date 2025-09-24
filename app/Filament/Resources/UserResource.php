@@ -70,6 +70,7 @@ class UserResource extends Resource
         return __('resources.users');
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -197,6 +198,7 @@ class UserResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -217,7 +219,7 @@ class UserResource extends Resource
                 BadgeColumn::make('role')
                     ->label(__('resources.role'))
                     ->getStateUsing(fn ($record) => $record->role instanceof UserRole ? $record->role->value : (string) $record->role)
-                    ->formatStateUsing(fn ($state) => (string) $state)
+                    ->formatStateUsing(fn ($state): string => (string) $state)
                     ->colors([
                         'danger' => 'admin',
                         'warning' => 'owner',
@@ -297,14 +299,14 @@ class UserResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.joined_until')),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $builder, array $data): Builder => $builder
                         ->when(
                             $data['created_from'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '>=', $date),
                         )
                         ->when(
                             $data['created_until'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '<=', $date),
                         )),
             ])
             ->headerActions([
@@ -329,6 +331,7 @@ class UserResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -357,6 +360,7 @@ class UserResource extends Resource
         return static::getModel()::count() > 100 ? 'warning' : 'primary';
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();

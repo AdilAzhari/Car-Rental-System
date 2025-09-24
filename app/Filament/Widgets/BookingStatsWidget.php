@@ -12,11 +12,13 @@ class BookingStatsWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -24,40 +26,41 @@ class BookingStatsWidget extends BaseWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         $user = auth()->user();
 
         // Base query - filter by owner's vehicles if not admin
-        $baseQuery = Booking::query();
+        $builder = Booking::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->whereHas('vehicle', function ($query) use ($user): void {
+            $builder->whereHas('vehicle', function ($query) use ($user): void {
                 $query->where('owner_id', $user->id);
             });
         }
 
         // Total bookings
-        $totalBookings = $baseQuery->count();
+        $totalBookings = $builder->count();
 
         // Pending bookings
-        $pendingBookings = (clone $baseQuery)->where('status', BookingStatus::PENDING)->count();
+        $pendingBookings = (clone $builder)->where('status', BookingStatus::PENDING)->count();
 
         // Confirmed bookings
-        $confirmedBookings = (clone $baseQuery)->where('status', BookingStatus::CONFIRMED)->count();
+        $confirmedBookings = (clone $builder)->where('status', BookingStatus::CONFIRMED)->count();
 
         // This month's bookings
-        $thisMonthBookings = (clone $baseQuery)
+        $thisMonthBookings = (clone $builder)
             ->whereMonth('start_date', now()->month)
             ->whereYear('start_date', now()->year)
             ->count();
 
         // Revenue from completed bookings
-        $totalRevenue = (clone $baseQuery)
+        $totalRevenue = (clone $builder)
             ->where('status', BookingStatus::COMPLETED)
             ->sum('total_amount');
 
         // Average booking duration
-        $averageDuration = (clone $baseQuery)
+        $averageDuration = (clone $builder)
             ->where('status', BookingStatus::COMPLETED)
             ->selectRaw('AVG(DATEDIFF(end_date, start_date)) as avg_duration')
             ->value('avg_duration') ?? 0;
@@ -66,7 +69,7 @@ class BookingStatsWidget extends BaseWidget
         $bookingTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $count = (clone $baseQuery)
+            $count = (clone $builder)
                 ->whereDate('created_at', $date)
                 ->count();
             $bookingTrend[] = $count;

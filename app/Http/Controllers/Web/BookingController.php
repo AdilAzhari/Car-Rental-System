@@ -11,13 +11,13 @@ class BookingController extends Controller
 {
     public function index(): Response
     {
-        $bookings = Booking::with(['vehicle', 'vehicle.images'])
+        $lengthAwarePaginator = Booking::with(['vehicle', 'vehicle.images'])
             ->where('renter_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return Inertia::render('MyBookingsPage', [
-            'bookings' => $bookings,
+            'bookings' => $lengthAwarePaginator,
         ]);
     }
 

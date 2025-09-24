@@ -12,44 +12,44 @@ class CreateBookingAction
 {
     public function __construct(
         private readonly PaymentService $paymentService,
-        private readonly ValidateVehicleAvailabilityAction $validateAvailability,
+        private readonly ValidateVehicleAvailabilityAction $validateVehicleAvailabilityAction,
         private readonly TransactionService $transactionService
     ) {}
 
     public function execute(array $validatedData): Booking
     {
-        $bookingDTO = \App\DTOs\CreateBookingDTO::fromArray($validatedData);
+        $createBookingDTO = \App\DTOs\CreateBookingDTO::fromArray($validatedData);
 
-        return $this->executeWithDTO($bookingDTO);
+        return $this->executeWithDTO($createBookingDTO);
     }
 
-    public function executeWithDTO(\App\DTOs\CreateBookingDTO $bookingDTO): Booking
+    public function executeWithDTO(\App\DTOs\CreateBookingDTO $createBookingDTO): Booking
     {
         Log::info('🔧 CREATE BOOKING ACTION STARTED', [
             'user_id' => auth()->id(),
-            'booking_data' => $bookingDTO->toArray(),
+            'booking_data' => $createBookingDTO->toArray(),
             'timestamp' => now(),
         ]);
 
-        return $this->transactionService->executeWithRetry(function () use ($bookingDTO) {
+        return $this->transactionService->executeWithRetry(function () use ($createBookingDTO) {
             Log::info('📊 DATABASE TRANSACTION STARTED', [
                 'user_id' => auth()->id(),
-                'car_id' => $bookingDTO->carId,
+                'car_id' => $createBookingDTO->carId,
             ]);
 
             try {
                 // Validate vehicle availability
                 Log::info('🚗 VALIDATING VEHICLE AVAILABILITY', [
                     'user_id' => auth()->id(),
-                    'car_id' => $bookingDTO->carId,
-                    'start_date' => $bookingDTO->startDate->toDateString(),
-                    'end_date' => $bookingDTO->endDate->toDateString(),
+                    'car_id' => $createBookingDTO->carId,
+                    'start_date' => $createBookingDTO->startDate->toDateString(),
+                    'end_date' => $createBookingDTO->endDate->toDateString(),
                 ]);
 
-                $vehicle = $this->validateAvailability->execute(
-                    $bookingDTO->carId,
-                    $bookingDTO->startDate->toDateString(),
-                    $bookingDTO->endDate->toDateString()
+                $vehicle = $this->validateVehicleAvailabilityAction->execute(
+                    $createBookingDTO->carId,
+                    $createBookingDTO->startDate->toDateString(),
+                    $createBookingDTO->endDate->toDateString()
                 );
 
                 Log::info('✅ VEHICLE VALIDATION PASSED', [
@@ -64,18 +64,18 @@ class CreateBookingAction
                 // Calculate booking details using DTO
                 $calculation = \App\DTOs\BookingCalculationDTO::calculate(
                     $vehicle->daily_rate,
-                    $bookingDTO->durationDays
+                    $createBookingDTO->durationDays
                 );
 
                 Log::info('💰 BOOKING CALCULATIONS', [
                     'user_id' => auth()->id(),
-                    'start_date' => $bookingDTO->startDate->toDateString(),
-                    'end_date' => $bookingDTO->endDate->toDateString(),
+                    'start_date' => $createBookingDTO->startDate->toDateString(),
+                    'end_date' => $createBookingDTO->endDate->toDateString(),
                     'calculation' => $calculation->toArray(),
                 ]);
 
                 // Determine initial status based on payment method
-                $initialStatus = match ($bookingDTO->paymentMethod) {
+                $initialStatus = match ($createBookingDTO->paymentMethod) {
                     'cash' => 'pending', // Cash payments need admin approval
                     'visa', 'credit' => 'pending', // Card payments process immediately
                     default => 'pending'
@@ -83,12 +83,12 @@ class CreateBookingAction
 
                 Log::info('💳 PAYMENT METHOD & STATUS', [
                     'user_id' => auth()->id(),
-                    'payment_method' => $bookingDTO->paymentMethod,
+                    'payment_method' => $createBookingDTO->paymentMethod,
                     'initial_status' => $initialStatus,
                 ]);
 
                 // Determine payment status based on payment method
-                $paymentStatus = match ($bookingDTO->paymentMethod) {
+                $paymentStatus = match ($createBookingDTO->paymentMethod) {
                     'cash' => 'unpaid', // Cash payments start as unpaid
                     'visa', 'credit' => 'unpaid', // Will be updated after payment processing
                     default => 'unpaid'
@@ -96,17 +96,17 @@ class CreateBookingAction
 
                 // Prepare booking data
                 $bookingData = [
-                    'renter_id' => $bookingDTO->renterId,
+                    'renter_id' => $createBookingDTO->renterId,
                     'vehicle_id' => $vehicle->id,
-                    'start_date' => $bookingDTO->startDate->toDateString(),
-                    'end_date' => $bookingDTO->endDate->toDateString(),
+                    'start_date' => $createBookingDTO->startDate->toDateString(),
+                    'end_date' => $createBookingDTO->endDate->toDateString(),
                     'total_amount' => $calculation->totalAmount,
                     'status' => $initialStatus,
-                    'payment_method' => $bookingDTO->paymentMethod,
+                    'payment_method' => $createBookingDTO->paymentMethod,
                     'payment_status' => $paymentStatus,
-                    'pickup_location' => $bookingDTO->pickupLocation ?? $vehicle->pickup_location ?? $vehicle->location ?? 'Main Office',
-                    'dropoff_location' => $bookingDTO->dropoffLocation ?? $bookingDTO->pickupLocation ?? $vehicle->pickup_location ?? $vehicle->location ?? 'Main Office',
-                    'special_requests' => $bookingDTO->specialRequests,
+                    'pickup_location' => $createBookingDTO->pickupLocation ?? $vehicle->pickup_location ?? $vehicle->location ?? 'Main Office',
+                    'dropoff_location' => $createBookingDTO->dropoffLocation ?? $createBookingDTO->pickupLocation ?? $vehicle->pickup_location ?? $vehicle->location ?? 'Main Office',
+                    'special_requests' => $createBookingDTO->specialRequests,
                 ];
 
                 Log::info('📝 CREATING BOOKING WITH DATA', [
@@ -127,19 +127,19 @@ class CreateBookingAction
                 ]);
 
                 // Process payment for card payments
-                if ($bookingDTO->paymentMethod === 'visa' || $bookingDTO->paymentMethod === 'credit') {
+                if ($createBookingDTO->paymentMethod === 'visa' || $createBookingDTO->paymentMethod === 'credit') {
                     Log::info('💰 PROCESSING CARD PAYMENT', [
                         'user_id' => auth()->id(),
                         'booking_id' => $booking->id,
-                        'payment_method' => $bookingDTO->paymentMethod,
-                        'payment_method_id' => $bookingDTO->paymentMethodId,
+                        'payment_method' => $createBookingDTO->paymentMethod,
+                        'payment_method_id' => $createBookingDTO->paymentMethodId,
                     ]);
 
                     $paymentResult = $this->paymentService->processPayment(
                         $booking,
                         [
-                            'payment_method' => $bookingDTO->paymentMethod,
-                            'payment_method_id' => $bookingDTO->paymentMethodId,
+                            'payment_method' => $createBookingDTO->paymentMethod,
+                            'payment_method_id' => $createBookingDTO->paymentMethodId,
                         ]
                     );
 
@@ -196,7 +196,7 @@ class CreateBookingAction
                     'error_file' => $e->getFile(),
                     'error_line' => $e->getLine(),
                     'stack_trace' => $e->getTraceAsString(),
-                    'booking_data' => $bookingDTO->toArray(),
+                    'booking_data' => $createBookingDTO->toArray(),
                 ]);
                 throw $e;
             }

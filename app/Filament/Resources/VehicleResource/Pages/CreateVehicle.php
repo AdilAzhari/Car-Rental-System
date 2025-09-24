@@ -12,6 +12,7 @@ class CreateVehicle extends CreateRecord
 {
     protected static string $resource = VehicleResource::class;
 
+    #[\Override]
     public function mount(): void
     {
         //             Check if user can create vehicles
@@ -22,6 +23,7 @@ class CreateVehicle extends CreateRecord
         parent::mount();
     }
 
+    #[\Override]
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -30,11 +32,13 @@ class CreateVehicle extends CreateRecord
             ->body(__('resources.vehicle_added_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Set default owner to current user if not specified and user is owner

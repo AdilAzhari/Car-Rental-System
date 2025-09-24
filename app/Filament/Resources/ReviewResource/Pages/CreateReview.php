@@ -10,6 +10,7 @@ class CreateReview extends CreateRecord
 {
     protected static string $resource = ReviewResource::class;
 
+    #[\Override]
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -18,11 +19,13 @@ class CreateReview extends CreateRecord
             ->body(__('resources.review_added_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Set current user as renter if they are a renter role

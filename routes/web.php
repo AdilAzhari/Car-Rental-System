@@ -9,36 +9,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Simple status route for testing
-Route::get('/status', function () {
-    return response()->json([
-        'status' => 'OK',
-        'timestamp' => now()->toISOString(),
-        'database' => 'Connected',
-        'app_name' => config('app.name'),
-        'environment' => config('app.env'),
-    ]);
-});
+Route::get('/status', fn() => response()->json([
+    'status' => 'OK',
+    'timestamp' => now()->toISOString(),
+    'database' => 'Connected',
+    'app_name' => config('app.name'),
+    'environment' => config('app.env'),
+]));
 
 // Test route for debugging
-Route::get('/test-inertia', function () {
-    return \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']);
-});
+Route::get('/test-inertia', fn() => \Inertia\Inertia::render('Test', ['message' => 'Hello from Inertia!']));
 
 // Test route for basic Laravel functionality
-Route::get('/test-json', function () {
-    return response()->json([
-        'message' => 'Laravel is working',
-        'timestamp' => now(),
-        'environment' => app()->environment(),
-        'view_paths' => config('view.paths'),
-        'view_exists' => file_exists(resource_path('views/app.blade.php')),
-    ]);
-});
+Route::get('/test-json', fn() => response()->json([
+    'message' => 'Laravel is working',
+    'timestamp' => now(),
+    'environment' => app()->environment(),
+    'view_paths' => config('view.paths'),
+    'view_exists' => file_exists(resource_path('views/app.blade.php')),
+]));
 
 // Test route for view resolution
-Route::get('/test-view', function () {
-    return view('app-simple', ['message' => 'Test view works']);
-});
+Route::get('/test-view', fn(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory => view('app-simple', ['message' => 'Test view works']));
 
 // Homepage - shows featured cars
 Route::get('/', [CarController::class, 'index']);
@@ -55,7 +47,7 @@ Route::get('/cars/{id}/reserve', [ReservationController::class, 'reserve'])->nam
 Route::get('/booking/payment/return/{booking}', [BookingController::class, 'paymentReturn'])->name('booking.payment.return');
 
 // Authenticated routes
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::get('/my-bookings', [BookingController::class, 'index']);
     Route::get('/my-bookings/{booking}', [BookingController::class, 'show']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -128,8 +120,8 @@ Route::middleware('auth')->get('/debug-filament-auth-protected', function () {
             'auth_identifier' => $user->getAuthIdentifier(),
         ],
         'role_comparison' => [
-            'user_role_class' => get_class($user->role),
-            'admin_role_class' => get_class(\App\Enums\UserRole::ADMIN),
+            'user_role_class' => $user->role::class,
+            'admin_role_class' => \App\Enums\UserRole::ADMIN::class,
             'user_role_value' => $user->role->value,
             'admin_role_value' => \App\Enums\UserRole::ADMIN->value,
             'strict_equality' => $user->role === \App\Enums\UserRole::ADMIN,
@@ -161,6 +153,4 @@ Route::middleware('auth')->get('/debug-filament-auth-protected', function () {
     return response()->json($response, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.filament.auth.protected');
 
-Route::get('/status', function () {
-    return response()->json(['status' => 'ok'], 200);
-});
+Route::get('/status', fn() => response()->json(['status' => 'ok'], 200));

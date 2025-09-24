@@ -48,16 +48,19 @@ class BookingResource extends Resource
 
     protected static string|null|BackedEnum $navigationIcon = Heroicon::ArchiveBoxArrowDown;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return BookingForm::configure($schema);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return BookingsTable::configure($table);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -75,6 +78,7 @@ class BookingResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

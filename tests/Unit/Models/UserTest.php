@@ -21,9 +21,23 @@ describe('User Model', function (): void {
 
     it('has correct fillable attributes', function (): void {
         $fillable = [
-            'name', 'email', 'password', 'role', 'phone', 'address',
-            'date_of_birth', 'emergency_contact', 'license_number',
-            'profile_photo_path',
+            'name',
+            'email',
+            'password',
+            'phone',
+            'role',
+            'status',
+            'license_number',
+            'id_document_path',
+            'license_document_path',
+            'avatar',
+            'is_verified',
+            'date_of_birth',
+            'address',
+            'is_new_user',
+            'has_changed_default_password',
+            'last_login_at',
+            'password_changed_at',
         ];
 
         expect($this->user->getFillable())->toEqual($fillable);
@@ -37,8 +51,12 @@ describe('User Model', function (): void {
 
     it('casts attributes correctly', function (): void {
         expect($this->user->role)->toBeInstanceOf(UserRole::class);
-        expect($this->user->email_verified_at)->toBeNull();
-        expect($this->user->date_of_birth)->toBeNull();
+
+        $unverifiedUser = User::factory()->create(['email_verified_at' => null]);
+        expect($unverifiedUser->email_verified_at)->toBeNull();
+
+        $userWithoutDob = User::factory()->create(['date_of_birth' => null]);
+        expect($userWithoutDob->date_of_birth)->toBeNull();
     });
 
     it('hashes password when set', function (): void {

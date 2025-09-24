@@ -11,6 +11,7 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
+    #[\Override]
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -19,11 +20,13 @@ class CreateUser extends CreateRecord
             ->body(__('resources.user_created_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Generate a default password if not provided

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // GET routes for auth pages
-Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function (): void {
     Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
     Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
 });

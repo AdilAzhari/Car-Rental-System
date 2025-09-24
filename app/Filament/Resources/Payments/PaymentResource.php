@@ -29,37 +29,40 @@ class PaymentResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return PaymentForm::configure($schema);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return PaymentsTable::configure($table);
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $builder = parent::getEloquentQuery();
 
         // Scope based on user role
         $user = Auth::user();
         if (! $user) {
-            return $query->whereRaw('1 = 0'); // Return empty results if not authenticated
+            return $builder->whereRaw('1 = 0'); // Return empty results if not authenticated
         }
 
         if ($user->role === 'admin') {
             // Admin can see all payments
-            return $query;
+            return $builder;
         } elseif ($user->role === 'owner') {
             // Owner can see payments for their vehicles
-            return $query->whereHas('booking.vehicle', function ($q) use ($user): void {
+            return $builder->whereHas('booking.vehicle', function ($q) use ($user): void {
                 $q->where('owner_id', $user->id);
             });
         } else {
             // Renter can see their own payments
-            return $query->whereHas('booking', function ($q) use ($user): void {
+            return $builder->whereHas('booking', function ($q) use ($user): void {
                 $q->where('renter_id', $user->id);
             });
         }
@@ -72,6 +75,7 @@ class PaymentResource extends Resource
         return $user && $user->role == 'admin';
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [

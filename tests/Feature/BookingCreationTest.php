@@ -9,12 +9,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     Filament::setCurrentPanel('app');
     $this->actingAs(User::factory()->active()->admin()->create());
 });
 
-test('can create booking with calculated fields', function () {
+test('can create booking with calculated fields', function (): void {
     $vehicle = Vehicle::factory()->create([
         'daily_rate' => 100,
         'status' => 'published',
@@ -54,7 +54,7 @@ test('can create booking with calculated fields', function () {
     expect($booking->total_amount)->toBe(250.00);
 });
 
-test('booking model has working days attribute', function () {
+test('booking model has working days attribute', function (): void {
     $startDate = Carbon::today();
     $endDate = Carbon::today()->addDays(5);
 
@@ -66,7 +66,7 @@ test('booking model has working days attribute', function () {
     expect($booking->days)->toBe(6); // Should include both start and end dates
 });
 
-test('booking relationships work correctly', function () {
+test('booking relationships work correctly', function (): void {
     $vehicle = Vehicle::factory()->create();
     $renter = User::factory()->renter()->active()->create();
 

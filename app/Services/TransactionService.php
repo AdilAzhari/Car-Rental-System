@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionService
 {
-    private const MAX_RETRIES = 3;
+    private const int MAX_RETRIES = 3;
 
-    private const RETRY_DELAY_MS = 100;
+    private const int RETRY_DELAY_MS = 100;
 
     public function executeWithRetry(Closure $callback, int $maxRetries = self::MAX_RETRIES): mixed
     {
@@ -39,7 +39,7 @@ class TransactionService
                 ]);
 
                 // Exponential backoff with jitter
-                $delay = self::RETRY_DELAY_MS * pow(2, $attempt - 1) + random_int(0, 50);
+                $delay = self::RETRY_DELAY_MS * 2 ** ($attempt - 1) + random_int(0, 50);
                 usleep($delay * 1000);
             }
         }
@@ -75,9 +75,7 @@ class TransactionService
         $chunks = array_chunk($items, $batchSize);
 
         foreach ($chunks as $chunk) {
-            $chunkResults = $this->executeWithRetry(function () use ($chunk, $processor) {
-                return array_map($processor, $chunk);
-            });
+            $chunkResults = $this->executeWithRetry(fn(): array => array_map($processor, $chunk));
 
             $results = array_merge($results, $chunkResults);
         }

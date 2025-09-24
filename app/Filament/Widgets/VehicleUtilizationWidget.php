@@ -9,6 +9,7 @@ use Filament\Widgets\ChartWidget;
 
 class VehicleUtilizationWidget extends ChartWidget
 {
+    #[\Override]
     public function getHeading(): string
     {
         return __('widgets.vehicle_status_distribution');
@@ -18,6 +19,7 @@ class VehicleUtilizationWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -25,20 +27,21 @@ class VehicleUtilizationWidget extends ChartWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getData(): array
     {
         $user = auth()->user();
 
         // Base query - filter by owner if not admin
-        $baseQuery = Vehicle::query();
+        $builder = Vehicle::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->where('owner_id', $user->id);
+            $builder->where('owner_id', $user->id);
         }
 
-        $pending = (clone $baseQuery)->where('status', VehicleStatus::PENDING)->count();
-        $published = (clone $baseQuery)->where('status', VehicleStatus::PUBLISHED)->count();
-        $suspended = (clone $baseQuery)->where('status', VehicleStatus::REJECTED)->count();
-        $maintenance = (clone $baseQuery)->where('status', VehicleStatus::MAINTENANCE)->count();
+        $pending = (clone $builder)->where('status', VehicleStatus::PENDING)->count();
+        $published = (clone $builder)->where('status', VehicleStatus::PUBLISHED)->count();
+        $suspended = (clone $builder)->where('status', VehicleStatus::REJECTED)->count();
+        $maintenance = (clone $builder)->where('status', VehicleStatus::MAINTENANCE)->count();
 
         return [
             'datasets' => [
@@ -69,6 +72,7 @@ class VehicleUtilizationWidget extends ChartWidget
         return 'doughnut';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

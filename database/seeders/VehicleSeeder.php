@@ -73,20 +73,20 @@ class VehicleSeeder extends Seeder
             ],
         ];
 
-        foreach ($testVehicles as $vehicleData) {
-            $owner = User::query()->where('email', $vehicleData['owner_email'])->first();
+        foreach ($testVehicles as $testVehicle) {
+            $owner = User::query()->where('email', $testVehicle['owner_email'])->first();
             if (! $owner) {
                 continue;
             }
 
             // Remove owner_email from the data array since it's not a database column
-            $cleanVehicleData = $vehicleData;
+            $cleanVehicleData = $testVehicle;
             unset($cleanVehicleData['owner_email']);
 
-            $vehicle = Vehicle::query()->firstOrCreate(['plate_number' => $vehicleData['plate_number']], array_merge($cleanVehicleData, [
+            $vehicle = Vehicle::query()->firstOrCreate(['plate_number' => $testVehicle['plate_number']], array_merge($cleanVehicleData, [
                 'owner_id' => $owner->id,
                 'vin' => fake()->bothify('1#?#?#?#?#?#?#?#?#?'),
-                'last_oil_change' => $vehicleData['fuel_type'] !== 'electric' ? fake()->dateTimeBetween('-6 months', '-1 month') : null,
+                'last_oil_change' => $testVehicle['fuel_type'] !== 'electric' ? fake()->dateTimeBetween('-6 months', '-1 month') : null,
                 'policy' => fake()->paragraph(2),
             ]));
 

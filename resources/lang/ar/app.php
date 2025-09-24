@@ -1,15 +1,12 @@
 <?php
 
 return [
-    // Application
     'app_name' => 'نظام تأجير السيارات',
     'welcome' => 'مرحباً',
     'dashboard' => 'لوحة التحكم',
     'language' => 'اللغة',
     'switch_to' => 'التبديل إلى',
     'change_language' => 'تغيير اللغة',
-
-    // Navigation
     'navigation' => [
         'dashboard' => 'لوحة التحكم',
         'user_management' => 'إدارة المستخدمين',
@@ -24,15 +21,11 @@ return [
         'activity_logs' => 'سجل الأنشطة',
         'settings' => 'الإعدادات',
     ],
-
-    // User Roles
     'roles' => [
         'admin' => 'مدير',
         'owner' => 'مالك مركبة',
         'renter' => 'مستأجر',
     ],
-
-    // Status
     'status' => [
         'active' => 'نشط',
         'inactive' => 'غير نشط',
@@ -44,8 +37,6 @@ return [
         'ongoing' => 'جاري',
         'cancelled' => 'ملغي',
     ],
-
-    // Common Actions
     'actions' => [
         'create' => 'إنشاء',
         'edit' => 'تعديل',
@@ -60,16 +51,12 @@ return [
         'export' => 'تصدير',
         'import' => 'استيراد',
     ],
-
-    // Forms
     'form' => [
         'required_field' => 'هذا الحقل مطلوب',
         'invalid_email' => 'البريد الإلكتروني غير صحيح',
         'password_min_length' => 'كلمة المرور يجب أن تكون على الأقل :min أحرف',
         'password_confirmation' => 'تأكيد كلمة المرور لا يتطابق',
     ],
-
-    // Messages
     'messages' => [
         'success_create' => 'تم الإنشاء بنجاح',
         'success_update' => 'تم التحديث بنجاح',

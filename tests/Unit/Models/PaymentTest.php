@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\Payment;
@@ -23,8 +24,8 @@ describe('Payment Model', function (): void {
         $this->payment = Payment::factory()->create([
             'booking_id' => $this->booking->id,
             'amount' => 400.00,
-            'method' => 'stripe',
-            'status' => PaymentStatus::CONFIRMED,
+            'payment_method' => PaymentMethod::CREDIT->value,
+            'payment_status' => PaymentStatus::CONFIRMED,
         ]);
     });
 

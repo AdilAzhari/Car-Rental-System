@@ -373,7 +373,7 @@ describe('Vehicle Details API', function (): void {
 
 describe('Repository Integration', function (): void {
     it('uses VehicleRepository for search operations', function (): void {
-        $repository = app(VehicleRepository::class);
+        $vehicleRepository = app(VehicleRepository::class);
         $owner = User::factory()->create();
 
         Vehicle::factory()->count(5)->create([
@@ -383,15 +383,15 @@ describe('Repository Integration', function (): void {
         ]);
 
         $request = new \Illuminate\Http\Request(['per_page' => 3]);
-        $results = $repository->searchWithFilters($request);
+        $lengthAwarePaginator = $vehicleRepository->searchWithFilters($request);
 
-        expect($results)->toBeInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class);
-        expect($results->items())->toHaveCount(3);
-        expect($results->total())->toBe(5);
+        expect($lengthAwarePaginator)->toBeInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class);
+        expect($lengthAwarePaginator->items())->toHaveCount(3);
+        expect($lengthAwarePaginator->total())->toBe(5);
     });
 
     it('repository maintains performance under load', function (): void {
-        $repository = app(VehicleRepository::class);
+        $vehicleRepository = app(VehicleRepository::class);
         $owner = User::factory()->create();
 
         Vehicle::factory()->count(50)->create([
@@ -400,10 +400,10 @@ describe('Repository Integration', function (): void {
             'status' => VehicleStatus::PUBLISHED->value,
         ]);
 
-        assertPerformance(function () use ($repository) {
+        assertPerformance(function () use ($vehicleRepository) {
             $request = new \Illuminate\Http\Request(['per_page' => 20]);
 
-            return $repository->searchWithFilters($request);
+            return $vehicleRepository->searchWithFilters($request);
         }, 1000, 20); // Max 1 second, 20MB memory
     });
 });

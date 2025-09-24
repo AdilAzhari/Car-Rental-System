@@ -67,9 +67,9 @@ describe('Review Model', function (): void {
     it('validates rating range', function (): void {
         $validRatings = [1, 2, 3, 4, 5];
 
-        foreach ($validRatings as $rating) {
-            $review = Review::factory()->create(['rating' => $rating]);
-            expect($review->rating)->toBe($rating);
+        foreach ($validRatings as $validRating) {
+            $review = Review::factory()->create(['rating' => $validRating]);
+            expect($review->rating)->toBe($validRating);
         }
     });
 

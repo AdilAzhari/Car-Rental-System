@@ -31,9 +31,10 @@
             <x-filament::dropdown.list>
                 @foreach($availableLocales as $localeCode => $locale)
                     <x-filament::dropdown.list.item
-                        href="{{ url()->current() }}?locale={{ $localeCode }}"
                         :active="$currentLocale === $localeCode"
                         icon="heroicon-o-globe-alt"
+                        wire:click="$dispatch('switch-language', { locale: '{{ $localeCode }}' })"
+                        style="cursor: pointer"
                     >
                         {{ $locale['native'] }} ({{ $locale['name'] }})
                     </x-filament::dropdown.list.item>
@@ -42,3 +43,26 @@
         </x-filament::dropdown>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Listen for language switch events
+    document.addEventListener('switch-language', function(event) {
+        const locale = event.detail.locale;
+
+        // Create form to submit locale change
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = window.location.pathname;
+
+        const localeInput = document.createElement('input');
+        localeInput.type = 'hidden';
+        localeInput.name = 'locale';
+        localeInput.value = locale;
+
+        form.appendChild(localeInput);
+        document.body.appendChild(form);
+        form.submit();
+    });
+});
+</script>

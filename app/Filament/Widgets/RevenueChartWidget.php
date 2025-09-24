@@ -8,6 +8,7 @@ use Filament\Widgets\ChartWidget;
 
 class RevenueChartWidget extends ChartWidget
 {
+    #[\Override]
     public function getHeading(): string
     {
         return __('widgets.revenue_chart');
@@ -17,6 +18,7 @@ class RevenueChartWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -24,6 +26,7 @@ class RevenueChartWidget extends ChartWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getData(): array
     {
         $user = auth()->user();
@@ -90,6 +93,7 @@ class RevenueChartWidget extends ChartWidget
         return 'line';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

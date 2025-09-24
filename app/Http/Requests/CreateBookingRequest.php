@@ -24,9 +24,7 @@ class CreateBookingRequest extends FormRequest
             'car_id' => [
                 'required',
                 'integer',
-                Rule::exists('car_rental_vehicles', 'id')->where(function ($query) {
-                    return $query->where('is_available', true)->where('status', 'published');
-                }),
+                Rule::exists('car_rental_vehicles', 'id')->where(fn($query) => $query->where('is_available', true)->where('status', 'published')),
             ],
             'start_date' => [
                 'required',
@@ -71,6 +69,7 @@ class CreateBookingRequest extends FormRequest
     /**
      * Get custom validation messages.
      */
+    #[\Override]
     public function messages(): array
     {
         return [

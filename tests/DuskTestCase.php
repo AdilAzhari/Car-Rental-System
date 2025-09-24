@@ -11,11 +11,12 @@ abstract class DuskTestCase extends BaseTestCase
      *
      * @return \Illuminate\Foundation\Application
      */
+    #[\Override]
     public function createApplication()
     {
         $app = require __DIR__.'/../bootstrap/app.php';
 
-        $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
         return $app;
     }
@@ -24,10 +25,8 @@ abstract class DuskTestCase extends BaseTestCase
      * Prepare for Dusk test execution.
      *
      * @beforeClass
-     *
-     * @return void
      */
-    public static function prepare()
+    public static function prepare(): void
     {
         // This is a placeholder for Dusk compatibility
         // These tests should be converted to Pest browser tests

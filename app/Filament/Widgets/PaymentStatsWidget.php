@@ -12,11 +12,13 @@ class PaymentStatsWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -24,44 +26,45 @@ class PaymentStatsWidget extends BaseWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         $user = auth()->user();
 
         // Base query - filter by owner's vehicles if not admin
-        $baseQuery = Payment::query();
+        $builder = Payment::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user): void {
+            $builder->whereHas('booking.vehicle', function ($query) use ($user): void {
                 $query->where('owner_id', $user->id);
             });
         }
 
         // Total payments
-        $totalPayments = $baseQuery->count();
+        $totalPayments = $builder->count();
 
         // Successful payments
-        $successfulPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::CONFIRMED)->count();
+        $successfulPayments = (clone $builder)->where('payment_status', PaymentStatus::CONFIRMED)->count();
 
         // Pending payments
-        $pendingPayments = (clone $baseQuery)->where('payment_status', PaymentStatus::PENDING)->count();
+        $pendingPayments = (clone $builder)->where('payment_status', PaymentStatus::PENDING)->count();
 
         // Failed payments
-        (clone $baseQuery)->where('payment_status', PaymentStatus::FAILED)->count();
+        (clone $builder)->where('payment_status', PaymentStatus::FAILED)->count();
 
         // Total revenue
-        $totalRevenue = (clone $baseQuery)
+        $totalRevenue = (clone $builder)
             ->where('payment_status', PaymentStatus::CONFIRMED)
             ->sum('amount');
 
         // This month's revenue
-        $monthlyRevenue = (clone $baseQuery)
+        $monthlyRevenue = (clone $builder)
             ->where('payment_status', PaymentStatus::CONFIRMED)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
 
         // Average payment amount
-        $averagePayment = (clone $baseQuery)
+        $averagePayment = (clone $builder)
             ->where('payment_status', PaymentStatus::CONFIRMED)
             ->avg('amount') ?? 0;
 
@@ -72,7 +75,7 @@ class PaymentStatsWidget extends BaseWidget
         $revenueTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $revenue = (clone $baseQuery)
+            $revenue = (clone $builder)
                 ->where('payment_status', PaymentStatus::CONFIRMED)
                 ->whereDate('created_at', $date)
                 ->sum('amount');

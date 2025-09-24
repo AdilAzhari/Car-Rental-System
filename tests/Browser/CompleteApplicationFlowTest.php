@@ -7,8 +7,8 @@ use Laravel\Dusk\Browser;
 
 uses(RefreshDatabase::class);
 
-describe('Complete Application Flow E2E Tests', function () {
-    beforeEach(function () {
+describe('Complete Application Flow E2E Tests', function (): void {
+    beforeEach(function (): void {
         $this->owner = User::factory()->owner()->create([
             'email' => 'owner@example.com',
             'password' => bcrypt('password123'),
@@ -31,8 +31,8 @@ describe('Complete Application Flow E2E Tests', function () {
         ]);
     });
 
-    it('completes full vehicle owner workflow', function () {
-        $this->browse(function (Browser $browser) {
+    it('completes full vehicle owner workflow', function (): void {
+        $this->browse(function (Browser $browser): void {
             // 1. Owner Registration and Login
             $browser->visit('/register')
                 ->type('[data-testid="name"]', 'Vehicle Owner')
@@ -85,8 +85,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('completes full vehicle rental workflow', function () {
-        $this->browse(function (Browser $browser) {
+    it('completes full vehicle rental workflow', function (): void {
+        $this->browse(function (Browser $browser): void {
             // 1. Renter Login
             $browser->visit('/login')
                 ->type('[data-testid="email"]', 'renter@example.com')
@@ -147,8 +147,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('handles booking conflicts correctly', function () {
-        $this->browse(function (Browser $browser1, Browser $browser2) {
+    it('handles booking conflicts correctly', function (): void {
+        $this->browse(function (Browser $browser1, Browser $browser2): void {
             $renter1 = User::factory()->renter()->create([
                 'email' => 'renter1@example.com',
                 'password' => bcrypt('password123'),
@@ -189,13 +189,13 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('completes admin management workflow', function () {
+    it('completes admin management workflow', function (): void {
         $admin = User::factory()->admin()->create([
             'email' => 'admin@example.com',
             'password' => bcrypt('password123'),
         ]);
 
-        $this->browse(function (Browser $browser) use ($admin) {
+        $this->browse(function (Browser $browser) use ($admin): void {
             // 1. Admin Login
             $browser->loginAs($admin)
                 ->visit('/admin')
@@ -245,8 +245,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('handles responsive design across devices', function () {
-        $this->browse(function (Browser $browser) {
+    it('handles responsive design across devices', function (): void {
+        $this->browse(function (Browser $browser): void {
             // Desktop View
             $browser->resize(1920, 1080)
                 ->visit('/cars')
@@ -271,7 +271,7 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('handles search and filtering performance', function () {
+    it('handles search and filtering performance', function (): void {
         // Create more test data for performance testing
         Vehicle::factory()->count(50)->create([
             'owner_id' => $this->owner->id,
@@ -279,7 +279,7 @@ describe('Complete Application Flow E2E Tests', function () {
             'status' => 'published',
         ]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $startTime = microtime(true);
 
             $browser->visit('/cars')
@@ -297,8 +297,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('maintains state during navigation', function () {
-        $this->browse(function (Browser $browser) {
+    it('maintains state during navigation', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->loginAs($this->renter)
                 ->visit('/cars')
                 ->type('[data-testid="search-input"]', 'Toyota')
@@ -319,8 +319,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('handles error scenarios gracefully', function () {
-        $this->browse(function (Browser $browser) {
+    it('handles error scenarios gracefully', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->loginAs($this->renter)
 
             // Test network error handling
@@ -346,8 +346,8 @@ describe('Complete Application Flow E2E Tests', function () {
         });
     });
 
-    it('supports multiple languages', function () {
-        $this->browse(function (Browser $browser) {
+    it('supports multiple languages', function (): void {
+        $this->browse(function (Browser $browser): void {
             // Test Arabic language support
             $browser->visit('/cars')
                 ->click('[data-testid="language-switcher"]')

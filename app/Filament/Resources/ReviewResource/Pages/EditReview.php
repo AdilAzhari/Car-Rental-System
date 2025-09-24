@@ -115,6 +115,7 @@ class EditReview extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -123,6 +124,7 @@ class EditReview extends EditRecord
             ->body(__('resources.review_updated_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);

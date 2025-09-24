@@ -20,6 +20,9 @@ return new class extends Migration
             // Make VIN nullable since it's optional in the form
             $table->string('vin')->nullable()->change();
 
+            // Drop the index first before dropping the column
+            $table->dropIndex('car_rental_vehicles_is_available_index');
+
             // Remove or make nullable fields that were in original migration but not in our model
             $table->dropColumn(['color', 'seats', 'description', 'location', 'mileage', 'insurance_expiry', 'is_available']);
         });
@@ -39,6 +42,9 @@ return new class extends Migration
             $table->string('location')->after('is_available');
             $table->integer('mileage')->default(0)->after('location');
             $table->date('insurance_expiry')->after('mileage');
+
+            // Restore the index
+            $table->index('is_available');
 
             // Remove added columns
             $table->dropColumn(['oil_type', 'last_oil_change', 'policy']);

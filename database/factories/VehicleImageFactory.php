@@ -10,7 +10,7 @@ class VehicleImageFactory extends Factory
     public function definition(): array
     {
         $categories = ['economy', 'compact', 'midsize', 'luxury', 'suv', 'sports', 'convertible', 'pickup', 'minivan', 'electric'];
-        $category = fake()->randomElement($categories);
+        fake()->randomElement($categories);
 
         // Only use actual image files that exist
         $availableImages = [

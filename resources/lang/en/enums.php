@@ -10,7 +10,6 @@ return [
         'maintenance' => 'Maintenance',
         'archived' => 'Archived',
     ],
-
     'payment_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',
@@ -20,7 +19,6 @@ return [
         'processing' => 'Processing',
         'unpaid' => 'Unpaid',
     ],
-
     'booking_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',
@@ -28,14 +26,12 @@ return [
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
     ],
-
     'user_role' => [
         'admin' => 'Administrator',
         'owner' => 'Vehicle Owner',
         'customer' => 'Customer/Renter',
         'renter' => 'Customer/Renter',
     ],
-
     'fuel_type' => [
         'petrol' => 'Petrol',
         'diesel' => 'Diesel',
@@ -43,13 +39,11 @@ return [
         'electric' => 'Electric',
         'lpg' => 'LPG',
     ],
-
     'transmission' => [
         'manual' => 'Manual',
         'automatic' => 'Automatic',
         'cvt' => 'CVT',
     ],
-
     'payment_method' => [
         'cash' => 'Cash',
         'credit_card' => 'Credit Card',
@@ -60,7 +54,6 @@ return [
         'stripe' => 'Stripe',
         'visa' => 'Visa',
     ],
-
     'vehicle_category' => [
         'economy' => 'Economy',
         'compact' => 'Compact',

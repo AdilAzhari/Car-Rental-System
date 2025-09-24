@@ -7,15 +7,15 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Event;
 
-describe('BookingController Enhanced Tests', function () {
-    beforeEach(function () {
+describe('BookingController Enhanced Tests', function (): void {
+    beforeEach(function (): void {
         Event::fake();
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create();
         $this->admin = User::factory()->create(['role' => 'admin']);
     });
 
-    it('creates booking with proper DTO validation', function () {
+    it('creates booking with proper DTO validation', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -54,7 +54,7 @@ describe('BookingController Enhanced Tests', function () {
         expect($booking->special_requests)->toBe('Need GPS and child seat');
     });
 
-    it('dispatches BookingCreated event', function () {
+    it('dispatches BookingCreated event', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -69,12 +69,10 @@ describe('BookingController Enhanced Tests', function () {
                 'payment_method' => 'cash',
             ]);
 
-        Event::assertDispatched(BookingCreated::class, function ($event) {
-            return $event->booking instanceof Booking;
-        });
+        Event::assertDispatched(BookingCreated::class, fn($event): bool => $event->booking instanceof Booking);
     });
 
-    it('handles custom exceptions properly', function () {
+    it('handles custom exceptions properly', function (): void {
         // Test VehicleException for unavailable vehicle
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
@@ -97,7 +95,7 @@ describe('BookingController Enhanced Tests', function () {
             ]);
     });
 
-    it('handles date conflicts with proper exception', function () {
+    it('handles date conflicts with proper exception', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -131,7 +129,7 @@ describe('BookingController Enhanced Tests', function () {
             ]);
     });
 
-    it('validates DTO requirements correctly', function () {
+    it('validates DTO requirements correctly', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -152,7 +150,7 @@ describe('BookingController Enhanced Tests', function () {
             ->assertJsonValidationErrors(['payment_method_id']);
     });
 
-    it('calculates amounts correctly using DTO', function () {
+    it('calculates amounts correctly using DTO', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -180,7 +178,7 @@ describe('BookingController Enhanced Tests', function () {
         expect($booking->total_amount)->toBeGreaterThan(500);
     });
 
-    it('uses transaction service for atomic operations', function () {
+    it('uses transaction service for atomic operations', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -207,8 +205,8 @@ describe('BookingController Enhanced Tests', function () {
     });
 });
 
-describe('Booking Authorization Middleware', function () {
-    beforeEach(function () {
+describe('Booking Authorization Middleware', function (): void {
+    beforeEach(function (): void {
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create();
         $this->otherUser = User::factory()->create();
@@ -220,21 +218,21 @@ describe('Booking Authorization Middleware', function () {
         ]);
     });
 
-    it('allows renter to access their booking', function () {
+    it('allows renter to access their booking', function (): void {
         $response = $this->actingAs($this->renter)
             ->getJson("/api/bookings/{$this->booking->id}");
 
         $response->assertSuccessful();
     });
 
-    it('allows vehicle owner to access booking', function () {
+    it('allows vehicle owner to access booking', function (): void {
         $response = $this->actingAs($this->owner)
             ->getJson("/api/bookings/{$this->booking->id}");
 
         $response->assertSuccessful();
     });
 
-    it('prevents unauthorized users from accessing booking', function () {
+    it('prevents unauthorized users from accessing booking', function (): void {
         $response = $this->actingAs($this->otherUser)
             ->getJson("/api/bookings/{$this->booking->id}");
 
@@ -245,7 +243,7 @@ describe('Booking Authorization Middleware', function () {
             ]);
     });
 
-    it('allows admin to access any booking', function () {
+    it('allows admin to access any booking', function (): void {
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)

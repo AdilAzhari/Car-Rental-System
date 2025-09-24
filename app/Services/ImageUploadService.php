@@ -17,9 +17,9 @@ class ImageUploadService
         $this->imageManager = new ImageManager(new Driver);
     }
 
-    public function uploadProfileImage(UploadedFile $file, ?string $oldImagePath = null): string
+    public function uploadProfileImage(UploadedFile $uploadedFile, ?string $oldImagePath = null): string
     {
-        $this->validateImage($file, 'profile');
+        $this->validateImage($uploadedFile, 'profile');
 
         // Delete old image if exists
         if ($oldImagePath) {
@@ -27,10 +27,10 @@ class ImageUploadService
         }
 
         $config = config('image.profile_images');
-        $filename = $this->generateFilename($file);
+        $filename = $this->generateFilename($uploadedFile);
         $path = "profiles/{$filename}";
 
-        $image = $this->imageManager->read($file->getRealPath());
+        $image = $this->imageManager->read($uploadedFile->getRealPath());
 
         // Resize while maintaining aspect ratio
         $image->scaleDown(
@@ -47,9 +47,9 @@ class ImageUploadService
         return $path;
     }
 
-    public function uploadVehicleImage(UploadedFile $file, ?string $oldImagePath = null): array
+    public function uploadVehicleImage(UploadedFile $uploadedFile, ?string $oldImagePath = null): array
     {
-        $this->validateImage($file, 'vehicle');
+        $this->validateImage($uploadedFile, 'vehicle');
 
         // Delete old image if exists
         if ($oldImagePath) {
@@ -57,11 +57,11 @@ class ImageUploadService
         }
 
         $config = config('image.vehicle_images');
-        $filename = $this->generateFilename($file);
+        $filename = $this->generateFilename($uploadedFile);
         $mainPath = "vehicles/{$filename}";
         $thumbnailPath = "vehicles/thumbnails/thumb_{$filename}";
 
-        $image = $this->imageManager->read($file->getRealPath());
+        $image = $this->imageManager->read($uploadedFile->getRealPath());
 
         // Create main image
         $mainImage = clone $image;
@@ -91,26 +91,26 @@ class ImageUploadService
         ];
     }
 
-    protected function validateImage(UploadedFile $file, string $type): void
+    protected function validateImage(UploadedFile $uploadedFile, string $type): void
     {
         $config = config("image.{$type}_images");
         $maxSize = $config['max_file_size'] * 1024; // Convert KB to bytes
 
-        if ($file->getSize() > $maxSize) {
+        if ($uploadedFile->getSize() > $maxSize) {
             throw new \InvalidArgumentException("File size exceeds maximum allowed size of {$config['max_file_size']}KB");
         }
 
         $allowedTypes = config('image.allowed_types');
-        $extension = strtolower($file->getClientOriginalExtension());
+        $extension = strtolower($uploadedFile->getClientOriginalExtension());
 
         if (! in_array($extension, $allowedTypes)) {
             throw new \InvalidArgumentException('File type not allowed. Allowed types: '.implode(', ', $allowedTypes));
         }
     }
 
-    protected function generateFilename(UploadedFile $file): string
+    protected function generateFilename(UploadedFile $uploadedFile): string
     {
-        $extension = strtolower($file->getClientOriginalExtension());
+        $extension = strtolower($uploadedFile->getClientOriginalExtension());
         $timestamp = now()->format('Y-m-d_H-i-s');
         $random = Str::random(8);
 

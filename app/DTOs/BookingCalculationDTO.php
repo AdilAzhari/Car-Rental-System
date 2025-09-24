@@ -11,7 +11,7 @@ readonly class BookingCalculationDTO
         public float $insuranceFee,
         public float $taxAmount,
         public float $totalAmount,
-        public string $currency = 'USD'
+        public string $currency = 'MYR'
     ) {}
 
     public static function calculate(float $dailyRate, int $totalDays, float $insuranceRate = 0.10, float $taxRate = 0.08): self

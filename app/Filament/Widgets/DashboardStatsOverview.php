@@ -17,11 +17,13 @@ class DashboardStatsOverview extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         $user = auth()->user();

@@ -21,18 +21,18 @@ class BookingController extends Controller
     /**
      * Create a new booking.
      */
-    public function store(CreateBookingRequest $request): JsonResponse
+    public function store(CreateBookingRequest $createBookingRequest): JsonResponse
     {
         Log::info('🚀 BOOKING REQUEST STARTED', [
             'user_id' => auth()->id(),
             'user_email' => auth()->user()?->email,
-            'request_data' => $request->safe()->all(),
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            'request_data' => $createBookingRequest->safe()->all(),
+            'ip' => $createBookingRequest->ip(),
+            'user_agent' => $createBookingRequest->userAgent(),
             'timestamp' => now(),
         ]);
 
-        $validatedData = $request->getValidatedDataWithComputed();
+        $validatedData = $createBookingRequest->getValidatedDataWithComputed();
 
         Log::info('✅ VALIDATION PASSED', [
             'user_id' => auth()->id(),
@@ -42,7 +42,7 @@ class BookingController extends Controller
         try {
             Log::info('🔧 CALLING CREATE BOOKING ACTION', [
                 'user_id' => auth()->id(),
-                'action_class' => get_class($this->createBookingAction),
+                'action_class' => $this->createBookingAction::class,
                 'data' => $validatedData,
             ]);
 

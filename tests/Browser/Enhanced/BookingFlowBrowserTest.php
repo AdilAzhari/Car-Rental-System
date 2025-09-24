@@ -4,8 +4,8 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Laravel\Dusk\Browser;
 
-describe('Booking Flow Browser Tests', function () {
-    beforeEach(function () {
+describe('Booking Flow Browser Tests', function (): void {
+    beforeEach(function (): void {
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create([
             'email' => 'renter@test.com',
@@ -23,8 +23,8 @@ describe('Booking Flow Browser Tests', function () {
         ]);
     });
 
-    it('can complete full booking flow', function () {
-        $this->browse(function (Browser $browser) {
+    it('can complete full booking flow', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/login')
                 ->assertSee('Sign In')
                 ->type('email', 'renter@test.com')
@@ -47,8 +47,8 @@ describe('Booking Flow Browser Tests', function () {
         });
     });
 
-    it('validates booking form correctly', function () {
-        $this->browse(function (Browser $browser) {
+    it('validates booking form correctly', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->loginAs($this->renter)
                 ->visit("/cars/{$this->vehicle->id}")
                 ->click('@reserve-button')
@@ -59,8 +59,8 @@ describe('Booking Flow Browser Tests', function () {
         });
     });
 
-    it('displays image carousel correctly', function () {
-        $this->browse(function (Browser $browser) {
+    it('displays image carousel correctly', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit("/cars/{$this->vehicle->id}")
                 ->assertVisible('@image-carousel')
                 ->assertVisible('@carousel-nav-next')
@@ -71,8 +71,8 @@ describe('Booking Flow Browser Tests', function () {
         });
     });
 
-    it('shows booking confirmation for cash payments', function () {
-        $this->browse(function (Browser $browser) {
+    it('shows booking confirmation for cash payments', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->loginAs($this->renter)
                 ->visit("/cars/{$this->vehicle->id}")
                 ->click('@reserve-button')
@@ -87,8 +87,8 @@ describe('Booking Flow Browser Tests', function () {
         });
     });
 
-    it('handles payment processing for card payments', function () {
-        $this->browse(function (Browser $browser) {
+    it('handles payment processing for card payments', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->loginAs($this->renter)
                 ->visit("/cars/{$this->vehicle->id}")
                 ->click('@reserve-button')
@@ -105,8 +105,8 @@ describe('Booking Flow Browser Tests', function () {
     });
 });
 
-describe('Vehicle Search and Filtering', function () {
-    beforeEach(function () {
+describe('Vehicle Search and Filtering', function (): void {
+    beforeEach(function (): void {
         $this->owner = User::factory()->create();
 
         Vehicle::factory()->create([
@@ -134,8 +134,8 @@ describe('Vehicle Search and Filtering', function () {
         ]);
     });
 
-    it('can filter vehicles by transmission', function () {
-        $this->browse(function (Browser $browser) {
+    it('can filter vehicles by transmission', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/cars')
                 ->assertSee('Toyota Camry')
                 ->assertSee('Honda Civic')
@@ -147,8 +147,8 @@ describe('Vehicle Search and Filtering', function () {
         });
     });
 
-    it('can filter vehicles by price range', function () {
-        $this->browse(function (Browser $browser) {
+    it('can filter vehicles by price range', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/cars')
                 ->assertSee('Toyota Camry')
                 ->assertSee('Honda Civic')
@@ -161,8 +161,8 @@ describe('Vehicle Search and Filtering', function () {
         });
     });
 
-    it('shows no results when filters match nothing', function () {
-        $this->browse(function (Browser $browser) {
+    it('shows no results when filters match nothing', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/cars')
                 ->select('@filter-transmission', 'manual')
                 ->type('@filter-price-min', '200')
@@ -173,8 +173,8 @@ describe('Vehicle Search and Filtering', function () {
     });
 });
 
-describe('Enhanced UI Components', function () {
-    beforeEach(function () {
+describe('Enhanced UI Components', function (): void {
+    beforeEach(function (): void {
         $this->owner = User::factory()->create();
         $this->vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
@@ -183,8 +183,8 @@ describe('Enhanced UI Components', function () {
         ]);
     });
 
-    it('displays enhanced header with new branding', function () {
-        $this->browse(function (Browser $browser) {
+    it('displays enhanced header with new branding', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/')
                 ->assertSee('CarZen')
                 ->assertSee('Premium Rentals')
@@ -193,8 +193,8 @@ describe('Enhanced UI Components', function () {
         });
     });
 
-    it('shows image carousel with navigation', function () {
-        $this->browse(function (Browser $browser) {
+    it('shows image carousel with navigation', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit("/cars/{$this->vehicle->id}")
                 ->assertVisible('@image-carousel')
                 ->assertVisible('@carousel-dots')
@@ -208,8 +208,8 @@ describe('Enhanced UI Components', function () {
         });
     });
 
-    it('displays vehicle cards with enhanced design', function () {
-        $this->browse(function (Browser $browser) {
+    it('displays vehicle cards with enhanced design', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/cars')
                 ->assertVisible('@vehicle-card')
                 ->mouseover('@vehicle-card')
@@ -218,8 +218,8 @@ describe('Enhanced UI Components', function () {
         });
     });
 
-    it('shows responsive mobile navigation', function () {
-        $this->browse(function (Browser $browser) {
+    it('shows responsive mobile navigation', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->resize(375, 667) // iPhone dimensions
                 ->visit('/')
                 ->assertVisible('@mobile-menu-button')
@@ -230,9 +230,9 @@ describe('Enhanced UI Components', function () {
     });
 });
 
-describe('Performance and Accessibility', function () {
-    it('loads home page within performance budget', function () {
-        $this->browse(function (Browser $browser) {
+describe('Performance and Accessibility', function (): void {
+    it('loads home page within performance budget', function (): void {
+        $this->browse(function (Browser $browser): void {
             $startTime = microtime(true);
 
             $browser->visit('/');
@@ -243,8 +243,8 @@ describe('Performance and Accessibility', function () {
         });
     });
 
-    it('has proper accessibility attributes', function () {
-        $this->browse(function (Browser $browser) {
+    it('has proper accessibility attributes', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/')
                 ->assertAttribute('@main-navigation', 'role', 'navigation')
                 ->assertAttribute('@hero-heading', 'role', 'heading')
@@ -252,8 +252,8 @@ describe('Performance and Accessibility', function () {
         });
     });
 
-    it('handles errors gracefully', function () {
-        $this->browse(function (Browser $browser) {
+    it('handles errors gracefully', function (): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/cars/999999') // Non-existent vehicle
                 ->assertSee('404')
                 ->assertSee('Vehicle not found');

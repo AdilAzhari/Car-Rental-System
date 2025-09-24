@@ -2,40 +2,40 @@
 
 use App\DTOs\BookingCalculationDTO;
 
-describe('BookingCalculationDTO', function () {
-    it('calculates booking totals correctly', function () {
-        $calculation = BookingCalculationDTO::calculate(
+describe('BookingCalculationDTO', function (): void {
+    it('calculates booking totals correctly', function (): void {
+        $bookingCalculationDTO = BookingCalculationDTO::calculate(
             dailyRate: 100.0,
             totalDays: 3,
             insuranceRate: 0.10,
             taxRate: 0.08
         );
 
-        expect($calculation->dailyRate)->toBe(100.0);
-        expect($calculation->totalDays)->toBe(3);
-        expect($calculation->subtotal)->toBe(300.0);
-        expect($calculation->insuranceFee)->toBe(30.0); // 10% of subtotal
-        expect($calculation->taxAmount)->toBe(26.4); // 8% of (subtotal + insurance)
-        expect($calculation->totalAmount)->toBe(356.4); // subtotal + insurance + tax
+        expect($bookingCalculationDTO->dailyRate)->toBe(100.0);
+        expect($bookingCalculationDTO->totalDays)->toBe(3);
+        expect($bookingCalculationDTO->subtotal)->toBe(300.0);
+        expect($bookingCalculationDTO->insuranceFee)->toBe(30.0); // 10% of subtotal
+        expect($bookingCalculationDTO->taxAmount)->toBe(26.4); // 8% of (subtotal + insurance)
+        expect($bookingCalculationDTO->totalAmount)->toBe(356.4); // subtotal + insurance + tax
     });
 
-    it('handles zero days correctly', function () {
-        $calculation = BookingCalculationDTO::calculate(
+    it('handles zero days correctly', function (): void {
+        $bookingCalculationDTO = BookingCalculationDTO::calculate(
             dailyRate: 100.0,
             totalDays: 0
         );
 
-        expect($calculation->subtotal)->toBe(0.0);
-        expect($calculation->totalAmount)->toBe(0.0);
+        expect($bookingCalculationDTO->subtotal)->toBe(0.0);
+        expect($bookingCalculationDTO->totalAmount)->toBe(0.0);
     });
 
-    it('converts to array with formatted amounts', function () {
-        $calculation = BookingCalculationDTO::calculate(
+    it('converts to array with formatted amounts', function (): void {
+        $bookingCalculationDTO = BookingCalculationDTO::calculate(
             dailyRate: 99.99,
             totalDays: 2
         );
 
-        $array = $calculation->toArray();
+        $array = $bookingCalculationDTO->toArray();
 
         expect($array)->toHaveKeys([
             'daily_rate', 'total_days', 'subtotal',
@@ -43,10 +43,10 @@ describe('BookingCalculationDTO', function () {
         ]);
         expect($array['daily_rate'])->toBeString();
         expect($array['total_amount'])->toBeString();
-        expect($array['currency'])->toBe('USD');
+        expect($array['currency'])->toBe('MYR');
     });
 
-    it('formats total with currency', function () {
+    it('formats total with currency', function (): void {
         $calculation = new BookingCalculationDTO(
             dailyRate: 100.0,
             totalDays: 2,

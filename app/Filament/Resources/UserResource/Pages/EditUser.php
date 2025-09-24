@@ -77,6 +77,7 @@ class EditUser extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -85,6 +86,7 @@ class EditUser extends EditRecord
             ->body(__('resources.user_updated_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);

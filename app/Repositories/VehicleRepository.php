@@ -147,44 +147,44 @@ class VehicleRepository
         return Vehicle::with(['owner', 'images', 'reviews']);
     }
 
-    private function applyFilters(Builder $query, Request $request): void
+    private function applyFilters(Builder $builder, Request $request): void
     {
         if ($request->filled('location')) {
-            $query->nearby($request->location);
+            $builder->nearby($request->location);
         }
 
         if ($request->filled(['price_min', 'price_max'])) {
-            $query->priceRange($request->price_min, $request->price_max);
+            $builder->priceRange($request->price_min, $request->price_max);
         }
 
         if ($request->filled('transmission')) {
-            $query->where('transmission', $request->transmission);
+            $builder->where('transmission', $request->transmission);
         }
 
         if ($request->filled('fuel_type')) {
-            $query->where('fuel_type', $request->fuel_type);
+            $builder->where('fuel_type', $request->fuel_type);
         }
 
         if ($request->filled('category')) {
-            $query->where('category', $request->category);
+            $builder->where('category', $request->category);
         }
 
         if ($request->filled('seats')) {
-            $query->where('seats', '>=', $request->seats);
+            $builder->where('seats', '>=', $request->seats);
         }
     }
 
-    private function applySorting(Builder $query, Request $request): void
+    private function applySorting(Builder $builder, Request $request): void
     {
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
 
         match ($sortBy) {
-            'price_low' => $query->orderBy('daily_rate'),
-            'price_high' => $query->orderBy('daily_rate', 'desc'),
-            'rating' => $query->orderByRaw('(SELECT AVG(rating) FROM reviews WHERE vehicle_id = car_rental_vehicles.id) DESC NULLS LAST'),
-            'popular' => $query->popular(),
-            default => $query->orderBy($sortBy, $sortOrder)
+            'price_low' => $builder->orderBy('daily_rate'),
+            'price_high' => $builder->orderBy('daily_rate', 'desc'),
+            'rating' => $builder->orderByRaw('(SELECT AVG(rating) FROM reviews WHERE vehicle_id = car_rental_vehicles.id) DESC NULLS LAST'),
+            'popular' => $builder->popular(),
+            default => $builder->orderBy($sortBy, $sortOrder)
         };
     }
 

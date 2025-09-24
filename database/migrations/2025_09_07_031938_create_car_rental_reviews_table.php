@@ -21,6 +21,7 @@ return new class extends Migration
             $table->index('vehicle_id');
             $table->index('renter_id');
             $table->index('rating');
+            $table->unique('booking_id'); // Ensure one review per booking
         });
     }
 

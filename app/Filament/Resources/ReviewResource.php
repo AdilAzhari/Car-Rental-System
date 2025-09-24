@@ -54,6 +54,7 @@ class ReviewResource extends Resource
         return __('resources.reviews');
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -121,6 +122,7 @@ class ReviewResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -156,8 +158,8 @@ class ReviewResource extends Resource
                 TextColumn::make('comment')
                     ->label(__('resources.comment'))
                     ->limit(50)
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
+                    ->tooltip(function (TextColumn $textColumn): ?string {
+                        $state = $textColumn->getState();
 
                         return strlen($state) > 50 ? $state : null;
                     }),
@@ -188,11 +190,11 @@ class ReviewResource extends Resource
 
                 Filter::make('high_rating')
                     ->label(__('resources.high_rating'))
-                    ->query(fn (Builder $query): Builder => $query->where('rating', '>=', 4)),
+                    ->query(fn (Builder $builder): Builder => $builder->where('rating', '>=', 4)),
 
                 Filter::make('low_rating')
                     ->label(__('resources.low_rating'))
-                    ->query(fn (Builder $query): Builder => $query->where('rating', '<=', 2)),
+                    ->query(fn (Builder $builder): Builder => $builder->where('rating', '<=', 2)),
             ])
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
@@ -238,6 +240,7 @@ class ReviewResource extends Resource
         return $totalCount > 0 ? 'primary' : 'gray';
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

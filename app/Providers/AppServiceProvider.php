@@ -6,11 +6,12 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Observers\VehicleObserver;
 use App\Policies\BookingPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\VehiclePolicy;
+use App\Repositories\VehicleRepository;
+use App\Services\TransactionService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
@@ -21,13 +22,14 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
+    #[\Override]
     public function register(): void
     {
         // Register repositories
-        $this->app->singleton(\App\Repositories\VehicleRepository::class);
+        $this->app->singleton(VehicleRepository::class);
 
         // Register services
-        $this->app->singleton(\App\Services\TransactionService::class);
+        $this->app->singleton(TransactionService::class);
     }
 
     /**
@@ -46,8 +48,5 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Review::class, ReviewPolicy::class);
 
         ResetPassword::createUrlUsing(fn (object $notifiable, string $token): string => config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}");
-
-        // Vehicle::observe(VehicleObserver::class);
-
     }
 }

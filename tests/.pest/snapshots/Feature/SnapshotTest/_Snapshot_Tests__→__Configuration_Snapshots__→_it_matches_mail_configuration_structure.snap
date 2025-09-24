@@ -1,0 +1,62 @@
+{
+    "default": "array",
+    "mailers": {
+        "smtp": {
+            "transport": "smtp",
+            "scheme": null,
+            "url": null,
+            "host": "127.0.0.1",
+            "port": "2525",
+            "username": null,
+            "password": null,
+            "timeout": null,
+            "local_domain": "localhost"
+        },
+        "ses": {
+            "transport": "ses"
+        },
+        "postmark": {
+            "transport": "postmark"
+        },
+        "resend": {
+            "transport": "resend"
+        },
+        "sendmail": {
+            "transport": "sendmail",
+            "path": "\/usr\/sbin\/sendmail -bs -i"
+        },
+        "log": {
+            "transport": "log",
+            "channel": null
+        },
+        "array": {
+            "transport": "array"
+        },
+        "failover": {
+            "transport": "failover",
+            "mailers": [
+                "smtp",
+                "log"
+            ],
+            "retry_after": 60
+        },
+        "roundrobin": {
+            "transport": "roundrobin",
+            "mailers": [
+                "ses",
+                "postmark"
+            ],
+            "retry_after": 60
+        }
+    },
+    "from": {
+        "address": "hello@example.com",
+        "name": "SENTIENTS A.I"
+    },
+    "markdown": {
+        "theme": "default",
+        "paths": [
+            "C:\\laragon\\www\\CarRentSystem\\resources\\views\/vendor\/mail"
+        ]
+    }
+}

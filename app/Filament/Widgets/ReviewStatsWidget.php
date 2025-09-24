@@ -11,11 +11,13 @@ class ReviewStatsWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -23,38 +25,39 @@ class ReviewStatsWidget extends BaseWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         $user = auth()->user();
 
         // Base query - filter by owner's vehicles if not admin
-        $baseQuery = Review::query();
+        $builder = Review::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->whereHas('booking.vehicle', function ($query) use ($user): void {
+            $builder->whereHas('booking.vehicle', function ($query) use ($user): void {
                 $query->where('owner_id', $user->id);
             });
         }
 
         // Total reviews
-        $totalReviews = $baseQuery->count();
+        $totalReviews = $builder->count();
 
         // Average rating
-        $averageRating = $baseQuery->avg('rating') ?? 0;
+        $averageRating = $builder->avg('rating') ?? 0;
 
         // Rating distribution
-        $fiveStars = (clone $baseQuery)->where('rating', 5)->count();
-        $fourStars = (clone $baseQuery)->where('rating', 4)->count();
-        $threeStars = (clone $baseQuery)->where('rating', 3)->count();
-        $twoStars = (clone $baseQuery)->where('rating', 2)->count();
-        $oneStar = (clone $baseQuery)->where('rating', 1)->count();
+        $fiveStars = (clone $builder)->where('rating', 5)->count();
+        $fourStars = (clone $builder)->where('rating', 4)->count();
+        $threeStars = (clone $builder)->where('rating', 3)->count();
+        $twoStars = (clone $builder)->where('rating', 2)->count();
+        $oneStar = (clone $builder)->where('rating', 1)->count();
 
         // Recent reviews (last 30 days)
-        $recentReviews = (clone $baseQuery)
+        $recentReviews = (clone $builder)
             ->where('created_at', '>=', now()->subDays(30))
             ->count();
 
         // Reviews with comments
-        $reviewsWithComments = (clone $baseQuery)
+        $reviewsWithComments = (clone $builder)
             ->whereNotNull('comment')
             ->where('comment', '!=', '')
             ->count();
@@ -63,7 +66,7 @@ class ReviewStatsWidget extends BaseWidget
         $reviewTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $count = (clone $baseQuery)
+            $count = (clone $builder)
                 ->whereDate('created_at', $date)
                 ->count();
             $reviewTrend[] = $count;
@@ -73,7 +76,7 @@ class ReviewStatsWidget extends BaseWidget
         $ratingTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $avgRating = (clone $baseQuery)
+            $avgRating = (clone $builder)
                 ->whereDate('created_at', $date)
                 ->avg('rating') ?? 0;
             $ratingTrend[] = max(1, $avgRating);

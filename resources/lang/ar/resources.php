@@ -1,7 +1,6 @@
 <?php
 
 return [
-    // Common
     'actions' => 'الإجراءات',
     'create' => 'إنشاء',
     'edit' => 'تحرير',
@@ -21,8 +20,6 @@ return [
     'error' => 'خطأ',
     'warning' => 'تحذير',
     'info' => 'معلومات',
-
-    // Users
     'users' => 'المستخدمون',
     'user' => 'مستخدم',
     'add_user' => 'إضافة مستخدم',
@@ -70,8 +67,6 @@ return [
     'user_updated_body' => 'تم تحديث تفاصيل المستخدم بنجاح.',
     'user_created_successfully' => 'تم إنشاء المستخدم بنجاح',
     'user_created_body' => 'تم إنشاء حساب المستخدم وهو جاهز للاستخدام.',
-
-    // Vehicles
     'vehicles' => 'المركبات',
     'vehicle' => 'مركبة',
     'add_vehicle' => 'إضافة مركبة',
@@ -135,8 +130,6 @@ return [
     'terms_conditions' => 'الشروط والأحكام',
     'terms_conditions_placeholder' => 'أي شروط خاصة لهذه المركبة...',
     'license' => 'الرخصة',
-
-    // Booking-specific translations
     'id' => 'المعرف',
     'booking_id_copied' => 'تم نسخ معرف الحجز!',
     'click_to_copy' => 'اضغط للنسخ',
@@ -180,8 +173,6 @@ return [
     'cancel_selected' => 'إلغاء المحدد',
     'cancel_multiple_bookings' => 'إلغاء حجوزات متعددة',
     'cancel_multiple_bookings_description' => 'سيتم إلغاء جميع الحجوزات المحددة. كن حذراً مع هذا الإجراء.',
-
-    // User-specific translations
     'user_details_description' => 'تفاصيل المستخدم الأساسية ومعلومات الحساب',
     'enter_full_name' => 'أدخل الاسم الكامل',
     'email_placeholder' => 'user@example.com',
@@ -226,8 +217,6 @@ return [
     'mileage' => 'المسافة المقطوعة',
     'insurance_expiry' => 'انتهاء التأمين',
     'unavailable' => 'غير متاح',
-
-    // Bookings
     'bookings' => 'الحجوزات',
     'booking' => 'حجز',
     'add_booking' => 'إضافة حجز',
@@ -245,8 +234,6 @@ return [
     'ongoing' => 'جاري',
     'completed' => 'مكتمل',
     'cancelled' => 'ملغي',
-
-    // Reviews
     'reviews' => 'المراجعات',
     'review' => 'مراجعة',
     'add_review' => 'إضافة مراجعة',
@@ -257,8 +244,6 @@ return [
     'high_rating' => 'تقييم عالي',
     'low_rating' => 'تقييم منخفض',
     'recent' => 'حديث',
-
-    // Activity Logs
     'activity_logs' => 'سجلات النشاط',
     'activity_log' => 'سجل النشاط',
     'system_activities' => 'أنشطة النظام',
@@ -266,16 +251,12 @@ return [
     'causer' => 'المستخدم',
     'properties' => 'الخصائص',
     'log_name' => 'اسم السجل',
-
-    // Payments
     'payments' => 'المدفوعات',
     'payment' => 'دفعة',
     'amount' => 'المبلغ',
     'transaction_id' => 'معرف المعاملة',
     'processed_at' => 'تاريخ المعالجة',
     'refund_amount' => 'مبلغ الاسترداد',
-
-    // Filters and Tabs
     'all' => 'الكل',
     'today' => 'اليوم',
     'this_week' => 'هذا الأسبوع',
@@ -283,16 +264,12 @@ return [
     'last_7_days' => 'آخر 7 أيام',
     'last_30_days' => 'آخر 30 يوماً',
     'recent_7_days' => 'حديث (7 أيام)',
-
-    // Status Colors
     'success_color' => 'نجح',
     'warning_color' => 'تحذير',
     'danger_color' => 'خطر',
     'info_color' => 'معلومات',
     'primary_color' => 'أساسي',
     'secondary_color' => 'ثانوي',
-
-    // Navigation Groups
     'user_management' => 'إدارة المستخدمين',
     'vehicle_management' => 'إدارة المركبات',
     'booking_management' => 'إدارة الحجوزات',
@@ -302,8 +279,6 @@ return [
     'transactions' => 'المعاملات',
     'car_rental' => 'تأجير السيارات',
     'account_settings' => 'إعدادات الحساب',
-
-    // Resource Navigation Labels (for tabs)
     'all_vehicles' => 'جميع المركبات',
     'all_users' => 'جميع المستخدمين',
     'all_bookings' => 'جميع الحجوزات',
@@ -311,8 +286,6 @@ return [
     '4_plus_stars' => '4+ نجوم',
     'low_ratings' => 'تقييمات منخفضة',
     'good_rating' => 'تقييم جيد',
-
-    // Review-specific translations
     'review_id' => 'رقم المراجعة #',
     'reviewer' => 'المراجع',
     'select_reviewer_placeholder' => 'اختر العميل الذي كتب هذه المراجعة',
@@ -331,8 +304,6 @@ return [
     '3_stars' => '3 نجوم',
     '2_stars' => 'نجمتان',
     '1_star' => 'نجمة واحدة',
-
-    // Activity Log specific translations
     'activity_information' => 'معلومات النشاط',
     'activity_information_description' => 'تفاصيل نشاط النظام ومسار التدقيق',
     'log_name_placeholder' => 'افتراضي',
@@ -369,8 +340,6 @@ return [
     'archive_selected' => 'أرشفة المحدد',
     'archive_activity_logs' => 'أرشفة سجلات النشاط',
     'archive_activity_logs_confirmation' => 'هل أنت متأكد من أنك تريد أرشفة سجلات النشاط هذه؟ لا يمكن التراجع عن هذا الإجراء.',
-
-    // Profile specific translations
     'my_profile' => 'ملفي الشخصي',
     'personal_information' => 'المعلومات الشخصية',
     'update_personal_details' => 'تحديث تفاصيلك الشخصية ومعلومات الاتصال',
@@ -391,8 +360,6 @@ return [
     'password_changed_login_required' => 'تم تغيير كلمة المرور بنجاح. يرجى تسجيل الدخول مرة أخرى.',
     'arabic' => 'العربية',
     'city' => 'المدينة',
-
-    // Enhanced Profile specific translations
     'personal_information_description' => 'معلوماتك الشخصية الأساسية وتفاصيل الاتصال',
     'name_helper' => 'أدخل اسمك الكامل كما يظهر في الهوية',
     'phone_helper' => 'يُرجى تضمين رمز الدولة للأرقام الدولية',
@@ -424,8 +391,6 @@ return [
     'create_new_booking' => 'إنشاء حجز جديد',
     'fill_booking_form_details' => 'املأ النموذج أدناه لإنشاء حجز جديد',
     'dashboard' => 'لوحة التحكم',
-
-    // Traffic Violations
     'traffic_violations' => 'مخالفات المرور',
     'traffic_violations_description' => 'سجلات مخالفات المرور من قاعدة بيانات الحكومة',
     'has_pending_violations' => 'يحتوي على مخالفات معلقة',
@@ -440,11 +405,7 @@ return [
     'due_date' => 'تاريخ الاستحقاق',
     'no_violations' => 'لا توجد مخالفات',
     'no_violations_description' => 'هذه المركبة لديها سجل مروري نظيف بدون مخالفات معلقة.',
-
-    // Navigation Groups
     'browse_vehicles' => 'تصفح المركبات',
-
-    // Labels for forms and views
     'availability' => 'التوفر',
     'book_now' => 'احجز الآن',
     'duration' => 'المدة',
@@ -491,15 +452,11 @@ return [
     'vehicle_make_model' => 'ماركة وطراز المركبة',
     'show_review' => 'إظهار المراجعة',
     'payment_id' => 'معرف الدفع',
-
-    // Static dropdowns and options that need translation
     'economy' => 'اقتصادي',
     'compact' => 'صغير الحجم',
     'midsize' => 'متوسط الحجم',
     'luxury' => 'فاخر',
     'suv' => 'دفع رباعي',
-
-    // Activity Log Specific Arabic Translations
     'activity_overview' => 'نظرة عامة على النشاط',
     'activity_overview_description' => 'معلومات عامة حول إدخال سجل النشاط هذا',
     'subject_information' => 'معلومات الموضوع',
@@ -520,8 +477,6 @@ return [
     'batch_uuid' => 'معرف الدفعة',
     'no_batch' => 'لا يوجد معرف دفعة',
     'created' => 'تم الإنشاء',
-
-    // Vehicle Notifications
     'vehicle_published' => 'تم نشر المركبة',
     'vehicle_published_body' => 'المركبة الآن متاحة ومتوفرة للحجز.',
     'vehicle_under_maintenance' => 'المركبة تحت الصيانة',
@@ -532,8 +487,6 @@ return [
     'vehicle_updated_body' => 'تم تحديث تفاصيل المركبة بنجاح.',
     'vehicle_added_successfully' => 'تم إضافة المركبة بنجاح',
     'vehicle_added_body' => 'تم إضافة المركبة إلى الأسطول وهي جاهزة للتكوين.',
-
-    // Review Notifications
     'review_approved' => 'تم قبول التقييم',
     'review_approved_body' => 'تم قبول التقييم وهو الآن عام.',
     'review_rejected' => 'تم رفض التقييم',
@@ -546,19 +499,13 @@ return [
     'review_updated_body' => 'تم تحديث تفاصيل التقييم بنجاح.',
     'review_added_successfully' => 'تم إضافة التقييم بنجاح',
     'review_added_body' => 'تم إضافة التقييم وهو في انتظار الموافقة.',
-
-    // Transmission options
     'automatic' => 'أوتوماتيك',
     'manual' => 'يدوي',
     'cvt' => 'ناقل حركة متغير باستمرار',
-
-    // Status options
     'published' => 'منشور',
     'draft' => 'مسودة',
     'under_maintenance' => 'تحت الصيانة',
     'archived' => 'مؤرشف',
-
-    // Availability options
     'available' => 'متاح',
     'not_available' => 'غير متاح',
 ];

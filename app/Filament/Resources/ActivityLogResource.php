@@ -61,6 +61,7 @@ class ActivityLogResource extends Resource
         return __('resources.activity_logs');
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -144,6 +145,7 @@ class ActivityLogResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -165,8 +167,8 @@ class ActivityLogResource extends Resource
                     ->label(__('resources.activity'))
                     ->searchable()
                     ->limit(50)
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
+                    ->tooltip(function (TextColumn $textColumn): ?string {
+                        $state = $textColumn->getState();
 
                         return strlen($state) > 50 ? $state : null;
                     }),
@@ -271,23 +273,23 @@ class ActivityLogResource extends Resource
                         DateTimePicker::make('created_until')
                             ->label(__('resources.until')),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $builder, array $data): Builder => $builder
                         ->when(
                             $data['created_from'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '>=', $date),
                         )
                         ->when(
                             $data['created_until'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '<=', $date),
                         )),
 
                 Filter::make('today')
                     ->label(__('resources.todays_activities'))
-                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())),
+                    ->query(fn (Builder $builder): Builder => $builder->whereDate('created_at', today())),
 
                 Filter::make('this_week')
                     ->label(__('resources.this_week'))
-                    ->query(fn (Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
+                    ->query(fn (Builder $builder): Builder => $builder->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
             ])
             ->actions([
                 ViewAction::make(),

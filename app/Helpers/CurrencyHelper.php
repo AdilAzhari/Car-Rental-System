@@ -9,7 +9,7 @@ class CurrencyHelper
      */
     public static function format(float|int $amount, ?string $currency = null): string
     {
-        $currency = $currency ?? config('app.currency');
+        $currency ??= config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
 
         if (! $currencyConfig) {
@@ -34,7 +34,7 @@ class CurrencyHelper
      */
     public static function getSymbol(?string $currency = null): string
     {
-        $currency = $currency ?? config('app.currency');
+        $currency ??= config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
 
         return $currencyConfig['symbol'] ?? config('app.currency_symbol', 'RM');
@@ -69,7 +69,7 @@ class CurrencyHelper
      */
     public static function getCurrencyName(?string $currency = null): string
     {
-        $currency = $currency ?? config('app.currency');
+        $currency ??= config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
 
         return $currencyConfig['name'] ?? $currency;
@@ -80,11 +80,11 @@ class CurrencyHelper
      */
     public static function toCents(float|int $amount, ?string $currency = null): int
     {
-        $currency = $currency ?? config('app.currency');
+        $currency ??= config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
         $decimalPlaces = $currencyConfig['decimal_places'] ?? 2;
 
-        return (int) ($amount * pow(10, $decimalPlaces));
+        return (int) ($amount * 10 ** $decimalPlaces);
     }
 
     /**
@@ -92,10 +92,10 @@ class CurrencyHelper
      */
     public static function fromCents(int $cents, ?string $currency = null): float
     {
-        $currency = $currency ?? config('app.currency');
+        $currency ??= config('app.currency');
         $currencyConfig = config("app.currencies.{$currency}");
         $decimalPlaces = $currencyConfig['decimal_places'] ?? 2;
 
-        return $cents / pow(10, $decimalPlaces);
+        return $cents / 10 ** $decimalPlaces;
     }
 }

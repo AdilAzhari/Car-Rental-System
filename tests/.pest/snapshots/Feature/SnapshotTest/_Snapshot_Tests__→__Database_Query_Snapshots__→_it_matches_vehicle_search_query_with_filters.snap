@@ -1,0 +1,1 @@
+select * from "car_rental_vehicles" where "status" = ? and "fuel_type" = ? and "daily_rate" between ? and ? and "car_rental_vehicles"."deleted_at" is null order by "daily_rate" asc

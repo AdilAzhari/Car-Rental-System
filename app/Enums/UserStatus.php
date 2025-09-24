@@ -21,6 +21,6 @@ enum UserStatus: string
 
     public static function values(): array
     {
-        return array_map(fn (\App\Enums\UserStatus $case) => $case->value, self::cases());
+        return array_map(fn (\App\Enums\UserStatus $userStatus) => $userStatus->value, self::cases());
     }
 }

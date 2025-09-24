@@ -12,14 +12,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
-describe('Architectural Integration Tests', function () {
-    beforeEach(function () {
+describe('Architectural Integration Tests', function (): void {
+    beforeEach(function (): void {
         Event::fake();
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create();
     });
 
-    it('integrates repository pattern with search functionality', function () {
+    it('integrates repository pattern with search functionality', function (): void {
         // Create test vehicles
         Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
@@ -37,19 +37,19 @@ describe('Architectural Integration Tests', function () {
             'daily_rate' => 80,
         ]);
 
-        $repository = app(VehicleRepository::class);
+        $vehicleRepository = app(VehicleRepository::class);
         $request = new Request([
             'transmission' => 'automatic',
             'price_min' => 90,
         ]);
 
-        $results = $repository->searchWithFilters($request);
+        $lengthAwarePaginator = $vehicleRepository->searchWithFilters($request);
 
-        expect($results->items())->toHaveCount(1)
-            ->and($results->items()[0]->transmission)->toBe('automatic');
+        expect($lengthAwarePaginator->items())->toHaveCount(1)
+            ->and($lengthAwarePaginator->items()[0]->transmission)->toBe('automatic');
     });
 
-    it('integrates DTO with action classes', function () {
+    it('integrates DTO with action classes', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -70,8 +70,8 @@ describe('Architectural Integration Tests', function () {
             specialRequests: 'GPS needed'
         );
 
-        $action = app(CreateBookingAction::class);
-        $booking = $action->executeWithDTO($dto);
+        $createBookingAction = app(CreateBookingAction::class);
+        $booking = $createBookingAction->executeWithDTO($dto);
 
         expect($booking)->toBeInstanceOf(Booking::class)
             ->and($booking->pickup_location)->toBe('Downtown')
@@ -79,7 +79,7 @@ describe('Architectural Integration Tests', function () {
             ->and($booking->special_requests)->toBe('GPS needed');
     });
 
-    it('integrates event system with booking creation', function () {
+    it('integrates event system with booking creation', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -96,13 +96,11 @@ describe('Architectural Integration Tests', function () {
 
         $response->assertSuccessful();
 
-        Event::assertDispatched(BookingCreated::class, function ($event) {
-            return $event->booking instanceof Booking &&
-                   $event->booking->payment_method === 'cash';
-        });
+        Event::assertDispatched(BookingCreated::class, fn($event): bool => $event->booking instanceof Booking &&
+               $event->booking->payment_method === 'cash');
     });
 
-    it('integrates transaction service with repository', function () {
+    it('integrates transaction service with repository', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -110,18 +108,16 @@ describe('Architectural Integration Tests', function () {
         ]);
 
         $transactionService = app(TransactionService::class);
-        $repository = app(VehicleRepository::class);
+        $vehicleRepository = app(VehicleRepository::class);
 
         // Test that repository calls work within transactions
-        $result = $transactionService->safeExecute(function () use ($repository, $vehicle) {
-            return $repository->findWithDetails($vehicle->id);
-        });
+        $result = $transactionService->safeExecute(fn() => $vehicleRepository->findWithDetails($vehicle->id));
 
         expect($result->id)->toBe($vehicle->id)
             ->and($result->relationLoaded('owner'))->toBeTrue();
     });
 
-    it('integrates custom exceptions with middleware', function () {
+    it('integrates custom exceptions with middleware', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => false, // Not available
@@ -146,7 +142,7 @@ describe('Architectural Integration Tests', function () {
             ]);
     });
 
-    it('integrates all architectural patterns in full booking flow', function () {
+    it('integrates all architectural patterns in full booking flow', function (): void {
         // Setup
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
@@ -190,14 +186,14 @@ describe('Architectural Integration Tests', function () {
         Event::assertDispatched(BookingCreated::class);
 
         // Verify repository methods work
-        $repository = app(VehicleRepository::class);
-        $stats = $repository->getVehicleStatistics($vehicle->id);
+        $vehicleRepository = app(VehicleRepository::class);
+        $stats = $vehicleRepository->getVehicleStatistics($vehicle->id);
         expect($stats['total_bookings'])->toBe(1);
     });
 });
 
-describe('Performance Integration Tests', function () {
-    it('handles concurrent booking requests correctly', function () {
+describe('Performance Integration Tests', function (): void {
+    it('handles concurrent booking requests correctly', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => User::factory()->create()->id,
             'is_available' => true,
@@ -228,14 +224,14 @@ describe('Performance Integration Tests', function () {
 
         // One should succeed, one should fail due to date conflict
         $successCount = collect($responses)->filter(fn ($r) => $r->successful())->count();
-        $conflictCount = collect($responses)->filter(fn ($r) => $r->status() === 409)->count();
+        $conflictCount = collect($responses)->filter(fn ($r): bool => $r->status() === 409)->count();
 
         expect($successCount)->toBe(1)
             ->and($conflictCount)->toBe(1)
             ->and(Booking::query()->count())->toBe(1);
     });
 
-    it('maintains performance under load', function () {
+    it('maintains performance under load', function (): void {
         // Create test data
         $owner = User::factory()->create();
         $vehicles = Vehicle::factory(10)->create([
@@ -248,10 +244,10 @@ describe('Performance Integration Tests', function () {
 
         // Test repository performance
         assertPerformance(function () {
-            $repository = app(VehicleRepository::class);
+            $vehicleRepository = app(VehicleRepository::class);
             $request = new Request(['per_page' => 10]);
 
-            return $repository->searchWithFilters($request);
+            return $vehicleRepository->searchWithFilters($request);
         }, 500, 10); // Max 500ms, 10MB memory
     });
 });

@@ -19,6 +19,6 @@ enum VehicleTransmission: string
 
     public static function values(): array
     {
-        return array_map(fn (\App\Enums\VehicleTransmission $case) => $case->value, self::cases());
+        return array_map(fn (\App\Enums\VehicleTransmission $vehicleTransmission) => $vehicleTransmission->value, self::cases());
     }
 }

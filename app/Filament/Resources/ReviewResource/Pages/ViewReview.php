@@ -24,6 +24,7 @@ class ViewReview extends ViewRecord
         ];
     }
 
+    #[\Override]
     public function infolist(Schema $schema): Schema
     {
         return $schema

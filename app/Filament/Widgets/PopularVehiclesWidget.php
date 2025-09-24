@@ -86,14 +86,14 @@ class PopularVehiclesWidget extends BaseWidget
                 Action::make('view')
                     ->label(__('widgets.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Vehicle $record): string => route('filament.admin.resources.vehicles.view', $record)
+                    ->url(fn (Vehicle $vehicle): string => route('filament.admin.resources.vehicles.view', $vehicle)
                     ),
 
                 Action::make('book')
                     ->label(__('widgets.book'))
 //                    ->icon('heroicon-m-calendar-plus')
                     ->color('success')
-                    ->url(fn (Vehicle $record): string => route('filament.admin.resources.bookings.create', ['vehicle_id' => $record->id])
+                    ->url(fn (Vehicle $vehicle): string => route('filament.admin.resources.bookings.create', ['vehicle_id' => $vehicle->id])
                     ),
             ])
             ->heading(__('widgets.popular_vehicles'))

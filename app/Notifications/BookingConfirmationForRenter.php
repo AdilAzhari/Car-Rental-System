@@ -23,7 +23,7 @@ class BookingConfirmationForRenter extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $message = (new MailMessage)
+        $mailMessage = (new MailMessage)
             ->subject('Booking Confirmation - '.$this->booking->vehicle->make.' '.$this->booking->vehicle->model)
             ->greeting('Hello '.$notifiable->first_name.',')
             ->line('Your booking has been successfully created!')
@@ -34,14 +34,14 @@ class BookingConfirmationForRenter extends Notification implements ShouldQueue
             ->line('Status: '.ucfirst($this->booking->status));
 
         if ($this->booking->payment_method === 'cash') {
-            $message->line('**Payment Method:** Cash')
+            $mailMessage->line('**Payment Method:** Cash')
                 ->line('Please contact our office to complete the payment process.')
                 ->line('Your booking is pending approval and will be confirmed once payment is received.');
         } else {
-            $message->line('**Payment Method:** '.ucfirst($this->booking->payment_method));
+            $mailMessage->line('**Payment Method:** '.ucfirst($this->booking->payment_method));
         }
 
-        return $message->action('View Booking', config('app.frontend_url').'/bookings/'.$this->booking->id)
+        return $mailMessage->action('View Booking', config('app.frontend_url').'/bookings/'.$this->booking->id)
             ->line('Thank you for choosing our car rental service!');
     }
 

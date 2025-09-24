@@ -166,7 +166,6 @@ return [
     'overall_satisfaction' => 'الرضا العام',
     'subject' => 'الموضوع',
     'subject_type' => 'نوع الموضوع',
-    'last_30_days' => 'آخر 30 يوماً',
 
     // UserStatsWidget translations
     'all_registered_users' => 'جميع المستخدمين المسجلين',
@@ -189,6 +188,6 @@ return [
     'avg_daily_rate' => 'متوسط السعر اليومي',
     'average_rental_rate' => 'متوسط سعر الإيجار',
 
-    // BookingStatsWidget translations
-    'current_month_bookings' => 'حجوزات الشهر الحالي',
+    // Latest Activities
+    'when' => 'متى',
 ];

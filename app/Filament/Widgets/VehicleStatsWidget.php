@@ -12,11 +12,13 @@ class VehicleStatsWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -24,27 +26,28 @@ class VehicleStatsWidget extends BaseWidget
         return $user && ($user->role === UserRole::ADMIN || $user->role === UserRole::OWNER);
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         $user = auth()->user();
 
         // Base query - filter by owner if not admin
-        $baseQuery = Vehicle::query();
+        $builder = Vehicle::query();
         if ($user && $user->role === UserRole::OWNER) {
-            $baseQuery->where('owner_id', $user->id);
+            $builder->where('owner_id', $user->id);
         }
 
         // Total vehicles
-        $totalVehicles = $baseQuery->count();
+        $totalVehicles = $builder->count();
 
         // Pending vehicles (awaiting approval)
-        $pendingVehicles = (clone $baseQuery)->where('status', VehicleStatus::PENDING)->count();
+        $pendingVehicles = (clone $builder)->where('status', VehicleStatus::PENDING)->count();
 
         // Published vehicles (available for rent)
-        $publishedVehicles = (clone $baseQuery)->where('status', VehicleStatus::PUBLISHED)->count();
+        $publishedVehicles = (clone $builder)->where('status', VehicleStatus::PUBLISHED)->count();
 
         // Average daily rate
-        $averageRate = (clone $baseQuery)->where('status', VehicleStatus::PUBLISHED)->avg('daily_rate') ?? 0;
+        $averageRate = (clone $builder)->where('status', VehicleStatus::PUBLISHED)->avg('daily_rate') ?? 0;
 
         return [
             Stat::make(__('widgets.total_vehicles'), $totalVehicles)

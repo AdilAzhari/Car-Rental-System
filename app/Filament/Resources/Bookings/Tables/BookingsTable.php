@@ -170,7 +170,7 @@ class BookingsTable
                     ->icon(Heroicon::OutlinedCreditCard)
                     ->color('success')
                     ->visible(fn ($record): bool => $record->payment_status === 'unpaid' &&
-                        auth()->user() && in_array(auth()->user()->role, ['admin']))
+                        auth()->user() && auth()->user()->role == 'admin')
                     ->requiresConfirmation()
                     ->modalHeading('Mark Payment as Paid')
                     ->modalDescription('Are you sure you want to mark this payment as paid? This action should only be done after receiving payment.')

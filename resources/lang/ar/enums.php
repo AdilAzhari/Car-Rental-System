@@ -10,7 +10,6 @@ return [
         'maintenance' => 'قيد الصيانة',
         'archived' => 'مؤرشف',
     ],
-
     'payment_status' => [
         'pending' => 'معلق',
         'confirmed' => 'مؤكد',
@@ -19,7 +18,6 @@ return [
         'cancelled' => 'ملغي',
         'processing' => 'قيد المعالجة',
     ],
-
     'booking_status' => [
         'pending' => 'معلق',
         'confirmed' => 'مؤكد',
@@ -27,14 +25,12 @@ return [
         'completed' => 'مكتمل',
         'cancelled' => 'ملغي',
     ],
-
     'user_role' => [
         'admin' => 'مدير',
         'owner' => 'مالك مركبة',
         'customer' => 'عميل/مستأجر',
         'renter' => 'عميل/مستأجر',
     ],
-
     'fuel_type' => [
         'petrol' => 'بنزين',
         'diesel' => 'ديزل',
@@ -42,13 +38,11 @@ return [
         'electric' => 'كهربائي',
         'lpg' => 'غاز البترول المسال',
     ],
-
     'transmission' => [
         'manual' => 'يدوي',
         'automatic' => 'أوتوماتيكي',
         'cvt' => 'CVT',
     ],
-
     'payment_method' => [
         'cash' => 'نقد',
         'credit_card' => 'بطاقة ائتمان',
@@ -59,7 +53,6 @@ return [
         'stripe' => 'Stripe',
         'visa' => 'Visa',
     ],
-
     'vehicle_category' => [
         'economy' => 'اقتصادي',
         'compact' => 'صغير الحجم',
@@ -72,12 +65,10 @@ return [
         'convertible' => 'قابل للطي',
         'sports' => 'رياضي',
     ],
-
     'user_status' => [
         'pending' => 'في انتظار الموافقة',
         'approved' => 'موافق عليه',
         'rejected' => 'مرفوض',
         'active' => 'مفعل',
     ],
-
 ];

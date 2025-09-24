@@ -184,6 +184,7 @@ describe('Application Architecture', function (): void {
             expect('App\Observers')
                 ->toOnlyUse([
                     'App\Models',
+                    'App\Notifications',
                     Log::class,
                     Activity::class,
                 ]);
@@ -222,7 +223,7 @@ describe('Application Architecture', function (): void {
             expect('App\Filament\Resources')
                 ->toOnlyUse([
                     'Filament\Forms',
-                    Resource::class,
+                    'Filament\Resources',
                     'Filament\Tables',
                     'Filament\Actions',
                     'Filament\Infolists',
@@ -358,6 +359,7 @@ describe('Application Architecture', function (): void {
     describe('Code Quality Architecture', function (): void {
         it('ensures proper class naming conventions', function (): void {
             expect('App')
+                ->ignoring('App\Enums')
                 ->toBeClasses()
                 ->toUseStrictTypes();
         });

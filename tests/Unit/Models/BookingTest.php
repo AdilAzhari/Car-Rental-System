@@ -85,7 +85,7 @@ describe('Booking Model', function (): void {
             'end_date' => Carbon::parse('2024-01-05'),
         ]);
 
-        $duration = $booking->end_date->diffInDays($booking->start_date);
+        $duration = $booking->start_date->diffInDays($booking->end_date);
         expect($duration)->toBe(4);
     });
 

@@ -40,6 +40,6 @@ enum VehicleStatus: string
 
     public static function values(): array
     {
-        return array_map(fn (VehicleStatus $case) => $case->value, self::cases());
+        return array_map(fn (VehicleStatus $vehicleStatus) => $vehicleStatus->value, self::cases());
     }
 }

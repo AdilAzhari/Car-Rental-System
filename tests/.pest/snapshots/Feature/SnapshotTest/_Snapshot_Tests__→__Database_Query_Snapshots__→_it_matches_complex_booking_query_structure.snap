@@ -1,0 +1,1 @@
+select * from "car_rental_bookings" where "renter_id" = ? and "car_rental_bookings"."deleted_at" is null order by "created_at" desc

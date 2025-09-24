@@ -21,19 +21,17 @@ class CarController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->limit(20)
                 ->get()
-                ->map(function ($car) {
-                    return [
-                        'id' => $car->id,
-                        'make' => $car->make,
-                        'model' => $car->model,
-                        'year' => $car->year,
-                        'daily_rate' => $car->daily_rate,
-                        'seats' => $car->seats,
-                        'transmission' => $car->transmission,
-                        'featured_image' => $car->featured_image ? Storage::url($car->featured_image) : ($car->images->first() ? Storage::url($car->images->first()->image_path) : null),
-                        'location' => $car->location,
-                    ];
-                });
+                ->map(fn($car): array => [
+                    'id' => $car->id,
+                    'make' => $car->make,
+                    'model' => $car->model,
+                    'year' => $car->year,
+                    'daily_rate' => $car->daily_rate,
+                    'seats' => $car->seats,
+                    'transmission' => $car->transmission,
+                    'featured_image' => $car->featured_image ? Storage::url($car->featured_image) : ($car->images->first() ? Storage::url($car->images->first()->image_path) : null),
+                    'location' => $car->location,
+                ]);
         } catch (Exception) {
             // If database tables don't exist yet, return empty array
             $cars = collect();
@@ -47,27 +45,27 @@ class CarController extends Controller
     public function listing(): Response
     {
         // Get all cars with filters for the cars listing page
-        $cars = Vehicle::with(['images'])
+        $lengthAwarePaginator = Vehicle::with(['images'])
             ->where('is_available', true)
             ->where('status', 'published')
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
         return Inertia::render('Cars/Listing', [
-            'cars' => $cars,
+            'cars' => $lengthAwarePaginator,
         ]);
     }
 
     public function show(int $id): Response
     {
-        $car = Vehicle::with(['images', 'owner'])
+        $vehicle = Vehicle::with(['images', 'owner'])
             ->where('id', $id)
             ->where('is_available', true)
             ->where('status', 'published')
             ->firstOrFail();
 
         return Inertia::render('Cars/Show', [
-            'car' => $car,
+            'car' => $vehicle,
         ]);
     }
 }

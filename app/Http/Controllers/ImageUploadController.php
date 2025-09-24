@@ -14,12 +14,12 @@ class ImageUploadController extends Controller
         protected ImageUploadService $imageUploadService
     ) {}
 
-    public function uploadProfileImage(ProfileImageUploadRequest $request): JsonResponse
+    public function uploadProfileImage(ProfileImageUploadRequest $profileImageUploadRequest): JsonResponse
     {
         try {
             $imagePath = $this->imageUploadService->uploadProfileImage(
-                $request->file('image'),
-                $request->input('old_image_path')
+                $profileImageUploadRequest->file('image'),
+                $profileImageUploadRequest->input('old_image_path')
             );
 
             return response()->json([
@@ -38,12 +38,12 @@ class ImageUploadController extends Controller
         }
     }
 
-    public function uploadVehicleImage(VehicleImageUploadRequest $request): JsonResponse
+    public function uploadVehicleImage(VehicleImageUploadRequest $vehicleImageUploadRequest): JsonResponse
     {
         try {
             $imagePaths = $this->imageUploadService->uploadVehicleImage(
-                $request->file('image'),
-                $request->input('old_image_path')
+                $vehicleImageUploadRequest->file('image'),
+                $vehicleImageUploadRequest->input('old_image_path')
             );
 
             return response()->json([

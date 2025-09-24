@@ -170,4 +170,8 @@ return [
     'email_verified_users' => 'Email Verified',
     'recent_reviews' => 'Recent Reviews',
     '5-star_reviews' => '5-star reviews',
+    'image' => 'Image',
+    'status_ongoing' => 'On Going',
+    'no_ratings' => 'No Ratings',
+    'when' => 'When',
 ];

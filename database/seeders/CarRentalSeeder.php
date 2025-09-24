@@ -186,7 +186,7 @@ class CarRentalSeeder extends Seeder
         ]);
 
         // Vehicle with no images (edge case)
-        $vehicleWithNoImages = Vehicle::factory()->create([
+        Vehicle::factory()->create([
             'owner_id' => $owners->random()->id,
             'status' => 'pending',
         ]);
@@ -221,7 +221,7 @@ class CarRentalSeeder extends Seeder
         }
 
         // Long-term booking (30 days)
-        $longTermBooking = Booking::factory()->create([
+        Booking::factory()->create([
             'vehicle_id' => $vehicles->random()->id,
             'renter_id' => $renters->random()->id,
             'start_date' => now()->addDays(10),
@@ -230,7 +230,7 @@ class CarRentalSeeder extends Seeder
         ]);
 
         // Same-day booking
-        $sameDayBooking = Booking::factory()->create([
+        Booking::factory()->create([
             'vehicle_id' => $vehicles->random()->id,
             'renter_id' => $renters->random()->id,
             'start_date' => now(),
@@ -239,7 +239,7 @@ class CarRentalSeeder extends Seeder
         ]);
 
         // Cancelled booking
-        $cancelledBooking = Booking::factory()->create([
+        Booking::factory()->create([
             'vehicle_id' => $vehicles->random()->id,
             'renter_id' => $renters->random()->id,
             'start_date' => now()->addDays(5),
@@ -248,7 +248,7 @@ class CarRentalSeeder extends Seeder
         ]);
 
         // Booking with very high special requests
-        $specialRequestBooking = Booking::factory()->create([
+        Booking::factory()->create([
             'vehicle_id' => $vehicles->random()->id,
             'renter_id' => $renters->random()->id,
             'special_requests' => 'Please ensure the vehicle is thoroughly sanitized. I need child car seats for 2 children (ages 3 and 5). GPS navigation system must be updated with latest maps. Please provide emergency contact numbers for roadside assistance. Vehicle should be parked in covered area to avoid weather damage.',

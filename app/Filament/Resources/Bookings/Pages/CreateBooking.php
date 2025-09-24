@@ -10,6 +10,7 @@ class CreateBooking extends CreateRecord
 {
     protected static string $resource = BookingResource::class;
 
+    #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // If no renter_id is provided and user is admin, they can create bookings for others

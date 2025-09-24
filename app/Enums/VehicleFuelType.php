@@ -23,6 +23,6 @@ enum VehicleFuelType: string
 
     public static function values(): array
     {
-        return array_map(fn (\App\Enums\VehicleFuelType $case) => $case->value, self::cases());
+        return array_map(fn (\App\Enums\VehicleFuelType $vehicleFuelType) => $vehicleFuelType->value, self::cases());
     }
 }

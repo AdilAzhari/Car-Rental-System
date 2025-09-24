@@ -20,11 +20,11 @@ class LatestActivitiesWidget extends BaseWidget
             ->query(Activity::query()->latest()->limit(10))
             ->columns([
                 Tables\Columns\TextColumn::make(__('widgets.description'))
-                    ->label('Activity')
+                    ->label(__('resources.activity'))
                     ->searchable()
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
-                        $state = $column->getState();
+                    ->tooltip(function (Tables\Columns\TextColumn $textColumn): ?string {
+                        $state = $textColumn->getState();
 
                         return strlen($state) > 50 ? $state : null;
                     }),
@@ -47,12 +47,12 @@ class LatestActivitiesWidget extends BaseWidget
                     ->color('secondary'),
 
                 Tables\Columns\TextColumn::make('causer.name')
-                    ->label('User')
+                    ->label(__('resources.user'))
                     ->searchable()
                     ->placeholder('System'),
 
                 Tables\Columns\TextColumn::make('causer.role')
-                    ->label('Role')
+                    ->label(__('resources.role'))
                     ->badge()
                     ->colors([
                         'danger' => 'admin',
@@ -62,15 +62,15 @@ class LatestActivitiesWidget extends BaseWidget
                     ->placeholder('System'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('When')
+                    ->label(__('widgets.when'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at->format('Y-m-d H:i:s')),
             ])
             ->actions([
                 Action::make('view')
-                    ->label('View')
+                    ->label(__('resources.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Activity $record): string => route('filament.admin.resources.activity-logs.view', $record)
+                    ->url(fn (Activity $activity): string => route('filament.admin.resources.activity-logs.view', $activity)
                     ),
             ])
             ->poll('30s')

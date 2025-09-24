@@ -65,7 +65,7 @@ class RecentBookingsWidget extends BaseWidget
                         'primary' => 'completed',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn ($state) => __('widgets.status_'.$state)),
+                    ->formatStateUsing(fn ($state): string|array|null => __('widgets.status_'.$state->value)),
 
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label(__('widgets.amount'))
@@ -83,26 +83,26 @@ class RecentBookingsWidget extends BaseWidget
                 Action::make('view')
                     ->label(__('widgets.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.view', $record)
+                    ->url(fn (Booking $booking): string => route('filament.admin.resources.bookings.view', $booking)
                     ),
 
                 Action::make('edit')
                     ->label(__('widgets.edit'))
                     ->icon('heroicon-m-pencil')
                     ->color('warning')
-                    ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.edit', $record)
+                    ->url(fn (Booking $booking): string => route('filament.admin.resources.bookings.edit', $booking)
                     ),
 
                 Action::make('confirm')
                     ->label(__('widgets.confirm'))
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
-                    ->visible(fn (Booking $record): bool => $record->status === 'pending')
-                    ->action(function (Booking $record): void {
-                        $record->update(['status' => 'confirmed']);
+                    ->visible(fn (Booking $booking): bool => $booking->status === 'pending')
+                    ->action(function (Booking $booking): void {
+                        $booking->update(['status' => 'confirmed']);
 
                         activity()
-                            ->performedOn($record)
+                            ->performedOn($booking)
                             ->causedBy(auth()->user())
                             ->log(__('widgets.booking_confirmed_via_dashboard'));
                     })

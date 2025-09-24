@@ -11,11 +11,13 @@ class UserStatsWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected function getColumns(): int
     {
         return 4;
     }
 
+    #[\Override]
     public static function canView(): bool
     {
         $user = auth()->user();
@@ -23,6 +25,7 @@ class UserStatsWidget extends BaseWidget
         return $user && $user->role === UserRole::ADMIN;
     }
 
+    #[\Override]
     protected function getStats(): array
     {
         // Total users

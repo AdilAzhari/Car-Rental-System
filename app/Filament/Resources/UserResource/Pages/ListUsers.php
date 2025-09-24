@@ -28,27 +28,27 @@ class ListUsers extends ListRecords
                 ->badge(fn () => $this->getResource()::getModel()::count()),
 
             'admins' => Tab::make('Administrators')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', 'admin'))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', 'admin'))
                 ->badge(fn () => $this->getResource()::getModel()::where('role', 'admin')->count())
                 ->icon('heroicon-m-shield-check'),
 
             'owners' => Tab::make('Vehicle Owners')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', 'owner'))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', 'owner'))
                 ->badge(fn () => $this->getResource()::getModel()::where('role', 'owner')->count())
                 ->icon('heroicon-m-building-storefront'),
 
             'renters' => Tab::make('Customers')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', 'renter'))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', 'renter'))
                 ->badge(fn () => $this->getResource()::getModel()::where('role', 'renter')->count())
                 ->icon('heroicon-m-user'),
 
             'verified' => Tab::make('Verified')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_verified', true))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('is_verified', true))
                 ->badge(fn () => $this->getResource()::getModel()::where('is_verified', true)->count())
                 ->icon('heroicon-m-check-badge'),
 
             'unverified' => Tab::make('Unverified')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_verified', false))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('is_verified', false))
                 ->badge(fn () => $this->getResource()::getModel()::where('is_verified', false)->count())
                 ->icon('heroicon-m-exclamation-triangle'),
         ];

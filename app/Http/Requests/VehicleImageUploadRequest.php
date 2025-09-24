@@ -39,6 +39,7 @@ class VehicleImageUploadRequest extends FormRequest
     /**
      * Get custom error messages for validation rules.
      */
+    #[\Override]
     public function messages(): array
     {
         $maxSize = config('image.vehicle_images.max_file_size');

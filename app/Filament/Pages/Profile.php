@@ -31,20 +31,46 @@ class Profile extends Page implements HasForms
 
     public ?array $data = [];
 
+    // Form properties
+    public $name;
+
+    public $email;
+
+    public $phone;
+
+    public $date_of_birth;
+
+    public $address;
+
+    public $license_number;
+
+    public $avatar = [];
+
     public $id_document_path = [];
 
     public $license_document_path = [];
 
+    public $role;
+
+    public $status;
+
+    public $is_verified;
+
+    public $preferred_language;
+
+    #[\Override]
     public function getView(): string
     {
         return 'filament.pages.profile';
     }
 
+    #[\Override]
     public static function getNavigationLabel(): string
     {
         return __('resources.my_profile');
     }
 
+    #[\Override]
     public static function getNavigationGroup(): ?string
     {
         return __('resources.account_settings');
@@ -54,25 +80,37 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
 
-        // Ensure the data property is properly filled
-        $this->data = [
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'date_of_birth' => $user->date_of_birth?->format('Y-m-d'),
-            'address' => $user->address,
-            'license_number' => $user->license_number,
-            'avatar' => $user->avatar ? [$user->avatar] : [],
-            'id_document_path' => $user->id_document_path ? [$user->id_document_path] : [],
-            'license_document_path' => $user->license_document_path ? [$user->license_document_path] : [],
-            'role' => $user->role?->value ?? 'renter',
-            'status' => $user->status?->value ?? 'active',
-            'is_verified' => $user->is_verified ?? false,
-            'preferred_language' => app()->getLocale(),
-        ];
+        // Set individual properties directly
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->phone = $user->phone;
+        $this->date_of_birth = $user->date_of_birth;
+        $this->address = $user->address;
+        $this->license_number = $user->license_number;
+        $this->avatar = $user->avatar ? [$user->avatar] : [];
+        $this->id_document_path = $user->id_document_path ? [$user->id_document_path] : [];
+        $this->license_document_path = $user->license_document_path ? [$user->license_document_path] : [];
+        $this->role = $user->role?->value ?? 'renter';
+        $this->status = $user->status?->value ?? 'active';
+        $this->is_verified = $user->is_verified ?? false;
+        $this->preferred_language = app()->getLocale();
 
-        // Fill the form with the data
-        $this->form->fill($this->data);
+        // Also keep data array for compatibility
+        $this->data = [
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'date_of_birth' => $this->date_of_birth,
+            'address' => $this->address,
+            'license_number' => $this->license_number,
+            'avatar' => $this->avatar,
+            'id_document_path' => $this->id_document_path,
+            'license_document_path' => $this->license_document_path,
+            'role' => $this->role,
+            'status' => $this->status,
+            'is_verified' => $this->is_verified,
+            'preferred_language' => $this->preferred_language,
+        ];
     }
 
     public function form(Schema $schema): Schema
@@ -113,7 +151,7 @@ class Profile extends Page implements HasForms
                                     ->placeholder(__('resources.enter_full_name'))
                                     ->helperText(__('resources.name_helper'))
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($state, $set) {
+                                    ->afterStateUpdated(function ($state, $set): void {
                                         if (filled($state)) {
                                             $set('name', trim($state));
                                         }
@@ -356,13 +394,18 @@ class Profile extends Page implements HasForms
         }
     }
 
+    public function updateProfileAction(): Action
+    {
+        return Action::make('updateProfile')
+            ->label(__('resources.update_profile'))
+            ->submit('updateProfile')
+            ->color('primary');
+    }
+
     protected function getFormActions(): array
     {
         return [
-            Action::make('updateProfile')
-                ->label(__('resources.update_profile'))
-                ->submit('updateProfile')
-                ->color('primary'),
+            $this->updateProfileAction(),
         ];
     }
 }

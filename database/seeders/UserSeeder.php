@@ -61,8 +61,8 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        foreach ($testOwners as $ownerData) {
-            User::query()->firstOrCreate(['email' => $ownerData['email']], array_merge($ownerData, [
+        foreach ($testOwners as $testOwner) {
+            User::query()->firstOrCreate(['email' => $testOwner['email']], array_merge($testOwner, [
                 'password' => Hash::make('password123'),
                 'role' => UserRole::OWNER,
                 'id_document_path' => 'documents/ids/sample-id-'.uniqid().'.pdf',
@@ -104,8 +104,8 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        foreach ($testRenters as $renterData) {
-            User::query()->firstOrCreate(['email' => $renterData['email']], array_merge($renterData, [
+        foreach ($testRenters as $testRenter) {
+            User::query()->firstOrCreate(['email' => $testRenter['email']], array_merge($testRenter, [
                 'password' => Hash::make('password123'),
                 'role' => UserRole::RENTER,
                 'id_document_path' => 'documents/ids/sample-id-'.uniqid().'.pdf',

@@ -60,8 +60,8 @@ class ReviewRelationManager extends RelationManager
                 TextColumn::make('review_text')
                     ->label(__('resources.review'))
                     ->limit(50)
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
+                    ->tooltip(function (TextColumn $textColumn): ?string {
+                        $state = $textColumn->getState();
                         if (strlen($state) <= 50) {
                             return null;
                         }

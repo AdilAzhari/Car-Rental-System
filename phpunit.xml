@@ -40,17 +40,17 @@
         </exclude>
     </source>
 
-    <coverage
+<!--    <coverage
         ignoreDeprecatedCodeUnits="true"
     >
         <report>
             <clover outputFile="coverage/clover.xml"/>
             <html outputDirectory="coverage/html" highLowerBound="80"/>
-<!--            <text outputFile="coverage/coverage.txt" showUncoveredFiles="true"/>-->
+            <text outputFile="coverage/coverage.txt" showUncoveredFiles="true"/>
             <xml outputDirectory="coverage/xml"/>
             <text outputFile="php://stdout" showUncoveredFiles="true"/>
         </report>
-    </coverage>
+    </coverage>-->
 
     <logging>
         <junit outputFile="coverage/junit.xml"/>

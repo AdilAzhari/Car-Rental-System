@@ -32,6 +32,7 @@ class ViewUser extends ViewRecord
         ];
     }
 
+    #[\Override]
     public function infolist(Schema $schema): Schema
     {
         return $schema

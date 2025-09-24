@@ -7,14 +7,14 @@ use App\Models\Vehicle;
 use App\Repositories\VehicleRepository;
 use Illuminate\Http\Request;
 
-describe('VehicleRepository', function () {
-    beforeEach(function () {
+describe('VehicleRepository', function (): void {
+    beforeEach(function (): void {
         $this->repository = app(VehicleRepository::class);
         $this->owner = User::factory()->create();
         $this->renter = User::factory()->create();
     });
 
-    it('can search vehicles with filters', function () {
+    it('can search vehicles with filters', function (): void {
         $vehicle1 = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,
@@ -48,7 +48,7 @@ describe('VehicleRepository', function () {
         expect($results->items()[0]->id)->toBe($vehicle1->id);
     });
 
-    it('can find vehicle with details', function () {
+    it('can find vehicle with details', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
         ]);
@@ -68,7 +68,7 @@ describe('VehicleRepository', function () {
         expect($result->reviews_count)->toBe(1);
     });
 
-    it('can check vehicle availability', function () {
+    it('can check vehicle availability', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
         ]);
@@ -101,7 +101,7 @@ describe('VehicleRepository', function () {
         expect($isAvailableAfter)->toBeTrue();
     });
 
-    it('can get owner vehicles', function () {
+    it('can get owner vehicles', function (): void {
         Vehicle::factory(3)->create(['owner_id' => $this->owner->id]);
         Vehicle::factory(2)->create(); // Different owner
 
@@ -111,7 +111,7 @@ describe('VehicleRepository', function () {
         expect($vehicles->first()->owner_id)->toBe($this->owner->id);
     });
 
-    it('can get vehicle statistics', function () {
+    it('can get vehicle statistics', function (): void {
         $vehicle = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
         ]);
@@ -151,7 +151,7 @@ describe('VehicleRepository', function () {
         expect($stats['total_revenue'])->toBe(800);
     });
 
-    it('can get vehicles needing attention', function () {
+    it('can get vehicles needing attention', function (): void {
         // Vehicle with expired insurance
         $expiredInsurance = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
@@ -183,7 +183,7 @@ describe('VehicleRepository', function () {
             ->toContain($lowRatedVehicle->id);
     });
 
-    it('can get popular vehicles', function () {
+    it('can get popular vehicles', function (): void {
         $popular = Vehicle::factory()->create([
             'owner_id' => $this->owner->id,
             'is_available' => true,

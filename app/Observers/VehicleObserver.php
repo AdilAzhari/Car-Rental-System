@@ -17,33 +17,9 @@ class VehicleObserver
         $vehicle->owner->notify(new VehicleCreated($vehicle));
 
         // Also notify the first user (assuming it's an admin) as a fallback
-        $firstUser = User::first();
+        $firstUser = User::query()->first();
         if ($firstUser && $firstUser->id !== $vehicle->owner_id) {
             $firstUser->notify(new VehicleCreated($vehicle));
         }
-    }
-
-    /**
-     * Handle the Vehicle "updated" event.
-     */
-    public function updated(Vehicle $vehicle): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Vehicle "deleted" event.
-     */
-    public function deleted(Vehicle $vehicle): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Vehicle "restored" event.
-     */
-    public function restored(Vehicle $vehicle): void
-    {
-        //
     }
 }

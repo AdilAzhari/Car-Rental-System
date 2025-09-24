@@ -80,6 +80,7 @@ class VehicleResource extends Resource
         return __('resources.vehicles');
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -419,6 +420,7 @@ class VehicleResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -464,7 +466,7 @@ class VehicleResource extends Resource
                 BadgeColumn::make('status')
                     ->label(__('resources.status'))
                     ->getStateUsing(fn ($record) => $record->status instanceof VehicleStatus ? $record->status->value : (string) $record->status)
-                    ->formatStateUsing(fn ($state) => (string) $state)
+                    ->formatStateUsing(fn ($state): string => (string) $state)
                     ->colors([
                         'success' => VehicleStatus::PUBLISHED->value,
                         'warning' => VehicleStatus::DRAFT->value,
@@ -572,13 +574,13 @@ class VehicleResource extends Resource
                     ->label(__('resources.book_now'))
                     ->icon('heroicon-m-calendar-plus')
                     ->color('success')
-                    ->url(fn (Vehicle $record): string => route('filament.admin.resources.bookings.create', [
-                        'vehicle_id' => $record->id,
+                    ->url(fn (Vehicle $vehicle): string => route('filament.admin.resources.bookings.create', [
+                        'vehicle_id' => $vehicle->id,
                     ]))
-                    ->visible(fn (Vehicle $record): bool => auth()->user() &&
+                    ->visible(fn (Vehicle $vehicle): bool => auth()->user() &&
                         auth()->user()->role === UserRole::RENTER &&
-                        $record->status === VehicleStatus::PUBLISHED &&
-                        $record->is_available
+                        $vehicle->status === VehicleStatus::PUBLISHED &&
+                        $vehicle->is_available
                     ),
             ]))
             ->bulkActions([
@@ -592,6 +594,7 @@ class VehicleResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -632,6 +635,7 @@ class VehicleResource extends Resource
         return $count > 10 ? 'success' : ($count > 5 ? 'warning' : 'primary');
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();

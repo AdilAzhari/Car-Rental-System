@@ -16,6 +16,7 @@ class EditVehicle extends EditRecord
 {
     protected static string $resource = VehicleResource::class;
 
+    #[\Override]
     public function mount(int|string $record): void
     {
         parent::mount($record);
@@ -112,6 +113,7 @@ class EditVehicle extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -120,11 +122,13 @@ class EditVehicle extends EditRecord
             ->body(__('resources.vehicle_updated_body'));
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // For owners, ensure they can't change the owner_id

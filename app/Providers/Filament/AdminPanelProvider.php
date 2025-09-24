@@ -9,6 +9,7 @@ use App\Filament\Widgets\RecentBookingsWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\UserStatsWidget;
 use App\Filament\Widgets\VehicleStatsWidget;
+use App\Http\Middleware\LocalizationMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -76,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 ShareErrorsFromSession::class,
                 SubstituteBindings::class,
+                LocalizationMiddleware::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])

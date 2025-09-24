@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BookingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,7 @@ class Booking extends Model
         return [
             'start_date' => 'datetime',
             'end_date' => 'datetime',
+            'status' => BookingStatus::class,
             'daily_rate' => 'decimal:2',
             'subtotal' => 'decimal:2',
             'insurance_fee' => 'decimal:2',

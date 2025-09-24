@@ -9,7 +9,6 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -27,21 +26,25 @@ class ViewVehicle extends ViewRecord
         ];
     }
 
+    #[\Override]
     public function getView(): string
     {
         return 'filament.pages.vehicle-view';
     }
 
+    #[\Override]
     public function getTitle(): string
     {
-        return $this->getRecord()->make . ' ' . $this->getRecord()->model . ' (' . $this->getRecord()->year . ')';
+        return $this->getRecord()->make.' '.$this->getRecord()->model.' ('.$this->getRecord()->year.')';
     }
 
+    #[\Override]
     public function getSubheading(): ?string
     {
         return __('resources.vehicle_details');
     }
 
+    #[\Override]
     public function infolist(Schema $schema): Schema
     {
         return $schema

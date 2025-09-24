@@ -14,9 +14,9 @@ class SendBookingNotifications implements ShouldQueue
 {
     use InteractsWithQueue;
 
-    public function handle(BookingCreated $event): void
+    public function handle(BookingCreated $bookingCreated): void
     {
-        $booking = $event->booking;
+        $booking = $bookingCreated->booking;
 
         try {
             // Send confirmation to renter
@@ -59,12 +59,12 @@ class SendBookingNotifications implements ShouldQueue
         }
     }
 
-    public function failed(BookingCreated $event, \Throwable $exception): void
+    public function failed(BookingCreated $bookingCreated, \Throwable $throwable): void
     {
         Log::error('Booking notification job failed', [
-            'booking_id' => $event->booking->id,
-            'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString(),
+            'booking_id' => $bookingCreated->booking->id,
+            'error' => $throwable->getMessage(),
+            'trace' => $throwable->getTraceAsString(),
         ]);
     }
 }

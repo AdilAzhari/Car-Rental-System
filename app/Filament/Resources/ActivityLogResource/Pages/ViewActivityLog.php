@@ -14,6 +14,7 @@ class ViewActivityLog extends ViewRecord
 {
     protected static string $resource = ActivityLogResource::class;
 
+    #[\Override]
     public function infolist(Schema $schema): Schema
     {
         return $schema
@@ -26,17 +27,17 @@ class ViewActivityLog extends ViewRecord
                             ->schema([
                                 TextInput::make('id')
                                     ->label(__('resources.log_id'))
-                                    ->formatStateUsing(fn ($state) => '#'.$state)
+                                    ->formatStateUsing(fn ($state): string => '#'.$state)
                                     ->disabled(),
 
                                 TextInput::make('log_name')
                                     ->label(__('resources.log_name'))
-                                    ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : __('resources.system'))
+                                    ->formatStateUsing(fn ($state): string|array|null => $state ? ucfirst((string) $state) : __('resources.system'))
                                     ->disabled(),
 
                                 TextInput::make('event')
                                     ->label(__('resources.event_type'))
-                                    ->formatStateUsing(fn ($state) => $state ? __(ucfirst($state)) : __('resources.unknown'))
+                                    ->formatStateUsing(fn ($state): string|array|null => $state ? __(ucfirst((string) $state)) : __('resources.unknown'))
                                     ->disabled(),
                             ]),
 
@@ -56,12 +57,12 @@ class ViewActivityLog extends ViewRecord
                             ->schema([
                                 TextInput::make('subject_type')
                                     ->label(__('resources.subject_type'))
-                                    ->formatStateUsing(fn ($state) => $state ? __(class_basename($state)) : __('resources.no_subject'))
+                                    ->formatStateUsing(fn ($state): string|array|null => $state ? __(class_basename($state)) : __('resources.no_subject'))
                                     ->disabled(),
 
                                 TextInput::make('subject_id')
                                     ->label(__('resources.subject_id'))
-                                    ->formatStateUsing(fn ($state) => $state ? '#'.$state : __('resources.no_id'))
+                                    ->formatStateUsing(fn ($state): string|array|null => $state ? '#'.$state : __('resources.no_id'))
                                     ->disabled(),
 
                                 TextInput::make('subject_display')
@@ -69,11 +70,11 @@ class ViewActivityLog extends ViewRecord
                                     ->formatStateUsing(function ($record) {
                                         if ($record->subject) {
                                             return match ($record->subject_type) {
-                                                'App\\Models\\User' => $record->subject->name ?? __('resources.deleted_user'),
-                                                'App\\Models\\Vehicle' => ($record->subject->make ?? '').' '.($record->subject->model ?? '').' ('.($record->subject->year ?? '').')',
-                                                'App\\Models\\Booking' => __('resources.booking').' #'.$record->subject->id,
-                                                'App\\Models\\Review' => __('resources.review').' #'.$record->subject->id,
-                                                'App\\Models\\Payment' => __('resources.payment').' #'.$record->subject->id,
+                                                \App\Models\User::class => $record->subject->name ?? __('resources.deleted_user'),
+                                                \App\Models\Vehicle::class => ($record->subject->make ?? '').' '.($record->subject->model ?? '').' ('.($record->subject->year ?? '').')',
+                                                \App\Models\Booking::class => __('resources.booking').' #'.$record->subject->id,
+                                                \App\Models\Review::class => __('resources.review').' #'.$record->subject->id,
+                                                \App\Models\Payment::class => __('resources.payment').' #'.$record->subject->id,
                                                 default => __('resources.unknown_subject')
                                             };
                                         }
@@ -97,12 +98,12 @@ class ViewActivityLog extends ViewRecord
 
                                 TextInput::make('causer.role')
                                     ->label(__('resources.actor_role'))
-                                    ->formatStateUsing(fn ($record) => $record->causer ? __(ucfirst($record->causer->role)) : __('resources.system'))
+                                    ->formatStateUsing(fn ($record): string|array|null => $record->causer ? __(ucfirst((string) $record->causer->role)) : __('resources.system'))
                                     ->disabled(),
 
                                 TextInput::make('created_at')
                                     ->label(__('resources.timestamp'))
-                                    ->formatStateUsing(fn ($state) => $state ? $state->format('Y-m-d H:i:s').' ('.$state->diffForHumans().')' : __('resources.unknown'))
+                                    ->formatStateUsing(fn ($state): string|array|null => $state ? $state->format('Y-m-d H:i:s').' ('.$state->diffForHumans().')' : __('resources.unknown'))
                                     ->disabled(),
                             ]),
                     ]),
@@ -133,7 +134,7 @@ class ViewActivityLog extends ViewRecord
                             ->formatStateUsing(fn ($state) => $state ?: __('resources.no_batch'))
                             ->disabled()
                             ->rows(1)
-                            ->visible(fn ($record) => ! empty($record->batch_uuid))
+                            ->visible(fn ($record): bool => ! empty($record->batch_uuid))
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),

@@ -40,12 +40,12 @@ class BookingForm
                                     ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('status', 'published')->where('is_available', true)
                                     )
                                     )
-                                    ->getOptionLabelFromRecordUsing(fn (Vehicle $record): string => "$record->make $record->model ($record->plate_number)")
+                                    ->getOptionLabelFromRecordUsing(fn (Vehicle $vehicle): string => "$vehicle->make $vehicle->model ($vehicle->plate_number)")
                                     ->searchable(['make', 'model', 'plate_number'])
                                     ->preload()
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
                                         if ($state) {
                                             $vehicle = Vehicle::query()->find($state);
                                             if ($vehicle) {
@@ -63,7 +63,7 @@ class BookingForm
                                     ->required()
                                     ->native(false)
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                    ->afterStateUpdated(function (Set $set, Get $get): void {
                                         self::calculateTotals($set, $get);
                                     }),
 
@@ -73,7 +73,7 @@ class BookingForm
                                     ->native(false)
                                     ->after('start_date')
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                    ->afterStateUpdated(function (Set $set, Get $get): void {
                                         self::calculateTotals($set, $get);
                                     }),
                             ]),
@@ -89,6 +89,10 @@ class BookingForm
                                     ->label(__('resources.daily_rate'))
                                     ->numeric()
                                     ->prefix('$')
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get): void {
+                                        self::calculateTotals($set, $get);
+                                    })
                                     ->readonly(),
 
                                 TextInput::make('subtotal')
@@ -127,19 +131,19 @@ class BookingForm
                                 Select::make('status')
                                     ->label(__('resources.booking_status'))
                                     ->options(
-                                        collect(bookingstatus::cases())
-                                            ->mapWithKeys(fn (bookingstatus $status) => [
-                                                $status->value => $status->label(),
+                                        collect(BookingStatus::cases())
+                                            ->mapWithKeys(fn (BookingStatus $bookingStatus): array => [
+                                                $bookingStatus->value => $bookingStatus->label(),
                                             ])
                                     )
                                     ->required(),
 
-                                Select::make(__('resources.payment_status'))
+                                Select::make('payment_status')
                                     ->label(__('resources.payment_status'))
                                     ->options(
                                         collect(PaymentStatus::cases())
-                                            ->mapWithKeys(fn (PaymentStatus $status) => [
-                                                $status->value => $status->label(),
+                                            ->mapWithKeys(fn (PaymentStatus $paymentStatus): array => [
+                                                $paymentStatus->value => $paymentStatus->label(),
                                             ])
                                     )
                                     ->required(),
@@ -161,33 +165,55 @@ class BookingForm
     {
         $startDate = $get('start_date');
         $endDate = $get('end_date');
-        $dailyRate = $get('daily_rate');
+        $dailyRate = (float) $get('daily_rate');
 
+        // Reset all fields if required data is missing
         if (! $startDate || ! $endDate || ! $dailyRate) {
+            $set('days', null);
+            $set('subtotal', null);
+            $set('insurance_fee', null);
+            $set('tax_amount', null);
+            $set('total_amount', null);
+
             return;
         }
 
         try {
             $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
-            $days = $end->diffInDays($start);
+
+            // Calculate days (inclusive of both start and end date)
+            $days = $start->diffInDays($end) + 1;
 
             if ($days <= 0) {
+                $set('days', 0);
+                $set('subtotal', '0.00');
+                $set('insurance_fee', '0.00');
+                $set('tax_amount', '0.00');
+                $set('total_amount', '0.00');
+
                 return;
             }
 
+            // Calculate all amounts
             $subtotal = $days * $dailyRate;
             $insuranceFee = $subtotal * 0.10; // 10% insurance fee
             $taxAmount = $subtotal * 0.15; // 15% tax
             $totalAmount = $subtotal + $insuranceFee + $taxAmount;
 
+            // Set calculated values
             $set('days', $days);
             $set('subtotal', number_format($subtotal, 2, '.', ''));
             $set('insurance_fee', number_format($insuranceFee, 2, '.', ''));
             $set('tax_amount', number_format($taxAmount, 2, '.', ''));
             $set('total_amount', number_format($totalAmount, 2, '.', ''));
-        } catch (\Exception $e) {
-            // Handle date parsing errors silently
+        } catch (\Exception) {
+            // Handle date parsing errors - reset fields
+            $set('days', null);
+            $set('subtotal', null);
+            $set('insurance_fee', null);
+            $set('tax_amount', null);
+            $set('total_amount', null);
         }
     }
 }

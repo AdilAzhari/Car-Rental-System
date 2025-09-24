@@ -75,28 +75,28 @@ class BookingSeeder extends Seeder
             ],
         ];
 
-        foreach ($testBookings as $bookingData) {
-            $renter = User::query()->where('email', $bookingData['renter_email'])->first();
-            $vehicle = Vehicle::query()->where('plate_number', $bookingData['vehicle_plate'])->first();
+        foreach ($testBookings as $testBooking) {
+            $renter = User::query()->where('email', $testBooking['renter_email'])->first();
+            $vehicle = Vehicle::query()->where('plate_number', $testBooking['vehicle_plate'])->first();
 
             if (! $renter || ! $vehicle) {
                 continue;
             }
 
-            $days = Carbon::parse($bookingData['start_date'])->diffInDays($bookingData['end_date']) + 1;
+            $days = Carbon::parse($testBooking['start_date'])->diffInDays($testBooking['end_date']) + 1;
             $totalAmount = $vehicle->daily_rate * $days;
             $depositAmount = $totalAmount * 0.2;
             $commissionAmount = $totalAmount * 0.15;
 
             // Remove non-database fields from booking data
-            $cleanBookingData = $bookingData;
+            $cleanBookingData = $testBooking;
             unset($cleanBookingData['renter_email'], $cleanBookingData['vehicle_plate'], $cleanBookingData['create_payment'], $cleanBookingData['create_review'], $cleanBookingData['review_rating']);
 
             $booking = Booking::query()->firstOrCreate([
                 'renter_id' => $renter->id,
                 'vehicle_id' => $vehicle->id,
-                'start_date' => $bookingData['start_date'],
-                'end_date' => $bookingData['end_date'],
+                'start_date' => $testBooking['start_date'],
+                'end_date' => $testBooking['end_date'],
             ], array_merge($cleanBookingData, [
                 'renter_id' => $renter->id,
                 'vehicle_id' => $vehicle->id,
@@ -109,7 +109,7 @@ class BookingSeeder extends Seeder
             ]));
 
             // Create payment if specified
-            if ($bookingData['create_payment']) {
+            if ($testBooking['create_payment']) {
                 Payment::query()->firstOrCreate([
                     'booking_id' => $booking->id,
                 ], [
@@ -122,13 +122,13 @@ class BookingSeeder extends Seeder
             }
 
             // Create review if specified and booking is completed
-            if ($bookingData['create_review'] && $booking->status === 'completed') {
+            if ($testBooking['create_review'] && $booking->status === 'completed') {
                 Review::query()->firstOrCreate([
                     'booking_id' => $booking->id,
                 ], [
                     'vehicle_id' => $booking->vehicle_id,
                     'renter_id' => $booking->renter_id,
-                    'rating' => $bookingData['review_rating'] ?? fake()->numberBetween(3, 5),
+                    'rating' => $testBooking['review_rating'] ?? fake()->numberBetween(3, 5),
                     'comment' => fake()->paragraph(2),
                 ]);
             }

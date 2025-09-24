@@ -115,7 +115,7 @@ describe('Vehicle Model', function (): void {
     });
 
     it('handles invalid daily rate gracefully', function (): void {
-        expect(function () {
+        expect(function (): void {
             Vehicle::factory()->create(['daily_rate' => 'invalid']);
         })->toThrow(\Exception::class);
     });
@@ -201,6 +201,9 @@ describe('Vehicle Model', function (): void {
         });
 
         it('filters available vehicles for rent', function (): void {
+            // Clear any existing vehicles to avoid interference
+            Vehicle::query()->delete();
+
             Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
                 'is_available' => true,
@@ -262,6 +265,9 @@ describe('Vehicle Model', function (): void {
         });
 
         it('excludes vehicles with conflicting bookings', function (): void {
+            // Clear any existing vehicles to avoid interference
+            Vehicle::query()->delete();
+
             $vehicle1 = Vehicle::factory()->create([
                 'owner_id' => $this->owner->id,
                 'is_available' => true,
