@@ -37,7 +37,7 @@ class PerformanceMonitoringMiddleware
 
         // Add performance headers in debug mode
         if (config('app.debug')) {
-            $response->headers->set('X-Execution-Time', round($executionTime * 1000, 2) . 'ms');
+            $response->headers->set('X-Execution-Time', round($executionTime * 1000, 2).'ms');
             $response->headers->set('X-Memory-Usage', $this->formatBytes($memoryUsed));
 
             if (DB::getQueryLog()) {
@@ -54,7 +54,7 @@ class PerformanceMonitoringMiddleware
     private function logSlowRequest(Request $request, float $executionTime, int $memoryUsed): void
     {
         $queryLog = config('app.debug') ? DB::getQueryLog() : [];
-        $slowQueries = array_filter($queryLog, fn($query) => $query['time'] > 100); // Queries over 100ms
+        $slowQueries = array_filter($queryLog, fn (array $query): bool => $query['time'] > 100); // Queries over 100ms
 
         Log::warning('Slow request detected', [
             'url' => $request->fullUrl(),
@@ -69,11 +69,11 @@ class PerformanceMonitoringMiddleware
         ]);
 
         // Log slow queries separately for detailed analysis
-        foreach ($slowQueries as $query) {
+        foreach ($slowQueries as $slowQuery) {
             Log::warning('Slow database query', [
-                'query' => $query['query'],
-                'bindings' => $query['bindings'],
-                'time' => $query['time'] . 'ms',
+                'query' => $slowQuery['query'],
+                'bindings' => $slowQuery['bindings'],
+                'time' => $slowQuery['time'].'ms',
                 'url' => $request->fullUrl(),
             ]);
         }
@@ -91,6 +91,6 @@ class PerformanceMonitoringMiddleware
 
         $bytes /= (1 << (10 * $pow));
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

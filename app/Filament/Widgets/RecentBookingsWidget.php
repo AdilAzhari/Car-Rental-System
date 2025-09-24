@@ -118,14 +118,14 @@ class RecentBookingsWidget extends BaseWidget
 
     protected function getOptimizedQuery()
     {
-        return Cache::remember('recent_bookings_widget_' . auth()->id(), 300, fn() => Booking::query()
+        return Cache::remember('recent_bookings_widget_'.auth()->id(), 300, fn () => Booking::query()
             ->with([
                 'renter:id,name',
-                'vehicle:id,owner_id,make,model'
+                'vehicle:id,owner_id,make,model',
             ])
             ->select([
                 'id', 'renter_id', 'vehicle_id', 'start_date', 'end_date',
-                'total_amount', 'status', 'created_at'
+                'total_amount', 'status', 'created_at',
             ])
             ->latest()
             ->limit(10)

@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\DB;
 class DashboardCacheService
 {
     public const CACHE_TTL_SHORT = 300; // 5 minutes
+
     public const CACHE_TTL_MEDIUM = 900; // 15 minutes
+
     public const CACHE_TTL_LONG = 1800; // 30 minutes
 
     /**
@@ -19,7 +21,7 @@ class DashboardCacheService
         $userId ??= auth()->id();
         $userRole = auth()->user()?->role ?? 'guest';
 
-        return "dashboard_{$prefix}_{$userRole}_{$userId}_" . now()->format('Y-m-d-H');
+        return "dashboard_{$prefix}_{$userRole}_{$userId}_".now()->format('Y-m-d-H');
     }
 
     /**
@@ -41,7 +43,7 @@ class DashboardCacheService
 
         // Clear cache entries matching the pattern
         $keys = Cache::getRedis()->keys($pattern);
-        if (!empty($keys)) {
+        if (! empty($keys)) {
             Cache::getRedis()->del($keys);
         }
     }
@@ -117,11 +119,11 @@ class DashboardCacheService
                     WHERE payment_status = 'confirmed'
                 ", [$currentMonth, $lastMonth, $currentMonth]);
 
-                $avgRating = DB::selectOne("
+                $avgRating = DB::selectOne('
                     SELECT AVG(rating) as average
                     FROM car_rental_reviews
                     WHERE is_visible = 1
-                ");
+                ');
 
                 return [
                     'users' => $counts->get('users'),
@@ -260,7 +262,7 @@ class DashboardCacheService
                 ", [$currentMonth, $lastMonth, $currentMonth, $userId]);
 
                 // Review stats for owner's vehicles
-                $reviewStats = DB::selectOne("
+                $reviewStats = DB::selectOne('
                     SELECT
                         COUNT(*) as total,
                         AVG(CASE WHEN r.is_visible = 1 THEN r.rating END) as average_rating,
@@ -268,13 +270,13 @@ class DashboardCacheService
                     FROM car_rental_reviews r
                     INNER JOIN car_rental_vehicles v ON r.vehicle_id = v.id
                     WHERE v.owner_id = ?
-                ", [$currentMonth, $userId]);
+                ', [$currentMonth, $userId]);
 
                 return [
                     'vehicles' => $vehicleStats,
-                    'bookings' => $bookingStats ?: (object)['total' => 0, 'active' => 0, 'completed' => 0, 'current_month' => 0],
-                    'revenue' => $revenueStats ?: (object)['total' => 0, 'current_month' => 0, 'last_month' => 0],
-                    'reviews' => $reviewStats ?: (object)['total' => 0, 'average_rating' => 0, 'current_month' => 0],
+                    'bookings' => $bookingStats ?: (object) ['total' => 0, 'active' => 0, 'completed' => 0, 'current_month' => 0],
+                    'revenue' => $revenueStats ?: (object) ['total' => 0, 'current_month' => 0, 'last_month' => 0],
+                    'reviews' => $reviewStats ?: (object) ['total' => 0, 'average_rating' => 0, 'current_month' => 0],
                 ];
             },
             self::CACHE_TTL_SHORT
@@ -312,13 +314,13 @@ class DashboardCacheService
                 ", [$currentMonth, $userId]);
 
                 // Renter's review stats
-                $reviewStats = DB::selectOne("
+                $reviewStats = DB::selectOne('
                     SELECT
                         COUNT(*) as total,
                         SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as current_month
                     FROM car_rental_reviews
                     WHERE renter_id = ?
-                ", [$currentMonth, $userId]);
+                ', [$currentMonth, $userId]);
 
                 // Available vehicles for renting
                 $availableVehicles = DB::selectOne("
@@ -328,9 +330,9 @@ class DashboardCacheService
                 ");
 
                 return [
-                    'bookings' => $bookingStats ?: (object)['total' => 0, 'active' => 0, 'completed' => 0, 'pending' => 0, 'current_month' => 0],
-                    'spending' => $spendingStats ?: (object)['total' => 0, 'current_month' => 0],
-                    'reviews' => $reviewStats ?: (object)['total' => 0, 'current_month' => 0],
+                    'bookings' => $bookingStats ?: (object) ['total' => 0, 'active' => 0, 'completed' => 0, 'pending' => 0, 'current_month' => 0],
+                    'spending' => $spendingStats ?: (object) ['total' => 0, 'current_month' => 0],
+                    'reviews' => $reviewStats ?: (object) ['total' => 0, 'current_month' => 0],
                     'available_vehicles' => $availableVehicles->total ?? 0,
                 ];
             },
@@ -346,6 +348,7 @@ class DashboardCacheService
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
+
         return round((($current - $previous) / $previous) * 100, 1);
     }
 

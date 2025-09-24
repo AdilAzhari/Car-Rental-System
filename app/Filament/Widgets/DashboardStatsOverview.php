@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Helpers\CurrencyHelper;
 use App\Models\Booking;
-use App\Models\Payment;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -21,6 +20,7 @@ class DashboardStatsOverview extends BaseWidget
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $pollingInterval = '60s';
+
     #[Override]
     protected function getColumns(): int
     {
@@ -30,7 +30,8 @@ class DashboardStatsOverview extends BaseWidget
     private function getCacheKey(string $prefix): string
     {
         $user = auth()->user();
-        return "dashboard_stats_{$prefix}_{$user->role}_{$user->id}_" . now()->format('Y-m-d-H');
+
+        return "dashboard_stats_{$prefix}_{$user->role}_{$user->id}_".now()->format('Y-m-d-H');
     }
 
     private function getCachedData(string $key, callable $callback, int $ttl = 3600)
@@ -124,11 +125,11 @@ class DashboardStatsOverview extends BaseWidget
             ", [$currentMonth, $lastMonth, $currentMonth]);
 
             // Reviews average rating
-            $avgRating = DB::selectOne("
+            $avgRating = DB::selectOne('
                 SELECT AVG(rating) as average
                 FROM car_rental_reviews
                 WHERE is_visible = 1
-            ");
+            ');
 
             return [
                 'users' => $counts->get('users'),
@@ -147,7 +148,7 @@ class DashboardStatsOverview extends BaseWidget
         $revenueGrowth = $this->calculateGrowth($stats['revenue_stats']->current_month, $stats['revenue_stats']->last_month);
 
         // Get chart data with caching
-        $chartData = $this->getCachedData($this->getCacheKey('admin_charts'), fn(): array => $this->getOptimizedChartData(), 1800); // Cache for 30 minutes
+        $chartData = $this->getCachedData($this->getCacheKey('admin_charts'), fn (): array => $this->getOptimizedChartData(), 1800); // Cache for 30 minutes
 
         return [
             Stat::make(__('widgets.total_users'), number_format($stats['users']->total))
@@ -187,6 +188,7 @@ class DashboardStatsOverview extends BaseWidget
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
+
         return round((($current - $previous) / $previous) * 100, 1);
     }
 
@@ -298,7 +300,7 @@ class DashboardStatsOverview extends BaseWidget
             ", [$currentMonth, $lastMonth, $currentMonth, $user->id]);
 
             // Review stats for owner's vehicles
-            $reviewStats = DB::selectOne("
+            $reviewStats = DB::selectOne('
                 SELECT
                     COUNT(*) as total,
                     AVG(CASE WHEN r.is_visible = 1 THEN r.rating END) as average_rating,
@@ -306,13 +308,13 @@ class DashboardStatsOverview extends BaseWidget
                 FROM car_rental_reviews r
                 INNER JOIN car_rental_vehicles v ON r.vehicle_id = v.id
                 WHERE v.owner_id = ?
-            ", [$currentMonth, $user->id]);
+            ', [$currentMonth, $user->id]);
 
             return [
                 'vehicles' => $vehicleStats,
-                'bookings' => $bookingStats ?: (object)['total' => 0, 'active' => 0, 'completed' => 0, 'current_month' => 0],
-                'revenue' => $revenueStats ?: (object)['total' => 0, 'current_month' => 0, 'last_month' => 0],
-                'reviews' => $reviewStats ?: (object)['total' => 0, 'average_rating' => 0, 'current_month' => 0],
+                'bookings' => $bookingStats ?: (object) ['total' => 0, 'active' => 0, 'completed' => 0, 'current_month' => 0],
+                'revenue' => $revenueStats ?: (object) ['total' => 0, 'current_month' => 0, 'last_month' => 0],
+                'reviews' => $reviewStats ?: (object) ['total' => 0, 'average_rating' => 0, 'current_month' => 0],
             ];
         }, 600); // Cache for 10 minutes
 
@@ -349,6 +351,7 @@ class DashboardStatsOverview extends BaseWidget
     private function getRenterStats(): array
     {
         $stats = $this->getCachedStats();
+
         // Cache for 10 minutes
         return [
             Stat::make(__('widgets.my_bookings'), number_format($stats['bookings']->total))

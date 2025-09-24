@@ -18,12 +18,12 @@ class FilamentQueryOptimizationService
         return Booking::query()
             ->select([
                 'id', 'renter_id', 'vehicle_id', 'start_date', 'end_date',
-                'total_amount', 'status', 'created_at', 'updated_at'
+                'total_amount', 'status', 'created_at', 'updated_at',
             ])
             ->with([
                 'renter:id,name,email',
                 'vehicle:id,owner_id,make,model,year,daily_rate',
-                'vehicle.owner:id,name'
+                'vehicle.owner:id,name',
             ]);
     }
 
@@ -35,7 +35,7 @@ class FilamentQueryOptimizationService
         return User::query()
             ->select([
                 'id', 'name', 'email', 'role', 'status', 'email_verified_at',
-                'created_at', 'updated_at'
+                'created_at', 'updated_at',
             ])
             ->withCount(['vehicles', 'bookings', 'reviews']);
     }
@@ -48,11 +48,11 @@ class FilamentQueryOptimizationService
         return Vehicle::query()
             ->select([
                 'id', 'owner_id', 'make', 'model', 'year', 'daily_rate',
-                'status', 'is_available', 'created_at', 'updated_at'
+                'status', 'is_available', 'created_at', 'updated_at',
             ])
             ->with([
                 'owner:id,name,email',
-                'images:id,vehicle_id,path'
+                'images:id,vehicle_id,path',
             ])
             ->withCount(['bookings', 'reviews']);
     }
@@ -98,7 +98,7 @@ class FilamentQueryOptimizationService
     public function applyIndexHints(Builder $builder, string $table, array $indexes): Builder
     {
         if (config('database.default') === 'mysql' && $indexes !== []) {
-            $indexHint = 'USE INDEX (' . implode(', ', $indexes) . ')';
+            $indexHint = 'USE INDEX ('.implode(', ', $indexes).')';
             $builder->from(DB::raw("{$table} {$indexHint}"));
         }
 
@@ -135,7 +135,7 @@ class FilamentQueryOptimizationService
     public function optimizePagination(Builder $builder, int $perPage = 25): Builder
     {
         // Add ordering to ensure consistent pagination
-        if (!$builder->getQuery()->orders) {
+        if (! $builder->getQuery()->orders) {
             $builder->orderBy('id', 'desc');
         }
 
@@ -153,7 +153,7 @@ class FilamentQueryOptimizationService
             $builder->afterQuery(function () use ($startTime, $context): void {
                 $executionTime = microtime(true) - $startTime;
                 if ($executionTime > 0.1) { // Log slow queries (>100ms)
-                    \Log::warning("Slow query detected", [
+                    \Log::warning('Slow query detected', [
                         'context' => $context,
                         'execution_time' => $executionTime,
                         'query' => request()->fullUrl(),
@@ -186,11 +186,11 @@ class FilamentQueryOptimizationService
         $tableName = $builder->getModel()->getTable();
 
         if ($this->shouldUseApproximateCount($tableName)) {
-            $count = DB::selectOne("
+            $count = DB::selectOne('
                 SELECT table_rows as approximate_count
                 FROM information_schema.tables
                 WHERE table_name = ? AND table_schema = DATABASE()
-            ", [$tableName]);
+            ', [$tableName]);
 
             return $count->approximate_count ?? 0;
         }
@@ -206,11 +206,11 @@ class FilamentQueryOptimizationService
         // Use approximate count for tables with more than 100k rows
         $largeTableThreshold = 100000;
 
-        $count = DB::selectOne("
+        $count = DB::selectOne('
             SELECT table_rows
             FROM information_schema.tables
             WHERE table_name = ? AND table_schema = DATABASE()
-        ", [$tableName]);
+        ', [$tableName]);
 
         return ($count->table_rows ?? 0) > $largeTableThreshold;
     }
