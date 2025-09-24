@@ -1,5 +1,5 @@
 <?php
 
-return array (
-  'Camry' => 'كامري',
-);
+return [
+    'Camry' => 'كامري',
+];
