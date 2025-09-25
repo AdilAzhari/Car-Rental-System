@@ -51,6 +51,34 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - Do NOT add any references to AI assistance, Claude Code, or similar attributions
 - Keep commit messages clean and professional without AI tool references
 
+## Code Quality Before Git Operations
+**CRITICAL**: Before any git push, pull request, or commit operations, you MUST run these commands to ensure code quality and prevent CI/CD failures:
+
+### Pre-Commit Requirements
+1. **Laravel Rector**: Run `vendor/bin/rector process` to automatically apply code improvements and modernization
+2. **Laravel Pint**: Run `vendor/bin/pint` to ensure consistent code formatting according to Laravel standards
+
+### Command Sequence
+Always run these commands in this exact order before git operations:
+```bash
+vendor/bin/rector process
+vendor/bin/pint
+```
+
+### When to Run
+- Before `git commit`
+- Before `git push`
+- Before creating pull requests
+- After making significant code changes
+- When working on any PHP files
+
+This ensures that:
+- Code follows modern PHP practices (Rector)
+- Formatting is consistent with Laravel standards (Pint)
+- CI/CD pipelines won't fail due to style issues
+- Code review process is smoother
+- No formatting conflicts in the repository
+
 
 === boost rules ===
 
@@ -418,8 +446,24 @@ document.addEventListener('livewire:init', function () {
 
 ## Laravel Pint Code Formatter
 
-- You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
+- You must run `vendor/bin/pint` before finalizing changes to ensure your code matches the project's expected style.
 - Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
+- **IMPORTANT**: This is part of the mandatory pre-commit workflow defined in the "Code Quality Before Git Operations" section above.
+
+
+=== rector/core rules ===
+
+## Laravel Rector Code Modernization
+
+- You must run `vendor/bin/rector process` before finalizing changes to ensure your code follows modern PHP practices and Laravel conventions.
+- Rector automatically upgrades code to use newer PHP features and Laravel best practices.
+- **IMPORTANT**: This is part of the mandatory pre-commit workflow defined in the "Code Quality Before Git Operations" section above.
+- Run Rector BEFORE Pint, as Rector may change code structure that Pint needs to format.
+
+### Available Rector Commands
+- `vendor/bin/rector process` - Process all files and apply fixes
+- `vendor/bin/rector process --dry-run` - Show what would be changed without applying
+- `vendor/bin/rector list-rules` - Show all available rules
 
 
 === pest/core rules ===
@@ -457,6 +501,22 @@ it('returns all', function () {
     $response->assertSuccessful();
 });
 </code-snippet>
+
+### Chaining Expect Statements
+- **ALWAYS chain multiple expect() statements instead of writing separate statements**
+- Use `->and()` to chain expectations for better readability and performance
+- **Bad Example:**
+```php
+expect($this->vehicle->bookings)->toHaveCount(2);
+expect($this->vehicle->bookings->first())->toBeInstanceOf(Booking::class);
+```
+- **Good Example:**
+```php
+expect($this->vehicle->bookings)->toHaveCount(2)
+    ->and($this->vehicle->bookings->first())->toBeInstanceOf(Booking::class);
+```
+- This applies to all expect() statements in the same test that can be logically grouped
+- Chain related assertions together for better test organization
 
 ### Mocking
 - Mocking can be very helpful when appropriate.

@@ -30,4 +30,8 @@ return RectorConfig::configure()
         SetList::TYPE_DECLARATION,
         SetList::NAMING,
         SetList::PRIVATIZATION,
+    ])
+    ->withRules([
+        // Custom rules can be added here when needed
+        // App\Rector\Rules\ChainExpectStatementsRector::class,
     ]);
