@@ -20,16 +20,16 @@ describe('CreateBookingDTO', function (): void {
 
         $createBookingDTO = CreateBookingDTO::fromArray($data);
 
-        expect($createBookingDTO->carId)->toBe(1);
-        expect($createBookingDTO->renterId)->toBe(2);
-        expect($createBookingDTO->startDate)->toBeInstanceOf(Carbon::class);
-        expect($createBookingDTO->endDate)->toBeInstanceOf(Carbon::class);
-        expect($createBookingDTO->durationDays)->toBe(3);
-        expect($createBookingDTO->paymentMethod)->toBe('visa');
-        expect($createBookingDTO->paymentMethodId)->toBe('pm_test123');
-        expect($createBookingDTO->pickupLocation)->toBe('Downtown');
-        expect($createBookingDTO->dropoffLocation)->toBe('Airport');
-        expect($createBookingDTO->specialRequests)->toBe('Need GPS');
+        expect($createBookingDTO->carId)->toBe(1)
+            ->and($createBookingDTO->renterId)->toBe(2)
+            ->and($createBookingDTO->startDate)->toBeInstanceOf(Carbon::class)
+            ->and($createBookingDTO->endDate)->toBeInstanceOf(Carbon::class)
+            ->and($createBookingDTO->durationDays)->toBe(3)
+            ->and($createBookingDTO->paymentMethod)->toBe('visa')
+            ->and($createBookingDTO->paymentMethodId)->toBe('pm_test123')
+            ->and($createBookingDTO->pickupLocation)->toBe('Downtown')
+            ->and($createBookingDTO->dropoffLocation)->toBe('Airport')
+            ->and($createBookingDTO->specialRequests)->toBe('Need GPS');
     });
 
     it('can convert back to array', function (): void {
@@ -52,10 +52,10 @@ describe('CreateBookingDTO', function (): void {
             'car_id', 'renter_id', 'start_date', 'end_date',
             'duration_days', 'payment_method', 'payment_method_id',
             'pickup_location', 'dropoff_location', 'special_requests',
-        ]);
-        expect($array['car_id'])->toBe(1);
-        expect($array['start_date'])->toBe('2025-01-01');
-        expect($array['end_date'])->toBe('2025-01-03');
+        ])
+            ->and($array['car_id'])->toBe(1)
+            ->and($array['start_date'])->toBe('2025-01-01')
+            ->and($array['end_date'])->toBe('2025-01-03');
     });
 
     it('validates date range correctly', function (): void {
@@ -122,7 +122,7 @@ describe('CreateBookingDTO', function (): void {
             specialRequests: null
         );
 
-        expect($visaDto->requiresPaymentMethodId())->toBeTrue();
-        expect($cashDto->requiresPaymentMethodId())->toBeFalse();
+        expect($visaDto->requiresPaymentMethodId())->toBeTrue()
+            ->and($cashDto->requiresPaymentMethodId())->toBeFalse();
     });
 });

@@ -12,9 +12,9 @@ describe('BookingCalculationDTO', function (): void {
         expect($bookingCalculationDTO->dailyRate)->toBe(100.0)
             ->and($bookingCalculationDTO->totalDays)->toBe(3)
             ->and($bookingCalculationDTO->subtotal)->toBe(300.0)
-            ->and($bookingCalculationDTO->insuranceFee)->toBe(30.0)
-            ->and($bookingCalculationDTO->taxAmount)->toBeCloseTo(26.4, 2)
-            ->and($bookingCalculationDTO->totalAmount)->toBeCloseTo(356.4, 2);
+            ->and($bookingCalculationDTO->insuranceFee)->toBe(30.0);
+        expect(abs($bookingCalculationDTO->taxAmount - 26.4))->toBeLessThan(0.01);
+        expect(abs($bookingCalculationDTO->totalAmount - 356.4))->toBeLessThan(0.01);
         // 10% of subtotal
         // 8% of (subtotal + insurance)
         // subtotal + insurance + tax
@@ -42,9 +42,9 @@ describe('BookingCalculationDTO', function (): void {
             'daily_rate', 'total_days', 'subtotal',
             'insurance_fee', 'tax_amount', 'total_amount', 'currency',
         ])
-            ->and($array['daily_rate'])->toBeString()->
-            expect($array['total_amount'])->toBeString()->
-            expect($array['currency'])->toBe('MYR');
+            ->and($array['daily_rate'])->toBeString()
+            ->and($array['total_amount'])->toBeString()
+            ->and($array['currency'])->toBe('MYR');
     });
 
     it('formats total with currency', function (): void {
