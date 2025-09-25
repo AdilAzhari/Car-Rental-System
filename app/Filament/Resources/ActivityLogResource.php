@@ -2,7 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserRole;
 use App\Filament\Resources\ActivityLogResource\Pages;
+use App\Models\Booking;
+use App\Models\Payment;
+use App\Models\Review;
+use App\Models\User;
+use App\Models\Vehicle;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -43,7 +49,7 @@ class ActivityLogResource extends Resource
         // Only admins can see activity logs
         $user = auth()->user();
 
-        return $user && $user->role === 'admin';
+        return $user && $user->role === UserRole::ADMIN;
     }
 
     public static function getNavigationLabel(): string
@@ -89,11 +95,11 @@ class ActivityLogResource extends Resource
                                 Select::make('subject_type')
                                     ->label(__('resources.subject_type'))
                                     ->options([
-                                        \App\Models\User::class => __('resources.user'),
-                                        \App\Models\Vehicle::class => __('resources.vehicle'),
-                                        \App\Models\Booking::class => __('resources.booking'),
-                                        \App\Models\Review::class => __('resources.review'),
-                                        \App\Models\Payment::class => __('resources.payment'),
+                                        User::class => __('resources.user'),
+                                        Vehicle::class => __('resources.vehicle'),
+                                        Booking::class => __('resources.booking'),
+                                        Review::class => __('resources.review'),
+                                        Payment::class => __('resources.payment'),
                                     ])
                                     ->searchable()
                                     ->placeholder(__('resources.select_model_type')),
@@ -109,9 +115,9 @@ class ActivityLogResource extends Resource
                                 Select::make('causer_type')
                                     ->label(__('resources.causer_type'))
                                     ->options([
-                                        \App\Models\User::class => __('resources.user'),
+                                        User::class => __('resources.user'),
                                     ])
-                                    ->default(\App\Models\User::class),
+                                    ->default(User::class),
 
                                 TextInput::make('causer_id')
                                     ->label(__('resources.causer_id'))
@@ -253,16 +259,16 @@ class ActivityLogResource extends Resource
                 SelectFilter::make('subject_type')
                     ->label(__('resources.subject_type'))
                     ->options([
-                        \App\Models\User::class => __('resources.user'),
-                        \App\Models\Vehicle::class => __('resources.vehicle'),
-                        \App\Models\Booking::class => __('resources.booking'),
-                        \App\Models\Review::class => __('resources.review'),
-                        \App\Models\Payment::class => __('resources.payment'),
+                        User::class => __('resources.user'),
+                        Vehicle::class => __('resources.vehicle'),
+                        Booking::class => __('resources.booking'),
+                        Review::class => __('resources.review'),
+                        Payment::class => __('resources.payment'),
                     ]),
 
-                SelectFilter::make('causer_id')
+                SelectFilter::make('user_id')
                     ->label(__('resources.user'))
-                    ->relationship('causer', 'name')
+//                    ->relationship('causer', 'causer')
                     ->searchable()
                     ->preload(),
 

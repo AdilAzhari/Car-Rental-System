@@ -79,6 +79,57 @@ This ensures that:
 - Code review process is smoother
 - No formatting conflicts in the repository
 
+## Local CI/CD Testing with Act
+**IMPORTANT**: Before pushing code, you should test GitHub Actions locally using act-cli to catch CI/CD failures early.
+
+### Installation
+If you haven't already, install act-cli:
+```bash
+# Windows (using Chocolatey)
+choco install act-cli
+
+# Or download from: https://github.com/nektos/act/releases
+```
+
+### Available Scripts
+Use these Composer scripts to run GitHub Actions locally:
+
+```bash
+# Run the main test job (recommended before push)
+composer run act:test
+
+# List all available GitHub Actions jobs
+composer run act:list
+
+# Run security scanning job
+composer run act:security
+
+# Run all jobs (test + security + deploy)
+composer run act:all
+
+# Dry run to see what would execute (no actual execution)
+composer run act:dry
+
+# Run code quality + local GitHub Actions tests
+composer run ci
+
+# Quick development workflow (quality + local tests only)
+composer run dev
+```
+
+### Workflow Integration
+**Best Practice Workflow:**
+1. Make your code changes
+2. Run `composer run dev` (quality + local tests)
+3. Run `composer run act:test` (test GitHub Actions locally)
+4. If all pass, commit and push
+5. This prevents CI/CD failures and wasted GitHub Actions minutes
+
+### Configuration Files
+- `.actrc` - Default act-cli configuration
+- `.env.act` - Environment variables for local GitHub Actions
+- These files are automatically configured for your Laravel environment
+
 
 === boost rules ===
 

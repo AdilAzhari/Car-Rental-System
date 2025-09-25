@@ -25,8 +25,8 @@ describe('Vehicle Model', function (): void {
     });
 
     it('belongs to an owner', function (): void {
-        expect($this->vehicle->owner)->toBeInstanceOf(User::class);
-        expect($this->vehicle->owner->id)->toBe($this->user->id);
+        expect($this->vehicle->owner)->toBeInstanceOf(User::class)
+            ->and($this->vehicle->owner->id)->toBe($this->user->id);
     });
 
     it('has many vehicle images', function (): void {
@@ -43,8 +43,8 @@ describe('Vehicle Model', function (): void {
             'renter_id' => $renter->id,
         ]);
 
-        expect($this->vehicle->bookings)->toHaveCount(2);
-        expect($this->vehicle->bookings->first())->toBeInstanceOf(Booking::class);
+        expect($this->vehicle->bookings)->toHaveCount(2)
+            ->and($this->vehicle->bookings->first())->toBeInstanceOf(Booking::class);
     });
 
     it('has many reviews', function (): void {

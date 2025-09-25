@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class VehicleRepository
 {
@@ -196,10 +195,8 @@ class VehicleRepository
             ->where('created_at', '>=', now()->subYear())
             ->get();
 
-        $bookedDays = $bookings->sum(function ($booking) {
-            return \Carbon\Carbon::parse($booking->start_date)
-                ->diffInDays(\Carbon\Carbon::parse($booking->end_date)) + 1;
-        });
+        $bookedDays = $bookings->sum(fn ($booking): float => \Carbon\Carbon::parse($booking->start_date)
+            ->diffInDays(\Carbon\Carbon::parse($booking->end_date)) + 1);
 
         return $bookedDays > 0 ? round(($bookedDays / $daysInYear) * 100, 2) : 0;
     }

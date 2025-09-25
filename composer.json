@@ -60,6 +60,47 @@
         ],
         "post-install-cmd": [
             "@php artisan optimize --ansi"
+        ],
+        "act": [
+            "@act:test"
+        ],
+        "act:check": [
+            "@php -r \"echo 'Checking for act-cli installation...\\n'; passthru('where act 2>nul || which act 2>/dev/null || echo \\\"Act-cli not found in PATH. Please install with: choco install act-cli\\\"');\""
+        ],
+        "act:list": [
+            "@act:check",
+            "act -l"
+        ],
+        "act:test": [
+            "@act:check",
+            "act -j test --container-architecture linux/amd64"
+        ],
+        "act:security": [
+            "@act:check",
+            "act -j security-scan --container-architecture linux/amd64"
+        ],
+        "act:all": [
+            "@act:check",
+            "act --container-architecture linux/amd64"
+        ],
+        "act:dry": [
+            "@act:check",
+            "act -n --container-architecture linux/amd64"
+        ],
+        "ci": [
+            "@quality",
+            "@act:test"
+        ],
+        "quality": [
+            "vendor/bin/rector process",
+            "vendor/bin/pint"
+        ],
+        "dev": [
+            "@quality",
+            "@php artisan test"
+        ],
+        "setup-act": [
+            "@php -r \"echo '\\n=== Act-CLI Setup Instructions ===\\n'; echo 'Install act-cli with: choco install act-cli\\n'; echo 'Or download from: https://github.com/nektos/act/releases\\n'; echo '\\nAfter installation, test with: composer run act:check\\n';\""
         ]
     },
     "extra": {

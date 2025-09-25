@@ -67,7 +67,8 @@
       "Bash(git stash:*)",
       "Bash(for brand in tesla kia honda gmc ford lexus nissan mazda toyota chevrolet)",
       "Bash(do echo \"=== $brand ===\")",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(where act)"
     ],
     "deny": [],
     "ask": []
