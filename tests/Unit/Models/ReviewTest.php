@@ -106,7 +106,7 @@ describe('Review Model', function (): void {
         Review::factory()->create(['vehicle_id' => $this->vehicle->id, 'rating' => 4]);
         Review::factory()->create(['vehicle_id' => $this->vehicle->id, 'rating' => 3]);
 
-        $averageRating = Review::where('vehicle_id', $this->vehicle->id)->avg('rating');
+        $averageRating = (float) Review::where('vehicle_id', $this->vehicle->id)->avg('rating');
         expect($averageRating)->toBeFloat();
         expect($averageRating)->toBeGreaterThan(3);
         expect($averageRating)->toBeLessThanOrEqual(5);

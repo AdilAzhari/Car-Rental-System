@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\laragon\www\CarRentSystem\phpunit.xml" tests="17" assertions="0" errors="17" failures="0" skipped="0" time="31.934554">
+    <testsuite name="Browser" tests="17" assertions="0" errors="17" failures="0" skipped="0" time="31.934554">
+      <testsuite name="Tests\Browser\AdminDashboardTest" file="tests\Browser\AdminDashboardTest.php" tests="17" assertions="0" errors="17" failures="0" skipped="0" time="31.934554">
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays correct vehicle statistics" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays correct vehicle statistics" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="25.873052">
+          <error type="BadMethodCallException">`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays correct vehicle statisticsBadMethodCallException: Call to undefined method Database\Factories\VehicleFactory::draft()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:1040
+at tests\Browser\AdminDashboardTest.php:54</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can filter dashboard data by date range" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can filter dashboard data by date range" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.139448">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can filter dashboard data by date rangeError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:193</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it loads dashboard within acceptable time" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it loads dashboard within acceptable time" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="4.429333">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it loads dashboard within acceptable timeError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:140</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to booking management from dashboard" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to booking management from dashboard" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.078407">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to booking management from dashboardError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:113</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can access recent activities widget" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can access recent activities widget" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.092544">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can access recent activities widgetError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:123</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays booking statistics" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays booking statistics" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.229056">
+          <error type="BadMethodCallException">`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays booking statisticsBadMethodCallException: Call to undefined method Database\Factories\BookingFactory::cancelled()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:1040
+at tests\Browser\AdminDashboardTest.php:71</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it redirects unauthenticated users to login" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it redirects unauthenticated users to login" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.076472">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it redirects unauthenticated users to loginError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:30</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it can access admin dashboard when authenticated" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it can access admin dashboard when authenticated" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.115184">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it can access admin dashboard when authenticatedError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:19</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it handles empty dashboard gracefully" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it handles empty dashboard gracefully" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.107971">
+          <error type="Illuminate\Database\QueryException">`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it handles empty dashboard gracefullyIlluminate\Database\QueryException: SQLSTATE[42000]: Syntax error or access violation: 1701 Cannot truncate a table referenced in a foreign key constraint (`carrentsystem`.`car_rental_reviews`, CONSTRAINT `car_rental_reviews_vehicle_id_foreign`) (Connection: mysql, SQL: truncate table `car_rental_vehicles`)&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:811
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4126
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2238
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
+at tests\Browser\AdminDashboardTest.php:208
+Caused by
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1701 Cannot truncate a table referenced in a foreign key constraint (`carrentsystem`.`car_rental_reviews`, CONSTRAINT `car_rental_reviews_vehicle_id_foreign`)
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:811
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4126
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2238
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
+at tests\Browser\AdminDashboardTest.php:208</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays user statistics" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays user statistics" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.130505">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Statistics and Data` → it displays user statisticsError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:89</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it displays correctly on different screen sizes" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it displays correctly on different screen sizes" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.083615">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Responsiveness and Performance` → it displays correctly on different screen sizesError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:151</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it shows notification when new booking is created" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it shows notification when new booking is created" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.085184">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it shows notification when new booking is createdError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:238</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it updates statistics in real-time" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it updates statistics in real-time" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.105010">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Real-time Updates and Notifications` → it updates statistics in real-timeError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:256</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can search for vehicles from dashboard" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can search for vehicles from dashboard" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.126279">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Search and Filtering` → it can search for vehicles from dashboardError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:179</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it displays error message when data fails to load" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it displays error message when data fails to load" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.078178">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Error Handling and Edge Cases` → it displays error message when data fails to loadError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:222</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to vehicle management from dashboard" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to vehicle management from dashboard" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.076521">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Quick Actions and Widget Interactions` → it can navigate to vehicle management from dashboardError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:103</error>
+        </testcase>
+        <testcase name="`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it shows correct navigation menu for admin users" file="tests\Browser\AdminDashboardTest.php::`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it shows correct navigation menu for admin users" class="Tests\Browser\AdminDashboardTest" classname="Tests.Browser.AdminDashboardTest" assertions="0" time="0.107796">
+          <error type="Error">`Admin Dashboard Browser Tests` → `Dashboard Access and Navigation` → it shows correct navigation menu for admin usersError: Call to undefined function browse()&#13;
+at tests\Browser\AdminDashboardTest.php:38</error>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

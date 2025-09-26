@@ -227,7 +227,15 @@ class ActivityLogResource extends Resource
 
                 TextColumn::make('properties')
                     ->label(__('resources.properties'))
-                    ->formatStateUsing(fn ($state) => $state ? count($state).' '.__('resources.items') : __('resources.none'))
+                    ->formatStateUsing(function ($record) {
+                        if (! $record->properties || $record->properties->isEmpty()) {
+                            return __('resources.none');
+                        }
+
+                        $count = $record->properties->count();
+
+                        return $count.' '.__('resources.items');
+                    })
                     ->badge()
                     ->color('gray')
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'twilio' => [
+        'account_sid' => env('TWILIO_ACCOUNT_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'from_number' => env('TWILIO_FROM_NUMBER'),
+    ],
+
+    'traffic_violations' => [
+        'check_number' => env('TRAFFIC_CHECK_NUMBER', '32728'),
+        'enabled' => env('TRAFFIC_CHECK_ENABLED', true),
+        'cache_hours' => env('TRAFFIC_CACHE_HOURS', 24),
+    ],
+
 ];

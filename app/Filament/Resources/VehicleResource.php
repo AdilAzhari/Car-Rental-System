@@ -425,11 +425,17 @@ class VehicleResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('featured_image')
+                    ->label(__('resources.image'))
+                    ->formatStateUsing(fn ($state): string => $state ? 'Has Image' : 'No Image')
+                    ->hiddenFrom('md'),
+
                 ImageColumn::make('featured_image')
                     ->label(__('resources.image'))
                     ->size(80)
                     ->square()
-                    ->defaultImageUrl(url('/images/car-placeholder.jpg')),
+                    ->defaultImageUrl(url('/images/car-placeholder.jpg'))
+                    ->visibleFrom('md'),
 
                 TextColumn::make('make')
                     ->label(__('resources.make'))
@@ -487,7 +493,9 @@ class VehicleResource extends Resource
                 TextColumn::make('owner.name')
                     ->label(__('resources.owner'))
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->placeholder('—')
+                    ->default('N/A'),
 
                 TextColumn::make('bookings_count')
                     ->label(__('resources.bookings'))
@@ -570,6 +578,54 @@ class VehicleResource extends Resource
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
+                Action::make('check_violations')
+                    ->label('Check Violations')
+                    ->icon('heroicon-m-exclamation-triangle')
+                    ->color('warning')
+                    ->action(function (Vehicle $vehicle): void {
+                        $trafficViolationService = app(\App\Services\TrafficViolationService::class);
+
+                        try {
+                            // Force check by clearing cache first
+                            $trafficViolationService->clearCache($vehicle->plate_number);
+                            $violationData = $trafficViolationService->checkVehicleViolations($vehicle);
+                            $trafficViolationService->updateVehicleViolations($vehicle, $violationData);
+
+                            if ($violationData['has_violations']) {
+                                $count = count($violationData['violations']);
+                                $fines = number_format($violationData['total_fines_amount'], 2);
+
+                                if ($violationData['has_pending_violations']) {
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Traffic violations found!')
+                                        ->body("Found {$count} violation(s) with RM{$fines} in pending fines.")
+                                        ->warning()
+                                        ->send();
+                                } else {
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Traffic violations found')
+                                        ->body("Found {$count} violation(s), all resolved.")
+                                        ->info()
+                                        ->send();
+                                }
+                            } else {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('No violations found')
+                                    ->body("Vehicle {$vehicle->plate_number} has no traffic violations.")
+                                    ->success()
+                                    ->send();
+                            }
+                        } catch (\Exception $e) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Check failed')
+                                ->body('Failed to check violations: '.$e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->modalDescription('This will send an SMS to check for current traffic violations.')
+                    ->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role->value, ['admin', 'owner'])),
                 Action::make('book_now')
                     ->label(__('resources.book_now'))
                     ->icon('heroicon-m-calendar-plus')
@@ -641,6 +697,7 @@ class VehicleResource extends Resource
         $user = auth()->user();
 
         return parent::getEloquentQuery()
+            ->with(['owner'])
             ->when($user && $user->role === UserRole::OWNER, fn ($query) => $query->where('owner_id', $user->id))
             ->when($user && $user->role === UserRole::RENTER, fn ($query) =>
                 // Renters can only see published and available vehicles

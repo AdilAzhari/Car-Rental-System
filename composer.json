@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "ext-curl": "*",
+        "ext-pdo": "*",
         "alperenersoy/filament-export": "*",
         "barryvdh/laravel-translation-manager": "^0.6.8",
         "filament/filament": "^4.0",
@@ -15,7 +17,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
         "livewire/livewire": "^3.0",
-        "spatie/laravel-activitylog": "^4.8"
+        "spatie/laravel-activitylog": "^4.8",
+        "twilio/sdk": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

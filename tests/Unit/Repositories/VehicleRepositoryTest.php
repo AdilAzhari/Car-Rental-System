@@ -64,7 +64,7 @@ describe('VehicleRepository', function (): void {
         expect($result->id)->toBe($vehicle->id);
         expect($result->relationLoaded('owner'))->toBeTrue();
         expect($result->relationLoaded('reviews'))->toBeTrue();
-        expect($result->reviews_avg_rating)->toBeFloat();
+        expect((float) $result->reviews_avg_rating)->toBeFloat();
         expect($result->reviews_count)->toBe(1);
     });
 
@@ -148,7 +148,7 @@ describe('VehicleRepository', function (): void {
         expect($stats['total_bookings'])->toBe(2);
         expect($stats['completed_bookings'])->toBe(1);
         expect($stats['total_reviews'])->toBe(1);
-        expect($stats['total_revenue'])->toBe(800);
+        expect((int) $stats['total_revenue'])->toBe(800);
     });
 
     it('can get vehicles needing attention', function (): void {

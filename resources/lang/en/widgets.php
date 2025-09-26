@@ -174,4 +174,5 @@ return [
     'status_ongoing' => 'On Going',
     'no_ratings' => 'No Ratings',
     'when' => 'When',
+    'export' => 'Export',
 ];

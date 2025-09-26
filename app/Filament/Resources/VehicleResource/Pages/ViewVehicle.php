@@ -3,12 +3,16 @@
 namespace App\Filament\Resources\VehicleResource\Pages;
 
 use App\Filament\Resources\VehicleResource;
+use App\Services\TrafficViolationService;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -21,6 +25,47 @@ class ViewVehicle extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('check_violations')
+                ->label('Check Violations')
+                ->icon('heroicon-m-shield-exclamation')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading('Check Traffic Violations')
+                ->modalDescription('This will check for traffic violations via SMS and update the vehicle record. Continue?')
+                ->modalSubmitActionLabel('Check Now')
+                ->action(function (TrafficViolationService $trafficViolationService): void {
+                    $model = $this->getRecord();
+
+                    // Clear cache to force new check
+                    $trafficViolationService->clearCache($model->plate_number);
+
+                    // Check violations
+                    $violationData = $trafficViolationService->checkVehicleViolations($model);
+
+                    // Update vehicle record
+                    $trafficViolationService->updateVehicleViolations($model, $violationData);
+
+                    // Show notification
+                    $violationCount = count($violationData['violations']);
+                    $totalFines = $violationData['total_fines_amount'];
+
+                    if ($violationData['has_violations']) {
+                        Notification::make()
+                            ->title('Violations Found')
+                            ->body("Found {$violationCount} violation(s) with total fines of RM ".number_format($totalFines, 2))
+                            ->warning()
+                            ->send();
+                    } else {
+                        Notification::make()
+                            ->title('No Violations Found')
+                            ->body("Vehicle {$model->plate_number} has a clean traffic record.")
+                            ->success()
+                            ->send();
+                    }
+
+                    // Refresh the page to show updated data
+                    $this->redirect($this->getResource()::getUrl('view', ['record' => $model]));
+                }),
             EditAction::make(),
             DeleteAction::make(),
         ];
@@ -190,6 +235,16 @@ class ViewVehicle extends ViewRecord
                             ->markdown(),
                     ])
                     ->collapsible(),
+
+                Section::make(__('resources.traffic_violations'))
+                    ->icon('heroicon-m-shield-exclamation')
+                    ->description(__('resources.traffic_violations_description'))
+                    ->schema([
+                        ViewEntry::make('traffic_violations_display')
+                            ->label('')
+                            ->view('filament.components.traffic-violations-display')
+                            ->columnSpanFull(),
+                    ]),
 
             ]);
     }

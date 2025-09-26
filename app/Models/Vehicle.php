@@ -89,7 +89,10 @@ class Vehicle extends Model
 
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id')->withDefault([
+            'name' => 'Unknown Owner',
+            'email' => 'unknown@example.com',
+        ]);
     }
 
     public function images(): HasMany

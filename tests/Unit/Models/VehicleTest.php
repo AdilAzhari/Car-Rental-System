@@ -32,8 +32,8 @@ describe('Vehicle Model', function (): void {
     it('has many vehicle images', function (): void {
         VehicleImage::factory(3)->create(['vehicle_id' => $this->vehicle->id]);
 
-        expect($this->vehicle->images)->toHaveCount(3);
-        expect($this->vehicle->images->first())->toBeInstanceOf(VehicleImage::class);
+        expect($this->vehicle->images)->toHaveCount(3)
+            ->and($this->vehicle->images->first())->toBeInstanceOf(VehicleImage::class);
     });
 
     it('has many bookings', function (): void {
@@ -54,16 +54,16 @@ describe('Vehicle Model', function (): void {
             'renter_id' => $renter->id,
         ]);
 
-        expect($this->vehicle->reviews)->toHaveCount(2);
-        expect($this->vehicle->reviews->first())->toBeInstanceOf(Review::class);
+        expect($this->vehicle->reviews)->toHaveCount(2)
+            ->and($this->vehicle->reviews->first())->toBeInstanceOf(Review::class);
     });
 
     it('casts attributes correctly', function (): void {
-        expect($this->vehicle->daily_rate)->toBeString(); // decimal:2 returns string
-        expect($this->vehicle->year)->toBeInt();
-        expect($this->vehicle->fuel_type)->toBeInstanceOf(VehicleFuelType::class);
-        expect($this->vehicle->transmission)->toBeInstanceOf(VehicleTransmission::class);
-        expect($this->vehicle->status)->toBeInstanceOf(VehicleStatus::class);
+        expect($this->vehicle->daily_rate)->toBeString()
+            ->and($this->vehicle->year)->toBeInt()
+            ->and($this->vehicle->fuel_type)->toBeInstanceOf(VehicleFuelType::class)
+            ->and($this->vehicle->transmission)->toBeInstanceOf(VehicleTransmission::class)
+            ->and($this->vehicle->status)->toBeInstanceOf(VehicleStatus::class); // decimal:2 returns string
     });
 
     it('has correct fillable attributes', function (): void {
@@ -106,26 +106,27 @@ describe('Vehicle Model', function (): void {
             'insurance_expiry' => now()->addMonths(12)->format('Y-m-d'),
         ];
 
-        $vehicle = Vehicle::create($vehicleData);
+        $vehicle = Vehicle::query()->create($vehicleData);
 
-        expect($vehicle)->toBeInstanceOf(Vehicle::class);
-        expect($vehicle->make)->toBe('Honda');
-        expect($vehicle->model)->toBe('Civic');
-        expect($vehicle->daily_rate)->toBe('85.00'); // decimal:2 returns string
+        expect($vehicle)->toBeInstanceOf(Vehicle::class)
+            ->and($vehicle->make)->toBe('Honda')
+            ->and($vehicle->model)->toBe('Civic')
+            ->and($vehicle->daily_rate)->toBe('85.00');
+        // decimal:2 returns string
     });
 
     it('handles invalid daily rate gracefully', function (): void {
         expect(function (): void {
             Vehicle::factory()->create(['daily_rate' => 'invalid']);
-        })->toThrow(\Exception::class);
+        })->toThrow(Exception::class);
     });
 
     it('can soft delete', function (): void {
         $vehicleId = $this->vehicle->id;
         $this->vehicle->delete();
 
-        expect(Vehicle::find($vehicleId))->toBeNull();
-        expect(Vehicle::withTrashed()->find($vehicleId))->not->toBeNull();
+        expect(Vehicle::query()->find($vehicleId))->toBeNull()
+            ->and(Vehicle::withTrashed()->find($vehicleId))->not->toBeNull();
     });
 
     describe('Featured Image URL Generation', function (): void {
@@ -218,10 +219,10 @@ describe('Vehicle Model', function (): void {
                 'insurance_expiry' => now()->addYear(),
             ]);
 
-            $availableVehicles = Vehicle::availableForRent()->get();
+            $availableVehicles = Vehicle::query()->availableForRent()->get();
 
-            expect($availableVehicles)->toHaveCount(1);
-            expect($availableVehicles->first()->is_available)->toBeTrue();
+            expect($availableVehicles)->toHaveCount(1)
+                ->and($availableVehicles->first()->is_available)->toBeTrue();
         });
 
         it('filters vehicles by owner', function (): void {
@@ -238,8 +239,8 @@ describe('Vehicle Model', function (): void {
 
             $ownerVehicles = Vehicle::byOwner($this->owner->id)->get();
 
-            expect($ownerVehicles)->toHaveCount(1);
-            expect($ownerVehicles->first()->owner_id)->toBe($this->owner->id);
+            expect($ownerVehicles)->toHaveCount(1)
+                ->and($ownerVehicles->first()->owner_id)->toBe($this->owner->id);
         });
 
         it('filters by price range', function (): void {
@@ -260,8 +261,8 @@ describe('Vehicle Model', function (): void {
 
             $midRangeVehicles = Vehicle::priceRange(90, 110)->where('owner_id', $this->owner->id)->get();
 
-            expect($midRangeVehicles)->toHaveCount(1); // Only vehicle2 ($100) in range
-            expect($midRangeVehicles->first()->id)->toBe($vehicle2->id);
+            expect($midRangeVehicles)->toHaveCount(1)
+                ->and($midRangeVehicles->first()->id)->toBe($vehicle2->id); // Only vehicle2 ($100) in range
         });
 
         it('excludes vehicles with conflicting bookings', function (): void {
@@ -298,8 +299,8 @@ describe('Vehicle Model', function (): void {
                 now()->addDays(8)->toDateString()
             )->get();
 
-            expect($availableVehicles)->toHaveCount(1);
-            expect($availableVehicles->first()->id)->toBe($vehicle2->id);
+            expect($availableVehicles)->toHaveCount(1)
+                ->and($availableVehicles->first()->id)->toBe($vehicle2->id);
         });
     });
 });

@@ -517,4 +517,10 @@ return [
     'change_photo' => 'Change Photo',
     'unnamed_user' => 'Unnamed User',
     'member_since' => 'Member since',
+    'ownership_and_status' => 'Ownership And Status',
+    'vehicle_details' => 'Vehicle Details',
+    'can_customers_book' => 'Can Customers Book',
+    'does_rental_include_insurance' => 'Does Rental Include Insurance',
+    'deposit_amount' => 'Deposit Amount',
+    'causer' => 'User',
 ];

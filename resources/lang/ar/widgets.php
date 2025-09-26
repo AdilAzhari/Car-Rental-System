@@ -190,4 +190,12 @@ return [
 
     // Latest Activities
     'when' => 'متى',
+    'message' => 'رسالة',
+    'customer_reviews' => 'مراجعات العملاء',
+    'customer_review' => 'مراجعة العميل',
+    'approved' => 'معتمد',
+    'avg_monthly_rate' => 'متوسط السعر الشهري',
+    'available_for_vehicle' => 'متاح للمركبة',
+    'status_ongoing' => 'جاري',
+    'export' => 'تصدير',
 ];

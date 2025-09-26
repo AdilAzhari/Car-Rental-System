@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\BookingStatus;
+use App\Enums\VehicleStatus;
 use App\Models\Booking;
 use App\Models\Vehicle;
 
@@ -19,9 +21,10 @@ describe('Power Features Demo', function (): void {
 
         $this->vehicle = createTestVehicle([
             'owner_id' => $this->owner->id,
-            'status' => 'published',
+            'status' => VehicleStatus::PUBLISHED,
             'is_available' => true,
             'daily_rate' => 100.00,
+            'has_pending_violations' => true,
             'traffic_violations' => [
                 ['type' => 'speeding', 'status' => 'pending', 'fine' => 300],
                 ['type' => 'parking', 'status' => 'resolved', 'fine' => 50],
@@ -91,7 +94,7 @@ describe('Power Features Demo', function (): void {
                 // Renter sees only published available vehicles
                 $renterVehicles = Vehicle::forRole('renter')->get();
                 expect($renterVehicles)->toHaveCount(1);
-                expect($renterVehicles->first()->status)->toBe('published');
+                expect($renterVehicles->first()->status->value)->toBe('published');
                 expect($renterVehicles->first()->is_available)->toBeTrue();
 
                 return true;
@@ -118,7 +121,7 @@ describe('Power Features Demo', function (): void {
             ->group('parallel', 'fast')
             ->expect(function (): true {
                 // Create some bookings and reviews for popularity calculation
-                createTestBooking(['vehicle_id' => $this->vehicle->id, 'status' => 'completed']);
+                createTestBooking(['vehicle_id' => $this->vehicle->id, 'status' => BookingStatus::COMPLETED]);
 
                 $popularVehicles = Vehicle::popular(5)->get();
                 expect($popularVehicles->first())->toHaveKey('bookings_count');
@@ -130,7 +133,7 @@ describe('Power Features Demo', function (): void {
             ->group('parallel', 'fast')
             ->expect(function (): true {
                 // Our test vehicle has pending violations
-                $attentionRequired = Vehicle::requireingAttention()->get();
+                $attentionRequired = Vehicle::requiringAttention()->get();
                 expect($attentionRequired)->toHaveCount(1);
                 expect($attentionRequired->first()->has_pending_violations)->toBeTrue();
 
@@ -144,7 +147,7 @@ describe('Power Features Demo', function (): void {
                 $booking = createTestBooking([
                     'renter_id' => $this->renter->id,
                     'vehicle_id' => $this->vehicle->id,
-                    'status' => 'confirmed',
+                    'status' => BookingStatus::CONFIRMED,
                     'start_date' => now()->addDays(5),
                     'end_date' => now()->addDays(10),
                 ]);
@@ -152,7 +155,7 @@ describe('Power Features Demo', function (): void {
                 // Test upcoming scope
                 $upcomingBookings = Booking::upcoming(30)->get();
                 expect($upcomingBookings)->toHaveCount(1);
-                expect($upcomingBookings->first()->status)->toBe('confirmed');
+                expect($upcomingBookings->first()->status->value)->toBe('confirmed');
 
                 // Test role-based filtering
                 $renterBookings = Booking::byStatus('confirmed', 'renter')->get();

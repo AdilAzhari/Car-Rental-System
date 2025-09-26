@@ -68,7 +68,9 @@
       "Bash(for brand in tesla kia honda gmc ford lexus nissan mazda toyota chevrolet)",
       "Bash(do echo \"=== $brand ===\")",
       "Bash(npm audit:*)",
-      "Bash(where act)"
+      "Bash(where act)",
+      "Bash(choco install:*)",
+      "Bash(winget install:*)"
     ],
     "deny": [],
     "ask": []
