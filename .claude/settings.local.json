@@ -70,7 +70,8 @@
       "Bash(npm audit:*)",
       "Bash(where act)",
       "Bash(choco install:*)",
-      "Bash(winget install:*)"
+      "Bash(winget install:*)",
+      "Bash(ln:*)"
     ],
     "deny": [],
     "ask": []
