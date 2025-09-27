@@ -79,7 +79,7 @@ class BookingsRelationManager extends RelationManager
                         'primary' => 'completed',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn ($state) => BookingStatus::tryFrom($state)?->label() ?? $state),
+                    ->formatStateUsing(fn ($state) => $state instanceof BookingStatus ? $state->label() : ($state ?? 'Unknown')),
 
                 TextColumn::make('total_amount')
                     ->label(__('resources.amount'))
