@@ -13,10 +13,6 @@ pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature', 'Unit', 'Performance');
 
-pest()->extend(Tests\TestCase::class)
-    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Browser');
-
 /*
 |--------------------------------------------------------------------------
 | Parallel Testing Groups
@@ -35,8 +31,7 @@ pest()->group('parallel', 'api')->in('Feature/Api');
 // Database-critical tests - should be isolated
 pest()->group('database')->in('Feature/Auth', 'Feature/Payment');
 
-// Browser tests - resource intensive, run separately
-pest()->group('browser')->in('Browser');
+// Browser tests - removed from this project
 
 /*
 |--------------------------------------------------------------------------

@@ -24,6 +24,7 @@ describe('Review Model', function (): void {
             'renter_id' => $this->renter->id,
             'rating' => 5,
             'comment' => 'Excellent vehicle and service!',
+            'is_visible' => true,
         ]);
     });
 
