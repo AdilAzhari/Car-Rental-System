@@ -51,12 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth('full')
             ->spa()
             ->databaseNotifications()
-            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->unsavedChangesAlerts()
             ->databaseTransactions()
-            ->plugins([
-                SpotlightPlugin::make(),
-            ])
             // ->renderHook(
             //     'panels::body.start',
             //     fn (): string => view('filament.hooks.rtl-support')->render()
@@ -75,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->plugins([
-                //
+                SpotlightPlugin::make()
             ])
             ->sidebarCollapsibleOnDesktop()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
