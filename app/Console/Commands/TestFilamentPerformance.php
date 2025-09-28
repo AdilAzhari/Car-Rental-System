@@ -16,12 +16,12 @@ class TestFilamentPerformance extends Command
     {
         $this->info('🔬 Testing Filament Query Optimization Performance...');
 
-        $optimizationService = app(FilamentQueryOptimizationService::class);
+        $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
 
         // Test 1: Dashboard Stats Performance
         $this->info('📊 Testing Dashboard Stats...');
         $startTime = microtime(true);
-        $stats = $optimizationService->getDashboardStats();
+        $stats = $filamentQueryOptimizationService->getDashboardStats();
         $dashboardTime = microtime(true) - $startTime;
 
         $this->table(['Metric', 'Value'], [
@@ -38,7 +38,7 @@ class TestFilamentPerformance extends Command
 
         // Test Booking Query Performance
         $startTime = microtime(true);
-        $optimizedBookings = $optimizationService->getOptimizedBookingQuery()->limit(10)->get();
+        $optimizedBookings = $filamentQueryOptimizationService->getOptimizedBookingQuery()->limit(10)->get();
         $optimizedTime = microtime(true) - $startTime;
 
         $startTime = microtime(true);
@@ -52,7 +52,7 @@ class TestFilamentPerformance extends Command
 
         // Test 3: User Query Performance
         $startTime = microtime(true);
-        $optimizedUsers = $optimizationService->getOptimizedUserQuery()->limit(10)->get();
+        $optimizedUsers = $filamentQueryOptimizationService->getOptimizedUserQuery()->limit(10)->get();
         $optimizedUserTime = microtime(true) - $startTime;
 
         $startTime = microtime(true);
@@ -66,7 +66,7 @@ class TestFilamentPerformance extends Command
 
         // Test 4: Vehicle Query Performance
         $startTime = microtime(true);
-        $optimizedVehicles = $optimizationService->getOptimizedVehicleQuery()->limit(10)->get();
+        $optimizedVehicles = $filamentQueryOptimizationService->getOptimizedVehicleQuery()->limit(10)->get();
         $optimizedVehicleTime = microtime(true) - $startTime;
 
         $startTime = microtime(true);
@@ -84,13 +84,13 @@ class TestFilamentPerformance extends Command
         DB::enableQueryLog();
 
         // Optimized query
-        $optimizationService->getOptimizedBookingQuery()->limit(5)->get();
+        $filamentQueryOptimizationService->getOptimizedBookingQuery()->limit(5)->get();
         $optimizedQueries = count(DB::getQueryLog());
 
         DB::flushQueryLog();
 
         // Regular query with N+1 problem
-        \App\Models\Booking::limit(5)->get()->each(function ($booking) {
+        \App\Models\Booking::limit(5)->get()->each(function ($booking): void {
             $booking->renter->name;
             $booking->vehicle->make;
             $booking->vehicle->owner->name;
@@ -111,7 +111,7 @@ class TestFilamentPerformance extends Command
             $sampleIds = \App\Models\Booking::limit(5)->pluck('id')->toArray();
 
             $startTime = microtime(true);
-            $optimizationService->getBulkOperationQuery('Booking', $sampleIds)->get();
+            $filamentQueryOptimizationService->getBulkOperationQuery('Booking', $sampleIds)->get();
             $bulkTime = microtime(true) - $startTime;
 
             $startTime = microtime(true);

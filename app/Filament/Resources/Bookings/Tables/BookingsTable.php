@@ -284,12 +284,12 @@ class BookingsTable
                                 ->placeholder(__('bookings.bulk_update_reason_placeholder'))
                                 ->maxLength(500),
                         ])
-                        ->action(function (array $data, $records) {
-                            $optimizationService = app(FilamentQueryOptimizationService::class);
+                        ->action(function (array $data, $records): void {
+                            $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
                             $recordIds = $records->pluck('id')->toArray();
 
                             // Use optimized bulk operation
-                            $optimizationService->getBulkOperationQuery('Booking', $recordIds)
+                            $filamentQueryOptimizationService->getBulkOperationQuery('Booking', $recordIds)
                                 ->update([
                                     'status' => $data['status'],
                                     'notes' => $data['reason'] ?? null,

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 
 class FilamentCacheService
 {
-    public static function getCacheKey(string $type, string $identifier = null): string
+    public static function getCacheKey(string $type, ?string $identifier = null): string
     {
         $key = "filament.{$type}";
 
@@ -17,44 +17,44 @@ class FilamentCacheService
         return $key;
     }
 
-    public static function getWidgetData(string $widget, callable $callback, int $ttl = null): mixed
+    public static function getWidgetData(string $widget, callable $callback, ?int $ttl = null): mixed
     {
         if (!config('filament.cache.widgets.enabled', true)) {
             return $callback();
         }
 
         $key = self::getCacheKey('widget', $widget);
-        $ttl = $ttl ?? config('filament.cache.widgets.ttl', 300);
+        $ttl ??= config('filament.cache.widgets.ttl', 300);
 
         return Cache::store(config('filament.cache.widgets.store', 'default'))
             ->remember($key, $ttl, $callback);
     }
 
-    public static function getResourceData(string $resource, callable $callback, int $ttl = null): mixed
+    public static function getResourceData(string $resource, callable $callback, ?int $ttl = null): mixed
     {
         if (!config('filament.cache.resources.enabled', true)) {
             return $callback();
         }
 
         $key = self::getCacheKey('resource', $resource);
-        $ttl = $ttl ?? config('filament.cache.resources.ttl', 3600);
+        $ttl ??= config('filament.cache.resources.ttl', 3600);
 
         return Cache::remember($key, $ttl, $callback);
     }
 
-    public static function getNavigationData(string $panel, callable $callback, int $ttl = null): mixed
+    public static function getNavigationData(string $panel, callable $callback, ?int $ttl = null): mixed
     {
         if (!config('filament.cache.navigation.enabled', true)) {
             return $callback();
         }
 
         $key = self::getCacheKey('navigation', $panel);
-        $ttl = $ttl ?? config('filament.cache.navigation.ttl', 1800);
+        $ttl ??= config('filament.cache.navigation.ttl', 1800);
 
         return Cache::remember($key, $ttl, $callback);
     }
 
-    public static function clearWidgetCache(string $widget = null): void
+    public static function clearWidgetCache(?string $widget = null): void
     {
         if ($widget) {
             $key = self::getCacheKey('widget', $widget);
@@ -72,7 +72,7 @@ class FilamentCacheService
         }
     }
 
-    public static function clearResourceCache(string $resource = null): void
+    public static function clearResourceCache(?string $resource = null): void
     {
         if ($resource) {
             $key = self::getCacheKey('resource', $resource);
@@ -83,7 +83,7 @@ class FilamentCacheService
         }
     }
 
-    public static function clearNavigationCache(string $panel = null): void
+    public static function clearNavigationCache(?string $panel = null): void
     {
         if ($panel) {
             $key = self::getCacheKey('navigation', $panel);

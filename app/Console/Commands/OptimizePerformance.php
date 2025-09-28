@@ -64,7 +64,7 @@ class OptimizePerformance extends Command
         return self::SUCCESS;
     }
 
-    private function runInBackground(string $command, &$exitCode): void
+    private function runInBackground(string $command, int &$exitCode): void
     {
         $process = popen($command, 'r');
         if ($process) {

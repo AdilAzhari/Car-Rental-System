@@ -28,6 +28,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -53,6 +54,9 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->unsavedChangesAlerts()
             ->databaseTransactions()
+            ->plugins([
+                SpotlightPlugin::make(),
+            ])
             // ->renderHook(
             //     'panels::body.start',
             //     fn (): string => view('filament.hooks.rtl-support')->render()

@@ -367,9 +367,9 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
-        $optimizationService = app(FilamentQueryOptimizationService::class);
+        $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
 
-        $query = $optimizationService->getOptimizedUserQuery()
+        $query = $filamentQueryOptimizationService->getOptimizedUserQuery()
             ->when($user && $user->role !== UserRole::ADMIN, fn ($q) =>
                 // Non-admin users can only see their own profile
                 $q->where('id', $user->id))
@@ -378,6 +378,6 @@ class UserResource extends Resource
                 $q->whereRaw('1 = 0'));
 
         // Apply performance monitoring
-        return $optimizationService->monitorQueryPerformance($query, 'UserResource');
+        return $filamentQueryOptimizationService->monitorQueryPerformance($query, 'UserResource');
     }
 }

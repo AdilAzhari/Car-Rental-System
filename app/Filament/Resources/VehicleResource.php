@@ -697,9 +697,9 @@ class VehicleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
-        $optimizationService = app(FilamentQueryOptimizationService::class);
+        $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
 
-        $query = $optimizationService->getOptimizedVehicleQuery()
+        $query = $filamentQueryOptimizationService->getOptimizedVehicleQuery()
             ->when($user && $user->role === UserRole::OWNER, fn ($q) => $q->where('owner_id', $user->id))
             ->when($user && $user->role === UserRole::RENTER, fn ($q) =>
                 // Renters can only see published and available vehicles
@@ -709,6 +709,6 @@ class VehicleResource extends Resource
                 $q->whereRaw('1 = 0'));
 
         // Apply performance monitoring
-        return $optimizationService->monitorQueryPerformance($query, 'VehicleResource');
+        return $filamentQueryOptimizationService->monitorQueryPerformance($query, 'VehicleResource');
     }
 }

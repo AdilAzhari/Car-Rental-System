@@ -82,16 +82,16 @@ class BookingResource extends Resource
     #[\Override]
     public static function getEloquentQuery(): Builder
     {
-        $optimizationService = app(FilamentQueryOptimizationService::class);
+        $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
 
-        $query = $optimizationService->getOptimizedBookingQuery()
+        $builder = $filamentQueryOptimizationService->getOptimizedBookingQuery()
             ->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('renter_id', auth()->id()))
             ->when(auth()->user()->role === UserRole::OWNER, fn ($q) => $q->whereHas('vehicle', function ($vehicleQuery): void {
                 $vehicleQuery->where('owner_id', auth()->id());
             }));
 
         // Apply performance monitoring in debug mode
-        return $optimizationService->monitorQueryPerformance($query, 'BookingResource');
+        return $filamentQueryOptimizationService->monitorQueryPerformance($builder, 'BookingResource');
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

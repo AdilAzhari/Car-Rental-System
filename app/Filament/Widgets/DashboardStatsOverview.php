@@ -59,11 +59,11 @@ class DashboardStatsOverview extends BaseWidget
 
     private function getAdminStats($currentMonth, $lastMonth): array
     {
-        $optimizationService = app(FilamentQueryOptimizationService::class);
+        $filamentQueryOptimizationService = app(FilamentQueryOptimizationService::class);
 
-        $stats = $this->getCachedData($this->getCacheKey('admin'), function () use ($currentMonth, $lastMonth, $optimizationService): array {
+        $stats = $this->getCachedData($this->getCacheKey('admin'), function () use ($currentMonth, $lastMonth, $filamentQueryOptimizationService): array {
             // Use the optimization service for dashboard stats
-            $dashboardStats = $optimizationService->getDashboardStats();
+            $dashboardStats = $filamentQueryOptimizationService->getDashboardStats();
 
             // Additional time-based stats with optimized queries
             $baseCounts = DB::select("
