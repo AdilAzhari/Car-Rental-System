@@ -6,7 +6,6 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Vehicle;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -190,6 +189,7 @@ describe('Payment Management', function (): void {
             // Skip stripe test if not configured
             if (! config('services.stripe.secret')) {
                 $this->markTestSkipped('Stripe configuration not available');
+
                 return;
             }
 

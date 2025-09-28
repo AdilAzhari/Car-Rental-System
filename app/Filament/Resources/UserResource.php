@@ -10,6 +10,7 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\Schemas\UserInfolist;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\FilamentQueryOptimizationService;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -366,13 +367,17 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
+        $optimizationService = app(FilamentQueryOptimizationService::class);
 
-        return parent::getEloquentQuery()
-            ->when($user && $user->role !== UserRole::ADMIN, fn ($query) =>
+        $query = $optimizationService->getOptimizedUserQuery()
+            ->when($user && $user->role !== UserRole::ADMIN, fn ($q) =>
                 // Non-admin users can only see their own profile
-                $query->where('id', $user->id))
-            ->when(! $user, fn ($query) =>
+                $q->where('id', $user->id))
+            ->when(! $user, fn ($q) =>
                 // If no authenticated user, return empty results
-                $query->whereRaw('1 = 0'));
+                $q->whereRaw('1 = 0'));
+
+        // Apply performance monitoring
+        return $optimizationService->monitorQueryPerformance($query, 'UserResource');
     }
 }

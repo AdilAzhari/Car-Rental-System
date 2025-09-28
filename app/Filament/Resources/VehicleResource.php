@@ -10,6 +10,7 @@ use App\Filament\Resources\VehicleResource\Pages;
 use App\Filament\Resources\VehicleResource\RelationManagers;
 use App\Filament\Resources\VehicleResource\Schemas\VehicleInfolist;
 use App\Models\Vehicle;
+use App\Services\FilamentQueryOptimizationService;
 use App\Services\TrafficViolationService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -696,15 +697,18 @@ class VehicleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
+        $optimizationService = app(FilamentQueryOptimizationService::class);
 
-        return parent::getEloquentQuery()
-            ->with(['owner'])
-            ->when($user && $user->role === UserRole::OWNER, fn ($query) => $query->where('owner_id', $user->id))
-            ->when($user && $user->role === UserRole::RENTER, fn ($query) =>
+        $query = $optimizationService->getOptimizedVehicleQuery()
+            ->when($user && $user->role === UserRole::OWNER, fn ($q) => $q->where('owner_id', $user->id))
+            ->when($user && $user->role === UserRole::RENTER, fn ($q) =>
                 // Renters can only see published and available vehicles
-                $query->where('status', VehicleStatus::PUBLISHED->value)->where('is_available', true))
-            ->when(! $user, fn ($query) =>
+                $q->where('status', VehicleStatus::PUBLISHED->value)->where('is_available', true))
+            ->when(! $user, fn ($q) =>
                 // If no authenticated user, return empty results
-                $query->whereRaw('1 = 0'));
+                $q->whereRaw('1 = 0'));
+
+        // Apply performance monitoring
+        return $optimizationService->monitorQueryPerformance($query, 'VehicleResource');
     }
 }

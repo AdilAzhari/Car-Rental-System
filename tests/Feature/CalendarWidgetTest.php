@@ -4,7 +4,6 @@ use App\Filament\Widgets\BookingCalendarWidget;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Vehicle;
-use Guava\Calendar\ValueObjects\FetchInfo;
 use Livewire\Livewire;
 
 test('booking calendar widget can be rendered', function (): void {

@@ -44,13 +44,13 @@ class PaymentsTable
                     ->label(__('resources.payment_method'))
                     ->badge()
                     ->formatStateUsing(fn ($state): string => $state instanceof PaymentMethod ? $state->label() : (string) $state)
-                    ->getStateUsing(fn ($record) => $record->payment_method instanceof PaymentMethod ? $record->payment_method->label() : (string) $record->payment_method)
+                    ->getStateUsing(fn ($record): string => $record->payment_method instanceof PaymentMethod ? $record->payment_method->label() : (string) $record->payment_method)
                     ->sortable(),
 
                 BadgeColumn::make('payment_status')
                     ->label(__('resources.status'))
                     ->formatStateUsing(fn ($state): string => $state instanceof PaymentStatus ? $state->label() : (string) $state)
-                    ->getStateUsing(fn ($record) => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
+                    ->getStateUsing(fn ($record): string => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
                     ->colors([
                         'info' => 'processing',
                         'success' => 'confirmed',

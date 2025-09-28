@@ -46,6 +46,13 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            // Performance optimizations
+            ->maxContentWidth('full')
+            ->spa()
+            ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->unsavedChangesAlerts()
+            ->databaseTransactions()
             // ->renderHook(
             //     'panels::body.start',
             //     fn (): string => view('filament.hooks.rtl-support')->render()

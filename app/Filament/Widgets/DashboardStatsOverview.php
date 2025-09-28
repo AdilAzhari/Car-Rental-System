@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\FilamentQueryOptimizationService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;
@@ -58,8 +59,13 @@ class DashboardStatsOverview extends BaseWidget
 
     private function getAdminStats($currentMonth, $lastMonth): array
     {
-        $stats = $this->getCachedData($this->getCacheKey('admin'), function () use ($currentMonth, $lastMonth): array {
-            // Single optimized query for all counts
+        $optimizationService = app(FilamentQueryOptimizationService::class);
+
+        $stats = $this->getCachedData($this->getCacheKey('admin'), function () use ($currentMonth, $lastMonth, $optimizationService): array {
+            // Use the optimization service for dashboard stats
+            $dashboardStats = $optimizationService->getDashboardStats();
+
+            // Additional time-based stats with optimized queries
             $baseCounts = DB::select("
                 SELECT
                     'users' as type,
@@ -97,49 +103,28 @@ class DashboardStatsOverview extends BaseWidget
 
             $counts = collect($baseCounts)->keyBy('type');
 
-            // Vehicle status counts
-            $vehicleStats = DB::selectOne("
-                SELECT
-                    COUNT(*) as total,
-                    SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) as published,
-                    SUM(CASE WHEN status = 'published' AND is_available = 1 THEN 1 ELSE 0 END) as available
-                FROM car_rental_vehicles
-            ");
-
-            // Booking status counts
-            $bookingStats = DB::selectOne("
-                SELECT
-                    SUM(CASE WHEN status = 'ongoing' THEN 1 ELSE 0 END) as active,
-                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
-                FROM car_rental_bookings
-            ");
-
-            // Revenue statistics
-            $revenueStats = DB::selectOne("
-                SELECT
-                    SUM(amount) as total,
-                    SUM(CASE WHEN created_at >= ? THEN amount ELSE 0 END) as current_month,
-                    SUM(CASE WHEN created_at >= ? AND created_at < ? THEN amount ELSE 0 END) as last_month
-                FROM car_rental_payments
-                WHERE payment_status = 'confirmed'
-            ", [$currentMonth, $lastMonth, $currentMonth]);
-
-            // Reviews average rating
-            $avgRating = DB::selectOne('
-                SELECT AVG(rating) as average
-                FROM car_rental_reviews
-                WHERE is_visible = 1
-            ');
-
+            // Merge with dashboard stats
             return [
                 'users' => $counts->get('users'),
                 'vehicles' => $counts->get('vehicles'),
                 'bookings' => $counts->get('bookings'),
                 'reviews' => $counts->get('reviews'),
-                'vehicle_stats' => $vehicleStats,
-                'booking_stats' => $bookingStats,
-                'revenue_stats' => $revenueStats,
-                'avg_rating' => $avgRating->average ?? 0,
+                'dashboard_stats' => $dashboardStats,
+                'vehicle_stats' => (object) [
+                    'total' => $dashboardStats['total_vehicles'],
+                    'published' => $dashboardStats['total_vehicles'],
+                    'available' => $dashboardStats['total_vehicles'],
+                ],
+                'booking_stats' => (object) [
+                    'active' => $dashboardStats['active_bookings'],
+                    'completed' => 0,
+                ],
+                'revenue_stats' => (object) [
+                    'total' => $dashboardStats['today_revenue'],
+                    'current_month' => $dashboardStats['today_revenue'],
+                    'last_month' => 0,
+                ],
+                'avg_rating' => $dashboardStats['avg_rating'],
             ];
         }, 900); // Cache for 15 minutes
 
@@ -350,9 +335,56 @@ class DashboardStatsOverview extends BaseWidget
 
     private function getRenterStats(): array
     {
-        $stats = $this->getCachedStats();
+        $user = auth()->user();
+        $currentMonth = now()->startOfMonth();
 
-        // Cache for 10 minutes
+        $stats = $this->getCachedData($this->getCacheKey('renter'), function () use ($user, $currentMonth): array {
+            // Get renter's booking stats
+            $bookingStats = DB::selectOne("
+                SELECT
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = 'ongoing' THEN 1 ELSE 0 END) as active,
+                    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                    SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as current_month
+                FROM car_rental_bookings
+                WHERE renter_id = ?
+            ", [$currentMonth, $user->id]);
+
+            // Get available vehicles count
+            $availableVehicles = DB::selectOne("
+                SELECT COUNT(*) as count
+                FROM car_rental_vehicles
+                WHERE status = 'published' AND is_available = 1
+            ")->count;
+
+            // Get spending stats
+            $spendingStats = DB::selectOne("
+                SELECT
+                    SUM(p.amount) as total,
+                    SUM(CASE WHEN p.created_at >= ? THEN p.amount ELSE 0 END) as current_month
+                FROM car_rental_payments p
+                INNER JOIN car_rental_bookings b ON p.booking_id = b.id
+                WHERE b.renter_id = ? AND p.payment_status = 'confirmed'
+            ", [$currentMonth, $user->id]);
+
+            // Get review stats
+            $reviewStats = DB::selectOne("
+                SELECT
+                    COUNT(*) as total,
+                    SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as current_month
+                FROM car_rental_reviews
+                WHERE user_id = ?
+            ", [$currentMonth, $user->id]);
+
+            return [
+                'bookings' => $bookingStats ?: (object) ['total' => 0, 'active' => 0, 'pending' => 0, 'completed' => 0, 'current_month' => 0],
+                'available_vehicles' => $availableVehicles,
+                'spending' => $spendingStats ?: (object) ['total' => 0, 'current_month' => 0],
+                'reviews' => $reviewStats ?: (object) ['total' => 0, 'current_month' => 0],
+            ];
+        }, 600);
+
         return [
             Stat::make(__('widgets.my_bookings'), number_format($stats['bookings']->total))
                 ->description($stats['bookings']->current_month.' '.__('widgets.bookings_this_month'))

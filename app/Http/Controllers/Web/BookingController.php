@@ -43,7 +43,7 @@ class BookingController extends Controller
         }
 
         // Check if booking is in a valid state for payment
-        if (!in_array($booking->status, ['pending', 'pending_payment'])) {
+        if (! in_array($booking->status, ['pending', 'pending_payment'])) {
             return redirect()->route('booking.show', $booking)
                 ->with('error', 'This booking cannot be paid for.');
         }

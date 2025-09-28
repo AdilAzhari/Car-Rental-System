@@ -11,6 +11,7 @@ use App\Filament\Resources\Bookings\Schemas\BookingForm;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
 use App\Policies\BookingPolicy;
+use App\Services\FilamentQueryOptimizationService;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -81,11 +82,16 @@ class BookingResource extends Resource
     #[\Override]
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->when(auth()->user()->role === UserRole::RENTER, fn ($query) => $query->where('renter_id', auth()->id()))
-            ->when(auth()->user()->role === UserRole::OWNER, fn ($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
+        $optimizationService = app(FilamentQueryOptimizationService::class);
+
+        $query = $optimizationService->getOptimizedBookingQuery()
+            ->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('renter_id', auth()->id()))
+            ->when(auth()->user()->role === UserRole::OWNER, fn ($q) => $q->whereHas('vehicle', function ($vehicleQuery): void {
                 $vehicleQuery->where('owner_id', auth()->id());
             }));
+
+        // Apply performance monitoring in debug mode
+        return $optimizationService->monitorQueryPerformance($query, 'BookingResource');
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

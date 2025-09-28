@@ -2,8 +2,6 @@
 
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
-use App\Filament\Resources\Bookings\Pages\CreateBooking;
-use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
 use App\Models\Booking;
 use App\Models\User;
@@ -105,9 +103,9 @@ describe('Booking Management', function (): void {
             // Check for conflicts via model query
             $conflicts = Booking::where('vehicle_id', $this->vehicle->id)
                 ->where('status', '!=', BookingStatus::CANCELLED)
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereBetween('start_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(1)])
-                          ->orWhereBetween('end_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(1)]);
+                        ->orWhereBetween('end_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(1)]);
                 })
                 ->exists();
 
@@ -197,14 +195,14 @@ describe('Booking Management', function (): void {
                 PaymentStatus::FAILED,
             ];
 
-            foreach ($paymentStatuses as $status) {
+            foreach ($paymentStatuses as $paymentStatus) {
                 $booking = Booking::factory()->create([
                     'renter_id' => $this->renter->id,
                     'vehicle_id' => $this->vehicle->id,
-                    'payment_status' => $status,
+                    'payment_status' => $paymentStatus,
                 ]);
 
-                expect($booking->payment_status)->toBe($status);
+                expect($booking->payment_status)->toBe($paymentStatus);
             }
         });
     });
@@ -219,7 +217,7 @@ describe('Booking Management', function (): void {
             ]);
 
             expect($booking->commission_amount)->toBe('50.00')
-                ->and((float)$booking->commission_amount / (float)$booking->total_amount)->toBe(0.1);
+                ->and((float) $booking->commission_amount / (float) $booking->total_amount)->toBe(0.1);
         });
     });
 

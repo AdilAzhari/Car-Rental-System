@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import "./tailwind.css";
+
 /* Guava Calendar Theme Styles */
 .ec {
     --ec-list-day-bg-color: white;
@@ -29,10 +31,6 @@
     --ec-button-active-bg-color: var(--dark-hover-bg);
     --ec-button-active-text-color: var(--dark-hover-text);
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Calendar-specific component styles */
 .ec-button {
@@ -220,19 +218,61 @@ body {
 /* Custom Components */
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-soft hover:shadow-colored transform hover:scale-105;
+    background: linear-gradient(to right, var(--primary-500, #3b82f6), var(--primary-600, #2563eb));
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+    transform: scale(1);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(to right, var(--primary-600, #2563eb), var(--primary-700, #1d4ed8));
+    box-shadow: 0 4px 25px -5px rgba(14, 165, 233, 0.15), 0 20px 25px -5px rgba(14, 165, 233, 0.08);
+    transform: scale(1.05);
   }
 
   .btn-secondary {
-    @apply bg-white border-2 border-primary-500 text-primary-600 hover:bg-primary-500 hover:text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-soft;
+    background: white;
+    border: 2px solid var(--primary-500, #3b82f6);
+    color: var(--primary-600, #2563eb);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .btn-secondary:hover {
+    background: var(--primary-500, #3b82f6);
+    color: white;
   }
 
   .btn-ghost {
-    @apply bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 font-semibold py-3 px-6 rounded-xl transition-all duration-200;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(0.5rem);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 
   .card-hover {
-    @apply transform transition-all duration-300 hover:scale-105 hover:shadow-large;
+    transform: scale(1);
+    transition: all 0.3s;
+  }
+
+  .card-hover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 50px -12px rgba(0, 0, 0, 0.25);
   }
 
   .gradient-primary {
@@ -297,30 +337,69 @@ body {
   }
 
   .vehicle-card {
-    @apply bg-white border border-gray-200 rounded-lg overflow-hidden transition-smooth hover:shadow-vehicle hover:-translate-y-1;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+  }
+
+  .vehicle-card:hover {
+    box-shadow: var(--shadow-vehicle);
+    transform: translateY(-0.25rem);
   }
 
   .hero-button {
-    @apply bg-blue-600 text-white hover:bg-blue-700 shadow-premium transition-fast;
+    background: #2563eb;
+    color: white;
+    box-shadow: var(--shadow-premium);
+    transition: var(--transition-fast);
+  }
+
+  .hero-button:hover {
+    background: #1d4ed8;
   }
 
   .filter-button {
-    @apply bg-gray-100 text-gray-700 hover:bg-blue-600 hover:text-white border border-gray-200 transition-fast;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    transition: var(--transition-fast);
+  }
+
+  .filter-button:hover {
+    background: #2563eb;
+    color: white;
   }
 
   .premium-input {
-    @apply bg-white border-gray-200 focus:ring-blue-600 focus:border-blue-600 transition-fast rounded-lg;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    transition: var(--transition-fast);
+  }
+
+  .premium-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
 }
 
 /* Animations */
 @layer utilities {
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary-600 to-secondary-900 bg-clip-text text-transparent;
+    background: linear-gradient(to right, #2563eb, #0f172a);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
   }
 
   .text-gradient-accent {
-    @apply bg-gradient-to-r from-accent-400 to-accent-500 bg-clip-text text-transparent;
+    background: linear-gradient(to right, #facc15, #eab308);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
   }
 
   .animate-fade-in {

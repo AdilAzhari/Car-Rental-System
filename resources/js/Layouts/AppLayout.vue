@@ -427,20 +427,56 @@ onUnmounted(() => {
 
 /* Navigation Styles */
 .nav-link {
-  @apply flex items-center gap-2 px-4 py-2.5 rounded-xl text-gray-600 font-medium transition-all duration-200 hover:text-blue-600 hover:bg-blue-50/50 relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  color: rgb(75, 85, 99);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: rgb(37, 99, 235);
+  background-color: rgba(59, 130, 246, 0.05);
 }
 
 .nav-link-active {
-  @apply text-blue-600 bg-blue-50 font-semibold;
+  color: rgb(37, 99, 235);
+  background-color: rgb(239, 246, 255);
+  font-weight: 600;
 }
 
 .nav-link-active::after {
   content: '';
-  @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.25rem;
+  height: 0.25rem;
+  background-color: rgb(37, 99, 235);
+  border-radius: 9999px;
 }
 
 .action-button {
-  @apply flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 text-sm;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to right, rgb(37, 99, 235), rgb(79, 70, 229));
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.action-button:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
 }
 
 .h-18 {

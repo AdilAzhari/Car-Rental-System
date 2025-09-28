@@ -7,6 +7,7 @@ use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
+use App\Services\FilamentQueryOptimizationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -27,7 +28,14 @@ class BookingsTable
 {
     public static function configure(Table $table): Table
     {
+        $optimizationService = app(FilamentQueryOptimizationService::class);
+
         return $table
+            ->modifyQueryUsing(function ($query) use ($optimizationService) {
+                // Apply query optimizations
+                $query = $optimizationService->optimizePagination($query, 25);
+                return $optimizationService->monitorQueryPerformance($query, 'BookingsTable');
+            })
             ->columns([
                 TextColumn::make('id')
                     ->label(__('resources.booking_id'))
@@ -68,7 +76,7 @@ class BookingsTable
                 BadgeColumn::make('status')
                     ->label(__('resources.booking_status'))
                     ->formatStateUsing(fn ($state): string => $state instanceof BookingStatus ? $state->label() : (string) $state)
-                    ->getStateUsing(fn ($record) => $record->status instanceof BookingStatus ? $record->status->label() : (string) $record->status)
+                    ->getStateUsing(fn ($record): string => $record->status instanceof BookingStatus ? $record->status->label() : (string) $record->status)
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'confirmed',
@@ -81,7 +89,7 @@ class BookingsTable
                 BadgeColumn::make('payment_status')
                     ->label(__('resources.payment_status'))
                     ->formatStateUsing(fn ($state): string => $state instanceof PaymentStatus ? $state->label() : (string) $state)
-                    ->getStateUsing(fn ($record) => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
+                    ->getStateUsing(fn ($record): string => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
                     ->colors([
                         'warning' => 'unpaid',
                         'success' => 'paid',
@@ -256,6 +264,46 @@ class BookingsTable
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
+
+                    // Custom bulk status update with optimization
+                    Action::make('bulk_status_update')
+                        ->label(__('bookings.bulk_status_update'))
+                        ->icon('heroicon-m-arrow-path')
+                        ->color('warning')
+                        ->form([
+                            Select::make('status')
+                                ->label(__('bookings.status'))
+                                ->options([
+                                    BookingStatus::CONFIRMED->value => __('enums.booking_status.confirmed'),
+                                    BookingStatus::CANCELLED->value => __('enums.booking_status.cancelled'),
+                                    BookingStatus::COMPLETED->value => __('enums.booking_status.completed'),
+                                ])
+                                ->required(),
+                            Textarea::make('reason')
+                                ->label(__('bookings.reason'))
+                                ->placeholder(__('bookings.bulk_update_reason_placeholder'))
+                                ->maxLength(500),
+                        ])
+                        ->action(function (array $data, $records) {
+                            $optimizationService = app(FilamentQueryOptimizationService::class);
+                            $recordIds = $records->pluck('id')->toArray();
+
+                            // Use optimized bulk operation
+                            $optimizationService->getBulkOperationQuery('Booking', $recordIds)
+                                ->update([
+                                    'status' => $data['status'],
+                                    'notes' => $data['reason'] ?? null,
+                                    'updated_at' => now(),
+                                ]);
+
+                            // Show success message
+                            $count = count($recordIds);
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('bookings.bulk_update_success', ['count' => $count]))
+                                ->success()
+                                ->send();
+                        }),
+
                     FilamentExportBulkAction::make('bulk_export')
                         ->label(__('widgets.export'))
                         ->icon('heroicon-m-arrow-down-tray'),

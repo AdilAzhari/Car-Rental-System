@@ -52,7 +52,8 @@ class FilamentQueryOptimizationService
             ])
             ->with([
                 'owner:id,name,email',
-                'images:id,vehicle_id,path',
+                // Note: Adjust image fields based on actual schema
+                'images:id,vehicle_id,image_path,alt_text',
             ])
             ->withCount(['bookings', 'reviews']);
     }

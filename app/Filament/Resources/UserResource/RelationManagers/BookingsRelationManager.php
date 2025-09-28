@@ -61,7 +61,7 @@ class BookingsRelationManager extends RelationManager
 
                 BadgeColumn::make('status')
                     ->label(__('resources.status'))
-                    ->getStateUsing(fn ($record) => $record->status instanceof BookingStatus ? $record->status->label() : (string) $record->status)
+                    ->getStateUsing(fn ($record): string => $record->status instanceof BookingStatus ? $record->status->label() : (string) $record->status)
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'confirmed',

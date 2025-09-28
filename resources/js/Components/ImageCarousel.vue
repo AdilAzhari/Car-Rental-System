@@ -301,20 +301,45 @@ onMounted(() => {
 
 /* Navigation Arrows */
 .nav-arrow {
-  @apply p-3 bg-white/90 backdrop-blur-sm text-gray-700 rounded-full shadow-lg hover:bg-white hover:text-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  color: rgb(55, 65, 81);
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
 .nav-arrow:hover:not(:disabled) {
-  @apply shadow-xl;
+  background-color: white;
+  color: rgb(37, 99, 235);
+  transform: scale(1.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Dots Indicator */
 .dot-indicator {
-  @apply w-2.5 h-2.5 bg-white/60 backdrop-blur-sm rounded-full transition-all duration-200 hover:bg-white hover:scale-125;
+  width: 0.625rem;
+  height: 0.625rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.dot-indicator:hover {
+  background-color: white;
+  transform: scale(1.25);
 }
 
 .dot-active {
-  @apply bg-white scale-125;
+  background-color: white;
+  transform: scale(1.25);
 }
 
 /* Fullscreen Modal */
