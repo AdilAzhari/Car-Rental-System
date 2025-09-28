@@ -8,7 +8,9 @@ use App\Enums\UserRole;
 use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Filament\Resources\VehicleResource\RelationManagers;
+use App\Filament\Resources\VehicleResource\Schemas\VehicleInfolist;
 use App\Models\Vehicle;
+use App\Services\TrafficViolationService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -37,6 +39,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 use UnitEnum;
 
 class VehicleResource extends Resource
@@ -80,7 +83,7 @@ class VehicleResource extends Resource
         return __('resources.vehicles');
     }
 
-    #[\Override]
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -420,22 +423,18 @@ class VehicleResource extends Resource
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('featured_image')
-                    ->label(__('resources.image'))
-                    ->formatStateUsing(fn ($state): string => $state ? 'Has Image' : 'No Image')
-                    ->hiddenFrom('md'),
-
                 ImageColumn::make('featured_image')
                     ->label(__('resources.image'))
                     ->size(80)
-                    ->square()
+                    ->circular()
                     ->defaultImageUrl(url('/images/car-placeholder.jpg'))
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->getStateUsing(fn ($record) => $record->featured_image ?: '/images/car-placeholder.jpg'),
 
                 TextColumn::make('make')
                     ->label(__('resources.make'))
@@ -575,7 +574,9 @@ class VehicleResource extends Resource
                     ->icon('heroicon-m-arrow-down-tray'),
             ])
             ->actions(array_filter([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->modalHeading(fn ($record): string => $record->make.' '.$record->model.' ('.$record->year.')')
+                    ->infolist(fn (): array => VehicleInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make(),
                 DeleteAction::make(),
                 Action::make('check_violations')
@@ -583,7 +584,7 @@ class VehicleResource extends Resource
                     ->icon('heroicon-m-exclamation-triangle')
                     ->color('warning')
                     ->action(function (Vehicle $vehicle): void {
-                        $trafficViolationService = app(\App\Services\TrafficViolationService::class);
+                        $trafficViolationService = app(TrafficViolationService::class);
 
                         try {
                             // Force check by clearing cache first
@@ -650,7 +651,7 @@ class VehicleResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
-    #[\Override]
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -691,7 +692,7 @@ class VehicleResource extends Resource
         return $count > 10 ? 'success' : ($count > 5 ? 'warning' : 'primary');
     }
 
-    #[\Override]
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();

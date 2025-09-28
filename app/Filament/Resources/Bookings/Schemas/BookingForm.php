@@ -153,6 +153,10 @@ class BookingForm
                             ->label(__('resources.pickup_location'))
                             ->maxLength(255),
 
+                        TextInput::make('dropoff_location')
+                            ->label(__('resources.dropoff_location'))
+                            ->maxLength(255),
+
                         Textarea::make('special_requests')
                             ->label(__('resources.special_requests'))
                             ->rows(3)

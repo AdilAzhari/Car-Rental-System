@@ -74,9 +74,9 @@ describe('Payment Model', function (): void {
         $creditPayment = Payment::factory()->create(['payment_method' => PaymentMethod::CREDIT->value]);
         $cashPayment = Payment::factory()->create(['payment_method' => PaymentMethod::CASH->value]);
 
-        expect($visaPayment->payment_method)->toBe(PaymentMethod::VISA->value)
-            ->and($creditPayment->payment_method)->toBe(PaymentMethod::CREDIT->value)
-            ->and($cashPayment->payment_method)->toBe(PaymentMethod::CASH->value);
+        expect($visaPayment->payment_method)->toBe(PaymentMethod::VISA)
+            ->and($creditPayment->payment_method)->toBe(PaymentMethod::CREDIT)
+            ->and($cashPayment->payment_method)->toBe(PaymentMethod::CASH);
     });
 
     it('can have different payment statuses', function (): void {
@@ -85,10 +85,10 @@ describe('Payment Model', function (): void {
         $failed = Payment::factory()->create(['payment_status' => PaymentStatus::FAILED->value]);
         $cancelled = Payment::factory()->create(['payment_status' => PaymentStatus::CANCELLED->value]);
 
-        expect($pending->payment_status)->toBe(PaymentStatus::PENDING->value)
-            ->and($confirmed->payment_status)->toBe(PaymentStatus::CONFIRMED->value)
-            ->and($failed->payment_status)->toBe(PaymentStatus::FAILED->value)
-            ->and($cancelled->payment_status)->toBe(PaymentStatus::CANCELLED->value);
+        expect($pending->payment_status)->toBe(PaymentStatus::PENDING)
+            ->and($confirmed->payment_status)->toBe(PaymentStatus::CONFIRMED)
+            ->and($failed->payment_status)->toBe(PaymentStatus::FAILED)
+            ->and($cancelled->payment_status)->toBe(PaymentStatus::CANCELLED);
     });
 
     it('can store gateway response data', function (): void {
@@ -162,7 +162,7 @@ describe('Payment Model', function (): void {
 
         expect($payment->refund_amount)->toBe('200.00')
             ->and($payment->refunded_at)->toBeInstanceOf(Carbon::class)
-            ->and($payment->payment_status)->toBe(PaymentStatus::REFUNDED->value);
+            ->and($payment->payment_status)->toBe(PaymentStatus::REFUNDED);
     });
 
     it('can handle payment failures', function (): void {

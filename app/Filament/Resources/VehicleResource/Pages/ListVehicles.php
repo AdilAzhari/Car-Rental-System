@@ -22,41 +22,52 @@ class ListVehicles extends ListRecords
         ];
     }
 
-    public function getTabs(): array
-    {
-        return [
-            'all' => Tab::make(__('resources.all_vehicles'))
-                ->badge(fn () => $this->getResource()::getModel()::count()),
-
-            'published' => Tab::make(__('resources.published'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PUBLISHED)->count())
-                ->icon('heroicon-m-check-circle'),
-
-            'available' => Tab::make(__('resources.available'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED)->where('is_available', true))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PUBLISHED)->where('is_available', true)->count())
-                ->icon('heroicon-m-hand-thumb-up'),
-
-            'pending' => Tab::make(__('resources.pending'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PENDING))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::PENDING)->count())
-                ->icon('heroicon-m-clock'),
-
-            'approved' => Tab::make(__('resources.approved'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::APPROVED))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::APPROVED)->count())
-                ->icon('heroicon-m-check-badge'),
-
-            'rejected' => Tab::make(__('resources.rejected'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::REJECTED))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::REJECTED)->count())
-                ->icon('heroicon-m-x-circle'),
-
-            'maintenance' => Tab::make(__('resources.maintenance'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::MAINTENANCE))
-                ->badge(fn () => $this->getResource()::getModel()::where('status', VehicleStatus::MAINTENANCE)->count())
-                ->icon('heroicon-m-wrench-screwdriver'),
-        ];
-    }
+    //    public function getTabs(): array
+    //    {
+    //        $modelClass = $this->getResource()::getModel();
+    //
+    //        // Calculate counts eagerly to avoid model context issues
+    //        $allCount = $modelClass::count();
+    //        $publishedCount = $modelClass::where('status', VehicleStatus::PUBLISHED)->count();
+    //        $availableCount = $modelClass::where('status', VehicleStatus::PUBLISHED)->where('is_available', true)->count();
+    //        $pendingCount = $modelClass::where('status', VehicleStatus::PENDING)->count();
+    //        $approvedCount = $modelClass::where('status', VehicleStatus::APPROVED)->count();
+    //        $rejectedCount = $modelClass::where('status', VehicleStatus::REJECTED)->count();
+    //        $maintenanceCount = $modelClass::where('status', VehicleStatus::MAINTENANCE)->count();
+    //
+    //        return [
+    //            'all' => Tab::make(__('resources.all_vehicles'))
+    //                ->badge($allCount),
+    //
+    //            'published' => Tab::make(__('resources.published'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED))
+    //                ->badge($publishedCount)
+    //                ->icon('heroicon-m-check-circle'),
+    //
+    //            'available' => Tab::make(__('resources.available'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED)->where('is_available', true))
+    //                ->badge($availableCount)
+    //                ->icon('heroicon-m-hand-thumb-up'),
+    //
+    //            'pending' => Tab::make(__('resources.pending'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PENDING))
+    //                ->badge($pendingCount)
+    //                ->icon('heroicon-m-clock'),
+    //
+    //            'approved' => Tab::make(__('resources.approved'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::APPROVED))
+    //                ->badge($approvedCount)
+    //                ->icon('heroicon-m-check-badge'),
+    //
+    //            'rejected' => Tab::make(__('resources.rejected'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::REJECTED))
+    //                ->badge($rejectedCount)
+    //                ->icon('heroicon-m-x-circle'),
+    //
+    //            'maintenance' => Tab::make(__('resources.maintenance'))
+    //                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::MAINTENANCE))
+    //                ->badge($maintenanceCount)
+    //                ->icon('heroicon-m-wrench-screwdriver'),
+    //        ];
+    //    }
 }

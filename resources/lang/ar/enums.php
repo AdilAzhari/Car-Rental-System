@@ -17,6 +17,7 @@ return [
         'refunded' => 'مسترد',
         'cancelled' => 'ملغي',
         'processing' => 'قيد المعالجة',
+        'unpaid' => 'غير مدفوعه',
     ],
     'booking_status' => [
         'pending' => 'معلق',

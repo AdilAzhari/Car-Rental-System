@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use App\Enums\VehicleStatus;
+use App\Filament\Resources\VehicleResource\Schemas\VehicleForm;
+use App\Filament\Resources\VehicleResource\Schemas\VehicleInfolist;
 use Exception;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -27,10 +30,7 @@ class VehiclesRelationManager extends RelationManager
      */
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->schema([
-                // We'll keep this simple since the main vehicle form is comprehensive
-            ]);
+        return VehicleForm::configure($schema);
     }
 
     /**
@@ -44,7 +44,8 @@ class VehiclesRelationManager extends RelationManager
                     ->label(__('resources.image'))
                     ->circular()
                     ->defaultImageUrl(url('/images/car-placeholder.jpg'))
-                    ->size(50),
+                    ->size(50)
+                    ->getStateUsing(fn ($record) => $record->featured_image ?: '/images/car-placeholder.jpg'),
 
                 TextColumn::make('make')
                     ->label(__('resources.make'))
@@ -67,6 +68,7 @@ class VehiclesRelationManager extends RelationManager
 
                 BadgeColumn::make('status')
                     ->label(__('resources.status'))
+                    ->getStateUsing(fn ($record) => $record->status instanceof VehicleStatus ? $record->status->value : (string) $record->status)
                     ->colors([
                         'success' => 'published',
                         'warning' => 'draft',
@@ -96,15 +98,19 @@ class VehiclesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->url(fn (): string => route('filament.admin.resources.vehicles.create', [
-                        'owner_id' => $this->ownerRecord->id,
-                    ])),
+                    ->modalHeading(__('resources.create_vehicle'))
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['owner_id'] = $this->ownerRecord->id;
+
+                        return $data;
+                    }),
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record): string => route('filament.admin.resources.vehicles.view', $record)),
+                    ->modalHeading(fn ($record): string => __('resources.vehicle').': '.$record->make.' '.$record->model)
+                    ->infolist(fn (): array => VehicleInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make()
-                    ->url(fn ($record): string => route('filament.admin.resources.vehicles.edit', $record)),
+                    ->modalHeading(fn ($record): string => __('resources.edit_vehicle').': '.$record->make.' '.$record->model),
                 DeleteAction::make(),
             ])
             ->bulkActions([

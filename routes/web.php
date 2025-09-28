@@ -43,7 +43,8 @@ Route::get('/cars/{id}', [CarController::class, 'show']);
 Route::get('/reservations/create', [ReservationController::class, 'create']);
 Route::get('/cars/{id}/reserve', [ReservationController::class, 'reserve'])->name('cars.reserve');
 
-// Payment return route (can be accessed without auth for payment callbacks)
+// Payment routes (payment checkout and return)
+Route::get('/booking/{booking}/payment', [BookingController::class, 'paymentCheckout'])->name('booking.payment.checkout');
 Route::get('/booking/payment/return/{booking}', [BookingController::class, 'paymentReturn'])->name('booking.payment.return');
 
 // Authenticated routes

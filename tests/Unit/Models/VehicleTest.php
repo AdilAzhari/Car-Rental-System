@@ -237,7 +237,7 @@ describe('Vehicle Model', function (): void {
                 'status' => VehicleStatus::PUBLISHED->value,
             ]);
 
-            $ownerVehicles = Vehicle::byOwner($this->owner->id)->get();
+            $ownerVehicles = Vehicle::query()->byOwner($this->owner->id)->get();
 
             expect($ownerVehicles)->toHaveCount(1)
                 ->and($ownerVehicles->first()->owner_id)->toBe($this->owner->id);
@@ -259,7 +259,7 @@ describe('Vehicle Model', function (): void {
                 'daily_rate' => 200,
             ]);
 
-            $midRangeVehicles = Vehicle::priceRange(90, 110)->where('owner_id', $this->owner->id)->get();
+            $midRangeVehicles = Vehicle::query()->priceRange(90, 110)->where('owner_id', $this->owner->id)->get();
 
             expect($midRangeVehicles)->toHaveCount(1)
                 ->and($midRangeVehicles->first()->id)->toBe($vehicle2->id); // Only vehicle2 ($100) in range
@@ -294,7 +294,7 @@ describe('Vehicle Model', function (): void {
                 'status' => 'confirmed',
             ]);
 
-            $availableVehicles = Vehicle::availableForRent(
+            $availableVehicles = Vehicle::query()->availableForRent(
                 now()->addDays(6)->toDateString(),
                 now()->addDays(8)->toDateString()
             )->get();

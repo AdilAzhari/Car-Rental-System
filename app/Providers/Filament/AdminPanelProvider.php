@@ -2,13 +2,19 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AttentionRequiredWidget;
+use App\Filament\Widgets\BookingCalendarWidget;
+use App\Filament\Widgets\BookingStatsWidget;
 use App\Filament\Widgets\DashboardStatsOverview;
 use App\Filament\Widgets\LatestActivitiesWidget;
+use App\Filament\Widgets\PaymentStatsWidget;
 use App\Filament\Widgets\PopularVehiclesWidget;
 use App\Filament\Widgets\RecentBookingsWidget;
 use App\Filament\Widgets\RevenueChartWidget;
+use App\Filament\Widgets\ReviewStatsWidget;
 use App\Filament\Widgets\UserStatsWidget;
 use App\Filament\Widgets\VehicleStatsWidget;
+use App\Filament\Widgets\VehicleUtilizationWidget;
 use App\Http\Middleware\LocalizationMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -64,12 +70,18 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 DashboardStatsOverview::class,
+                AttentionRequiredWidget::class,
+                BookingCalendarWidget::class,
+                BookingStatsWidget::class,
+                PaymentStatsWidget::class,
                 RevenueChartWidget::class,
+                ReviewStatsWidget::class,
+                VehicleStatsWidget::class,
+                VehicleUtilizationWidget::class,
+                UserStatsWidget::class,
                 LatestActivitiesWidget::class,
                 PopularVehiclesWidget::class,
                 RecentBookingsWidget::class,
-                VehicleStatsWidget::class,
-                UserStatsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

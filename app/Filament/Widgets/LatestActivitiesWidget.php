@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\ActivityLogResource\Schemas\ActivityLogInfolist;
 use Filament\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -70,8 +71,8 @@ class LatestActivitiesWidget extends BaseWidget
                 Action::make('view')
                     ->label(__('resources.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Activity $activity): string => route('filament.admin.resources.activity-logs.view', $activity)
-                    ),
+                    ->modalHeading(fn (Activity $activity): string => __('resources.activity_log').' #'.$activity->id)
+                    ->infolist(fn (): array => ActivityLogInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
             ])
             ->poll('30s')
             ->heading(__('widgets.latest_activities'))

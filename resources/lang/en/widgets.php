@@ -175,4 +175,18 @@ return [
     'no_ratings' => 'No Ratings',
     'when' => 'When',
     'export' => 'Export',
+    'requiring_action' => 'Requiring Action',
+    'currently_ongoing' => 'Currently On Going',
+    'next_7_days' => 'Next 7 Days',
+    'vehicles_overdue' => 'Vehicles Overdue',
+    'current_month_earnings' => 'Current Month Earnings',
+    'month_revenue' => 'Monthly Revenue',
+    'needs_attention' => 'Needs Attention',
+    'overdue_returns' => 'Overdue Returns',
+
+    // New widget translations
+    'all_bookings' => 'All Bookings',
+    'upcoming_bookings' => 'Upcoming Bookings',
+    'overdue_bookings' => 'Overdue Bookings',
+    'revenue_this_month' => 'Revenue This Month',
 ];

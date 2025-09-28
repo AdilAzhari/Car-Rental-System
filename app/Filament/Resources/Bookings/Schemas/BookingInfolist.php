@@ -188,12 +188,12 @@ class BookingInfolist
                                     ->placeholder('No commission'),
                             ]),
 
-                        TextEntry::make('payment_method')
-                            ->label(__('resources.payment_method'))
-                            ->icon('heroicon-m-credit-card')
-                            ->placeholder('Not specified')
-                            ->badge()
-                            ->color('info'),
+                        //                        TextEntry::make('payment_method')
+                        //                            ->label(__('resources.payment_method'))
+                        //                            ->icon('heroicon-m-credit-card')
+                        //                            ->placeholder('Not specified')
+                        //                            ->badge()
+                        //                            ->color('info'),
                     ]),
 
                 // Location & Special Requests Section
@@ -239,7 +239,7 @@ class BookingInfolist
                                 ->color('success')
                                 ->button()
                                 ->visible(fn ($record) => $record->payment()->exists())
-                                ->url(fn ($record): string => route('filament.admin.resources.bookings.view', ['record' => $record, 'tab' => 'payment-relation-manager'])),
+                                ->url(fn ($record): string => route('filament.admin.resources.payments.edit', $record->payment)),
                         ]),
                     ])
                     ->compact(),

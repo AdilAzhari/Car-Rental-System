@@ -47,4 +47,10 @@ return [
         'cache_hours' => env('TRAFFIC_CACHE_HOURS', 24),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

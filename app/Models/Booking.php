@@ -3,7 +3,11 @@
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use Guava\Calendar\Contracts\Eventable;
+use Guava\Calendar\ValueObjects\CalendarEvent;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Booking extends Model
+class Booking extends Model implements Eventable
 {
     use HasFactory, SoftDeletes;
 
@@ -45,6 +49,7 @@ class Booking extends Model
             'end_date' => 'datetime',
             'status' => BookingStatus::class,
             'payment_status' => PaymentStatus::class,
+            'payment_method' => PaymentMethod::class,
             'daily_rate' => 'decimal:2',
             'subtotal' => 'decimal:2',
             'insurance_fee' => 'decimal:2',
@@ -94,7 +99,8 @@ class Booking extends Model
     /**
      * Scope bookings by status with role-based access
      */
-    public function scopeByStatus($query, $status, $userRole = null)
+    #[Scope]
+    public function byStatus($query, $status, $userRole = null)
     {
         $query->where('status', $status);
 
@@ -111,7 +117,8 @@ class Booking extends Model
     /**
      * Scope for active bookings (ongoing or confirmed)
      */
-    public function scopeActive($query)
+    #[Scope]
+    public function active($query)
     {
         return $query->whereIn('status', ['confirmed', 'ongoing'])
             ->where('start_date', '<=', now())
@@ -121,7 +128,8 @@ class Booking extends Model
     /**
      * Scope for upcoming bookings
      */
-    public function scopeUpcoming($query, $days = 30)
+    #[Scope]
+    public function upcoming($query, $days = 30)
     {
         return $query->where('status', 'confirmed')
             ->where('start_date', '>', now())
@@ -132,7 +140,8 @@ class Booking extends Model
     /**
      * Scope for overdue returns
      */
-    public function scopeOverdue($query)
+    #[Scope]
+    public function overdue($query)
     {
         return $query->where('status', 'ongoing')
             ->where('end_date', '<', now())
@@ -142,7 +151,8 @@ class Booking extends Model
     /**
      * Scope for revenue analysis with date ranges
      */
-    public function scopeRevenueInPeriod($query, $startDate = null, $endDate = null, $ownerId = null)
+    #[Scope]
+    public function revenueInPeriod($query, $startDate = null, $endDate = null, $ownerId = null)
     {
         $startDate ??= now()->startOfMonth();
         $endDate ??= now()->endOfMonth();
@@ -161,7 +171,8 @@ class Booking extends Model
     /**
      * Scope for bookings requiring attention (payments pending, reviews missing, etc.)
      */
-    public function scopeRequiringAttention($query)
+    #[Scope]
+    public function requiringAttention($query)
     {
         return $query->where(function ($mainQuery): void {
             $mainQuery->where(function ($paymentQuery): void {
@@ -179,5 +190,37 @@ class Booking extends Model
                     ->where('end_date', '<', now());
             });
         });
+    }
+
+    public function toCalendarEvent(): CalendarEvent
+    {
+        $color = match ($this->status) {
+            BookingStatus::PENDING => '#fbbf24', // yellow
+            BookingStatus::CONFIRMED => '#10b981', // green
+            BookingStatus::ONGOING => '#3b82f6', // blue
+            BookingStatus::CANCELLED => '#ef4444', // red
+            default => '#6b7280'
+        };
+
+        // Handle null relationships gracefully
+        $vehicleInfo = $this->vehicle
+            ? "{$this->vehicle->make} {$this->vehicle->model}"
+            : 'Vehicle Not Available';
+
+        $renterName = $this->renter?->name ?? 'Renter Not Available';
+
+        $title = "$vehicleInfo - $renterName";
+
+        return CalendarEvent::make($this)
+            ->title($title)
+            ->start($this->start_date)
+            ->end($this->end_date)
+            ->backgroundColor($color)
+            ->textColor('#ffffff')
+            ->extendedProp('status', $this->status->label())
+            ->extendedProp('vehicle', $vehicleInfo)
+            ->extendedProp('renter', $renterName)
+            ->extendedProp('total_amount', $this->total_amount)
+            ->action('view');
     }
 }

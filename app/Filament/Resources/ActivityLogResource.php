@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Filament\Resources\ActivityLogResource\Pages;
+use App\Filament\Resources\ActivityLogResource\Schemas\ActivityLogInfolist;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Review;
@@ -306,7 +307,9 @@ class ActivityLogResource extends Resource
                     ->query(fn (Builder $builder): Builder => $builder->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
             ])
             ->actions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->modalHeading(fn ($record): string => __('resources.activity_log').' #'.$record->id)
+                    ->infolist(fn (): array => ActivityLogInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -324,7 +327,6 @@ class ActivityLogResource extends Resource
     {
         return [
             'index' => Pages\ListActivityLogs::route('/'),
-            'view' => Pages\ViewActivityLog::route('/{record}'),
         ];
     }
 

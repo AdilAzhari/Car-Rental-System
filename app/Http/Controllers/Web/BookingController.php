@@ -35,6 +35,27 @@ class BookingController extends Controller
         ]);
     }
 
+    public function paymentCheckout(Booking $booking): Response
+    {
+        // Ensure user can only access payment for their own bookings
+        if ($booking->renter_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Check if booking is in a valid state for payment
+        if (!in_array($booking->status, ['pending', 'pending_payment'])) {
+            return redirect()->route('booking.show', $booking)
+                ->with('error', 'This booking cannot be paid for.');
+        }
+
+        $booking->load(['vehicle', 'vehicle.images']);
+
+        return Inertia::render('PaymentCheckout', [
+            'booking' => $booking,
+            'stripe_key' => config('services.stripe.key'),
+        ]);
+    }
+
     public function paymentReturn(Booking $booking): Response
     {
         // This endpoint handles payment return callbacks from payment gateways

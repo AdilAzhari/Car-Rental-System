@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\Bookings;
 
+use App\Enums\UserRole;
 use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
-use App\Filament\Resources\Bookings\Pages\ViewBooking;
+use App\Filament\Resources\Bookings\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\Bookings\Schemas\BookingForm;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
@@ -64,7 +65,7 @@ class BookingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PaymentsRelationManager::class,
         ];
     }
 
@@ -73,7 +74,6 @@ class BookingResource extends Resource
         return [
             'index' => ListBookings::route('/'),
             'create' => CreateBooking::route('/create'),
-            'view' => ViewBooking::route('/{record}'),
             'edit' => EditBooking::route('/{record}/edit'),
         ];
     }
@@ -82,8 +82,8 @@ class BookingResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->when(auth()->user()->role === 'renter', fn ($query) => $query->where('renter_id', auth()->id()))
-            ->when(auth()->user()->role === 'owner', fn ($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
+            ->when(auth()->user()->role === UserRole::RENTER, fn ($query) => $query->where('renter_id', auth()->id()))
+            ->when(auth()->user()->role === UserRole::OWNER, fn ($query) => $query->whereHas('vehicle', function ($vehicleQuery): void {
                 $vehicleQuery->where('owner_id', auth()->id());
             }));
     }

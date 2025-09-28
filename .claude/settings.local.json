@@ -71,7 +71,10 @@
       "Bash(where act)",
       "Bash(choco install:*)",
       "Bash(winget install:*)",
-      "Bash(ln:*)"
+      "Bash(ln:*)",
+      "Bash(list-artisan-commands)",
+      "WebFetch(domain:filamentphp.com)",
+      "WebFetch(domain:127.0.0.1)"
     ],
     "deny": [],
     "ask": []

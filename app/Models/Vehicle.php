@@ -7,11 +7,13 @@ use App\Enums\VehicleStatus;
 use App\Enums\VehicleTransmission;
 use App\Observers\VehicleObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -120,7 +122,8 @@ class Vehicle extends Model
     /**
      * Scope vehicles for specific user role with dynamic permissions
      */
-    public function scopeForRole($query, $role, $userId = null)
+    #[Scope]
+    public function forRole($query, $role, $userId = null)
     {
         $userId ??= auth()->id();
 
@@ -135,7 +138,8 @@ class Vehicle extends Model
     /**
      * Scope for available vehicles with smart filtering
      */
-    public function scopeAvailableForRent($query, $startDate = null, $endDate = null)
+    #[Scope]
+    public function availableForRent($query, $startDate = null, $endDate = null)
     {
         $query->where('status', 'published')
             ->where('is_available', true)
@@ -162,7 +166,8 @@ class Vehicle extends Model
     /**
      * Scope for advanced search with multiple criteria
      */
-    public function scopeAdvancedSearch($query, array $filters)
+    #[Scope]
+    public function advancedSearch($query, array $filters)
     {
         return $query->when($filters['make'] ?? null, fn ($q, $make) => $q->where('make', 'like', "%$make%"))
             ->when($filters['model'] ?? null, fn ($q, $model) => $q->where('model', 'like', "%{$model}%"))
@@ -180,10 +185,12 @@ class Vehicle extends Model
     /**
      * Scope for popular vehicles based on bookings and reviews
      */
-    public function scopePopular($query, $limit = 10)
+    #[Scope]
+    public function popular($query, $limit = 10)
     {
         return $query->withCount(['bookings', 'reviews'])
             ->withAvg('reviews', 'rating')
+            ->groupBy('car_rental_vehicles.id')
             ->having('bookings_count', '>', 0)
             ->orderByRaw('(bookings_count * 0.7 + COALESCE(reviews_avg_rating, 0) * 0.3) DESC')
             ->limit($limit);
@@ -192,7 +199,8 @@ class Vehicle extends Model
     /**
      * Scope for vehicles with maintenance issues or violations
      */
-    public function scopeRequiringAttention($query)
+    #[Scope]
+    public function requiringAttention($query)
     {
         return $query->where(function ($mainQuery): void {
             $mainQuery->where('status', 'maintenance')
@@ -205,7 +213,8 @@ class Vehicle extends Model
     /**
      * Scope for revenue analysis by owner
      */
-    public function scopeRevenueAnalysis($query, $startDate = null, $endDate = null)
+    #[Scope]
+    public function revenueAnalysis($query, $startDate = null, $endDate = null)
     {
         $startDate ??= now()->subYear();
         $endDate ??= now();
@@ -224,7 +233,8 @@ class Vehicle extends Model
     /**
      * Scope for nearby vehicles using location matching
      */
-    public function scopeNearby($query, $location, $radius = 50)
+    #[Scope]
+    public function nearby($query, $location, $radius = 50)
     {
         // Simple text-based proximity (in real app, use spatial queries)
         return $query->where('location', 'like', "%{$location}%")
@@ -234,7 +244,8 @@ class Vehicle extends Model
     /**
      * Scope for price range filtering
      */
-    public function scopePriceRange($query, $minPrice = null, $maxPrice = null)
+    #[Scope]
+    public function priceRange($query, $minPrice = null, $maxPrice = null)
     {
         return $query->when($minPrice, fn ($q) => $q->where('daily_rate', '>=', $minPrice))
             ->when($maxPrice, fn ($q) => $q->where('daily_rate', '<=', $maxPrice));
@@ -243,7 +254,8 @@ class Vehicle extends Model
     /**
      * Scope for vehicles with images
      */
-    public function scopeWithImages($query)
+    #[Scope]
+    public function withImages($query)
     {
         return $query->whereNotNull('featured_image')
             ->orWhereJsonLength('gallery_images', '>', 0)
@@ -253,7 +265,8 @@ class Vehicle extends Model
     /**
      * Scope for premium vehicles (high-rated with luxury features)
      */
-    public function scopePremium($query)
+    #[Scope]
+    public function premium($query)
     {
         return $query->where('category', 'luxury')
             ->where('daily_rate', '>', 100)
@@ -264,7 +277,8 @@ class Vehicle extends Model
     /**
      * Scope for eco-friendly vehicles
      */
-    public function scopeEcoFriendly($query)
+    #[Scope]
+    public function ecoFriendly($query)
     {
         return $query->whereIn('fuel_type', ['electric', 'hybrid']);
     }
@@ -272,7 +286,8 @@ class Vehicle extends Model
     /**
      * Scope for family vehicles (suitable for families)
      */
-    public function scopeFamilyFriendly($query)
+    #[Scope]
+    public function familyFriendly($query)
     {
         return $query->where('seats', '>=', 5)
             ->whereIn('category', ['suv', 'minivan', 'midsize']);
@@ -281,7 +296,8 @@ class Vehicle extends Model
     /**
      * Scope for recently added vehicles
      */
-    public function scopeRecent($query, $days = 30)
+    #[Scope]
+    public function recent($query, $days = 30)
     {
         return $query->where('created_at', '>=', now()->subDays($days));
     }
@@ -289,7 +305,8 @@ class Vehicle extends Model
     /**
      * Scope for vehicles with high ratings
      */
-    public function scopeHighlyRated($query, $minRating = 4.0)
+    #[Scope]
+    public function highlyRated($query, $minRating = 4.0)
     {
         return $query->withAvg('reviews', 'rating')
             ->having('reviews_avg_rating', '>=', $minRating);
@@ -298,7 +315,8 @@ class Vehicle extends Model
     /**
      * Scope for vehicles by owner
      */
-    public function scopeByOwner($query, $ownerId)
+    #[Scope]
+    public function byOwner($query, $ownerId)
     {
         return $query->where('owner_id', $ownerId);
     }
@@ -306,7 +324,8 @@ class Vehicle extends Model
     /**
      * Scope for vehicles with active bookings
      */
-    public function scopeWithActiveBookings($query)
+    #[Scope]
+    public function withActiveBookings($query)
     {
         return $query->whereHas('bookings', function ($bookingQuery): void {
             $bookingQuery->where('status', 'confirmed')
@@ -318,7 +337,8 @@ class Vehicle extends Model
     /**
      * Scope for most booked vehicles
      */
-    public function scopeMostBooked($query, $limit = 10)
+    #[Scope]
+    public function mostBooked($query, $limit = 10)
     {
         return $query->withCount(['bookings' => function ($bookingQuery): void {
             $bookingQuery->where('status', 'completed');
@@ -336,24 +356,24 @@ class Vehicle extends Model
         if ($this->relationLoaded('images') && $this->images->isNotEmpty()) {
             $primaryImage = $this->images->where('is_primary', true)->first();
             if ($primaryImage) {
-                return \Storage::url($primaryImage->image_path);
+                return Storage::url($primaryImage->image_path);
             }
 
             // Fallback to first image if no primary
             $firstImage = $this->images->first();
             if ($firstImage) {
-                return \Storage::url($firstImage->image_path);
+                return Storage::url($firstImage->image_path);
             }
         }
 
         // Priority 2: featured_image field
         if ($this->featured_image) {
-            return \Storage::url($this->featured_image);
+            return Storage::url($this->featured_image);
         }
 
         // Priority 3: First image from gallery_images array
         if ($this->gallery_images && is_array($this->gallery_images) && count($this->gallery_images) > 0) {
-            return \Storage::url($this->gallery_images[0]);
+            return Storage::url($this->gallery_images[0]);
         }
 
         // No image available

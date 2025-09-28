@@ -13,8 +13,7 @@ class UserPolicy
     public function viewAny(User $user): bool
     {
         // Only admins can view all users
-        return true;
-        //        return $user->role === UserRole::ADMIN;
+        return $user->role === UserRole::ADMIN;
     }
 
     /**
@@ -23,8 +22,7 @@ class UserPolicy
     public function view(User $user, User $model): bool
     {
         // Admin can view all users, users can only view their own profile
-        //        return $user->role === UserRole::ADMIN || $user->id === $model->id;
-        return true;
+        return $user->role === UserRole::ADMIN || $user->id === $model->id;
     }
 
     /**

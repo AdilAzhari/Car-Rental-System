@@ -5,8 +5,11 @@ namespace App\Filament\Resources;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Filament\Resources\ReviewResource\Pages;
+use App\Filament\Resources\ReviewResource\Schemas\ReviewInfolist;
 use App\Models\Review;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +28,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class ReviewResource extends Resource
 {
@@ -203,12 +207,48 @@ class ReviewResource extends Resource
                     ->icon('heroicon-m-arrow-down-tray'),
             ])
             ->actions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->modalHeading(fn ($record): string => __('resources.review').' #RV-'.$record->id)
+                    ->infolist(fn (): array => ReviewInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make(),
+                Action::make('toggle_visibility')
+                    ->label(fn (Review $review): string => $review->is_visible ? __('resources.hide') : __('resources.show'))
+                    ->icon(fn (Review $review): string => $review->is_visible ? 'heroicon-m-eye-slash' : 'heroicon-m-eye')
+                    ->color(fn (Review $review): string => $review->is_visible ? 'warning' : 'success')
+                    ->action(function (Review $review): void {
+                        $review->update(['is_visible' => ! $review->is_visible]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalDescription(fn (Review $review): string => $review->is_visible
+                            ? __('resources.hide_review_confirmation')
+                            : __('resources.show_review_confirmation')
+                    ),
                 DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('hide_selected')
+                        ->label(__('resources.hide_selected'))
+                        ->icon('heroicon-m-eye-slash')
+                        ->color('warning')
+                        ->action(function (Collection $records): void {
+                            $records->each(fn (Review $review) => $review->update(['is_visible' => false]));
+                        })
+                        ->requiresConfirmation()
+                        ->modalDescription(__('resources.bulk_hide_confirmation'))
+                        ->deselectRecordsAfterCompletion(),
+
+                    BulkAction::make('show_selected')
+                        ->label(__('resources.show_selected'))
+                        ->icon('heroicon-m-eye')
+                        ->color('success')
+                        ->action(function (Collection $records): void {
+                            $records->each(fn (Review $review) => $review->update(['is_visible' => true]));
+                        })
+                        ->requiresConfirmation()
+                        ->modalDescription(__('resources.bulk_show_confirmation'))
+                        ->deselectRecordsAfterCompletion(),
+
                     DeleteBulkAction::make(),
                     FilamentExportBulkAction::make('bulk_export')
                         ->label(__('widgets.export'))
@@ -224,7 +264,6 @@ class ReviewResource extends Resource
             'index' => Pages\ListReviews::route('/'),
             'create' => Pages\CreateReview::route('/create'),
             'edit' => Pages\EditReview::route('/{record}/edit'),
-            'view' => Pages\ViewReview::route('/{record}'),
         ];
     }
 

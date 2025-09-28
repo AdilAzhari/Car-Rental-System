@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\VehicleResource\RelationManagers;
 
 use App\Enums\BookingStatus;
+use App\Filament\Resources\Bookings\Schemas\BookingForm;
+use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
 use Exception;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -27,10 +29,7 @@ class BookingsRelationManager extends RelationManager
      */
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->schema([
-                // Keep simple - main booking form is comprehensive
-            ]);
+        return BookingForm::configure($schema);
     }
 
     /**
@@ -97,15 +96,19 @@ class BookingsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->url(fn (): string => route('filament.admin.resources.bookings.create', [
-                        'vehicle_id' => $this->ownerRecord->id,
-                    ])),
+                    ->modalHeading(__('resources.create_booking'))
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['vehicle_id'] = $this->ownerRecord->id;
+
+                        return $data;
+                    }),
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record): string => route('filament.admin.resources.bookings.view', $record)),
+                    ->modalHeading(fn ($record): string => __('resources.booking').' #BK-'.$record->id)
+                    ->infolist(fn (): array => BookingInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make()
-                    ->url(fn ($record): string => route('filament.admin.resources.bookings.edit', $record)),
+                    ->modalHeading(fn ($record): string => __('resources.edit_booking').' #BK-'.$record->id),
                 DeleteAction::make(),
             ])
             ->bulkActions([

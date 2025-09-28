@@ -4,6 +4,9 @@ namespace App\Filament\Resources\Bookings\Tables;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
+use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -64,6 +67,8 @@ class BookingsTable
 
                 BadgeColumn::make('status')
                     ->label(__('resources.booking_status'))
+                    ->formatStateUsing(fn ($state): string => $state instanceof BookingStatus ? $state->label() : (string) $state)
+                    ->getStateUsing(fn ($record) => $record->status instanceof BookingStatus ? $record->status->label() : (string) $record->status)
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'confirmed',
@@ -75,6 +80,8 @@ class BookingsTable
 
                 BadgeColumn::make('payment_status')
                     ->label(__('resources.payment_status'))
+                    ->formatStateUsing(fn ($state): string => $state instanceof PaymentStatus ? $state->label() : (string) $state)
+                    ->getStateUsing(fn ($record) => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
                     ->colors([
                         'warning' => 'unpaid',
                         'success' => 'paid',
@@ -91,37 +98,35 @@ class BookingsTable
             ->filters([
                 TrashedFilter::make(),
 
+                //                Select::make('transmission')
+                //                    ->label(__('resources.transmission'))
+                //                    ->options([
+                //                        'automatic' => __('enums.transmission.automatic'),
+                //                        'manual' => __('enums.transmission.manual'),
+                //                        'cvt' => __('enums.transmission.cvt'),
+                //                    ])
+
                 SelectFilter::make('status')
                     ->label(__('resources.booking_status'))
                     ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'ongoing' => 'Ongoing',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
+                        'pending' => __('enums.booking_status.pending'),
+                        'confirmed' => __('enums.booking_status.confirmed'),
+                        'ongoing' => __('enums.booking_status.ongoing'),
+                        'completed' => __('enums.booking_status.completed'),
+                        'cancelled' => __('enums.booking_status.cancelled'),
                     ])
                     ->multiple(),
 
                 SelectFilter::make('payment_status')
                     ->label(__('resources.payment_status'))
                     ->options([
-                        'unpaid' => 'Unpaid',
-                        'paid' => 'Paid',
-                        'refunded' => 'Refunded',
-                    ])
-                    ->multiple(),
-
-                SelectFilter::make('payment_method')
-                    ->label(__('resources.payment_method'))
-                    ->relationship('payment', 'payment_method')
-                    ->options([
-                        'stripe' => 'Stripe',
-                        'visa' => 'Visa',
-                        'credit' => 'Credit Card',
-                        'tng' => 'Touch n Go',
-                        'touch_n_go' => 'Touch n Go',
-                        'cash' => 'Cash',
-                        'bank_transfer' => 'Bank Transfer',
+                        'unpaid' => __('enums.payment_status.unpaid'),
+                        'pending' => __('enums.payment_status.pending'),
+                        'confirmed' => __('enums.payment_status.confirmed'),
+                        'failed' => __('enums.payment_status.failed'),
+                        'refunded' => __('enums.payment_status.refunded'),
+                        'cancelled' => __('enums.payment_status.cancelled'),
+                        'processing' => __('enums.payment_status.processing'),
                     ])
                     ->multiple(),
             ])
@@ -132,7 +137,10 @@ class BookingsTable
                     ->icon('heroicon-m-arrow-down-tray'),
             ])
             ->recordActions([
-                ViewAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner', 'renter'])),
+                ViewAction::make()
+                    ->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner', 'renter']))
+                    ->modalHeading(fn ($record): string => __('resources.booking').' #'.$record->id)
+                    ->infolist(fn (): array => BookingInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner'])),
 
                 Action::make('confirm_booking')

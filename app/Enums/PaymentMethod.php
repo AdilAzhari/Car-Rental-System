@@ -35,6 +35,8 @@ enum PaymentMethod: string
             self::BANK_TRANSFER => __('enums.payment_method.Bank Transfer'),
             self::DEBIT_CARD => __('enums.payment_method.debit_card'),
             self::PAYPAL => __('enums.payment_method.paypal'),
+            self::APPLE_PAY => __('enums.payment_method.apple_pay'),
+            self::GOOGLE_PAY => __('enums.payment_method.google_pay'),
         };
     }
 

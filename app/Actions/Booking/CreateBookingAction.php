@@ -2,28 +2,31 @@
 
 namespace App\Actions\Booking;
 
+use App\DTOs\BookingCalculationDTO;
+use App\DTOs\CreateBookingDTO;
+use App\Events\BookingCreated;
 use App\Models\Booking;
-use App\Models\Vehicle;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
-class CreateBookingAction
+readonly class CreateBookingAction
 {
     public function __construct(
-        private readonly PaymentService $paymentService,
-        private readonly ValidateVehicleAvailabilityAction $validateVehicleAvailabilityAction,
-        private readonly TransactionService $transactionService
+        private PaymentService $paymentService,
+        private ValidateVehicleAvailabilityAction $validateVehicleAvailabilityAction,
+        private TransactionService $transactionService
     ) {}
 
     public function execute(array $validatedData): Booking
     {
-        $createBookingDTO = \App\DTOs\CreateBookingDTO::fromArray($validatedData);
+        $createBookingDTO = CreateBookingDTO::fromArray($validatedData);
 
         return $this->executeWithDTO($createBookingDTO);
     }
 
-    public function executeWithDTO(\App\DTOs\CreateBookingDTO $createBookingDTO): Booking
+    public function executeWithDTO(CreateBookingDTO $createBookingDTO): Booking
     {
         Log::info('🔧 CREATE BOOKING ACTION STARTED', [
             'user_id' => auth()->id(),
@@ -62,7 +65,7 @@ class CreateBookingAction
                 ]);
 
                 // Calculate booking details using DTO
-                $calculation = \App\DTOs\BookingCalculationDTO::calculate(
+                $calculation = BookingCalculationDTO::calculate(
                     $vehicle->daily_rate,
                     $createBookingDTO->durationDays
                 );
@@ -75,11 +78,7 @@ class CreateBookingAction
                 ]);
 
                 // Determine initial status based on payment method
-                $initialStatus = match ($createBookingDTO->paymentMethod) {
-                    'cash' => 'pending', // Cash payments need admin approval
-                    'visa', 'credit' => 'pending', // Card payments process immediately
-                    default => 'pending'
-                };
+                $initialStatus = 'pending';
 
                 Log::info('💳 PAYMENT METHOD & STATUS', [
                     'user_id' => auth()->id(),
@@ -88,11 +87,7 @@ class CreateBookingAction
                 ]);
 
                 // Determine payment status based on payment method
-                $paymentStatus = match ($createBookingDTO->paymentMethod) {
-                    'cash' => 'unpaid', // Cash payments start as unpaid
-                    'visa', 'credit' => 'unpaid', // Will be updated after payment processing
-                    default => 'unpaid'
-                };
+                $paymentStatus = 'unpaid';
 
                 // Prepare booking data
                 $bookingData = [
@@ -116,12 +111,12 @@ class CreateBookingAction
                 ]);
 
                 // Create booking
-                $booking = Booking::create($bookingData);
+                $booking = Booking::query()->create($bookingData);
 
                 Log::info('✨ BOOKING CREATED SUCCESSFULLY', [
                     'user_id' => auth()->id(),
                     'booking_id' => $booking->id,
-                    'booking_exists_in_db' => Booking::where('id', $booking->id)->exists(),
+                    'booking_exists_in_db' => Booking::query()->where('id', $booking->id)->exists(),
                     'created_at' => $booking->created_at,
                     'booking_data' => $booking->toArray(),
                 ]);
@@ -168,7 +163,7 @@ class CreateBookingAction
                             'booking_id' => $booking->id,
                             'payment_message' => $paymentResult['message'] ?? 'Payment failed',
                         ]);
-                        throw new \Exception($paymentResult['message'] ?? 'Payment failed');
+                        throw new Exception($paymentResult['message'] ?? 'Payment failed');
                     }
                 }
 
@@ -176,20 +171,20 @@ class CreateBookingAction
                 $finalBooking = $booking->load(['vehicle.owner', 'renter', 'payments']);
 
                 // Dispatch booking created event
-                \App\Events\BookingCreated::dispatch($finalBooking);
+                BookingCreated::dispatch($finalBooking);
 
                 Log::info('🎉 BOOKING ACTION COMPLETED SUCCESSFULLY', [
                     'user_id' => auth()->id(),
                     'booking_id' => $finalBooking->id,
                     'final_status' => $finalBooking->status,
-                    'booking_persisted' => Booking::where('id', $finalBooking->id)->exists(),
+                    'booking_persisted' => Booking::query()->where('id', $finalBooking->id)->exists(),
                     'transaction_completed' => true,
                     'event_dispatched' => true,
                 ]);
 
                 return $finalBooking;
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('💥 CREATE BOOKING ACTION EXCEPTION', [
                     'user_id' => auth()->id(),
                     'error_message' => $e->getMessage(),

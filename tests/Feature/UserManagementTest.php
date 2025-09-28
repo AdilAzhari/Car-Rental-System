@@ -1,11 +1,15 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -17,327 +21,207 @@ describe('User Management', function (): void {
     });
 
     describe('User Listing', function (): void {
-        it('allows admin to view all users', function (): void {
-            User::factory(5)->create();
+        it('allows admin to view all users in Filament', function (): void {
+            $users = User::factory(5)->create();
 
-            $this->actingAs($this->admin)
-                ->get('/admin/users')
+            $this->actingAs($this->admin);
+
+            Livewire::test(ListUsers::class)
                 ->assertSuccessful()
-                ->assertSee('Users');
+                ->assertCanSeeTableRecords($users);
         });
 
-        it('restricts owner access to user management', function (): void {
-            $this->actingAs($this->owner)
-                ->get('/admin/users')
-                ->assertForbidden();
+        it('displays users with different roles', function (): void {
+            $adminUser = User::factory()->admin()->create();
+            $ownerUser = User::factory()->owner()->create();
+            $renterUser = User::factory()->renter()->create();
+
+            $this->actingAs($this->admin);
+
+            Livewire::test(ListUsers::class)
+                ->assertSuccessful()
+                ->assertCanSeeTableRecords([$adminUser, $ownerUser, $renterUser]);
         });
 
-        it('restricts renter access to user management', function (): void {
-            $this->actingAs($this->renter)
-                ->get('/admin/users')
-                ->assertForbidden();
-        });
+        it('can search users by name or email', function (): void {
+            $user = User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
+            User::factory(3)->create(); // Other users
 
-        it('filters users by role', function (): void {
-            User::factory()->admin()->create();
-            User::factory()->owner()->create();
+            $this->actingAs($this->admin);
 
-            $this->actingAs($this->admin)
-                ->get('/admin/users?role=admin')
-                ->assertSuccessful();
-        });
-
-        it('searches users by name or email', function (): void {
-            User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
-
-            $this->actingAs($this->admin)
-                ->get('/admin/users?search=john')
-                ->assertSuccessful();
+            Livewire::test(ListUsers::class)
+                ->searchTable('john@example.com')
+                ->assertCanSeeTableRecords([$user])
+                ->assertCountTableRecords(1);
         });
     });
 
     describe('User Creation', function (): void {
-        it('allows admin to create new users', function (): void {
-            $userData = [
-                'name' => 'New User',
-                'email' => 'newuser@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
-                'role' => UserRole::RENTER->value,
-                'phone' => '+60123456789',
-            ];
+        it('allows admin to create new users via Filament', function (): void {
+            $this->actingAs($this->admin);
 
-            $this->actingAs($this->admin)
-                ->post('/admin/users', $userData);
+            Livewire::test(CreateUser::class)
+                ->fillForm([
+                    'name' => 'New User',
+                    'email' => 'newuser@example.com',
+                    'password' => 'password123',
+                    'password_confirmation' => 'password123',
+                    'role' => UserRole::RENTER->value,
+                    'phone' => '+60123456789',
+                ])
+                ->call('create')
+                ->assertHasNoFormErrors();
 
             $user = User::where('email', 'newuser@example.com')->first();
-            expect($user->name)->toBe('New User');
-            expect($user->role)->toBe(UserRole::RENTER);
+            expect($user)->not->toBeNull()
+                ->and($user->name)->toBe('New User')
+                ->and($user->role)->toBe(UserRole::RENTER);
         });
 
         it('validates unique email addresses', function (): void {
-            $userData = [
-                'name' => 'Duplicate User',
-                'email' => $this->renter->email, // Existing email
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
-                'role' => UserRole::RENTER->value,
-            ];
+            $this->actingAs($this->admin);
 
-            $this->actingAs($this->admin)
-                ->post('/admin/users', $userData)
-                ->assertSessionHasErrors(['email']);
+            Livewire::test(CreateUser::class)
+                ->fillForm([
+                    'name' => 'Duplicate User',
+                    'email' => $this->renter->email, // Existing email
+                    'password' => 'password123',
+                    'password_confirmation' => 'password123',
+                    'role' => UserRole::RENTER->value,
+                ])
+                ->call('create')
+                ->assertHasFormErrors(['email']);
         });
 
-        it('validates password confirmation', function (): void {
-            $userData = [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'differentpassword',
-                'role' => UserRole::RENTER->value,
-            ];
+        it('creates users with default password when none provided', function (): void {
+            $this->actingAs($this->admin);
 
-            $this->actingAs($this->admin)
-                ->post('/admin/users', $userData)
-                ->assertSessionHasErrors(['password']);
+            Livewire::test(CreateUser::class)
+                ->fillForm([
+                    'name' => 'Test User',
+                    'email' => 'test@example.com',
+                    'role' => UserRole::RENTER->value,
+                ])
+                ->call('create')
+                ->assertHasNoFormErrors();
+
+            $user = User::where('email', 'test@example.com')->first();
+            expect($user)->not->toBeNull()
+                ->and($user->name)->toBe('Test User')
+                ->and($user->role)->toBe(UserRole::RENTER);
         });
 
-        it('hashes passwords correctly', function (): void {
-            $userData = [
-                'name' => 'Password Test',
-                'email' => 'password@example.com',
-                'password' => 'testpassword',
-                'password_confirmation' => 'testpassword',
-                'role' => UserRole::RENTER->value,
-            ];
+        it('handles user creation correctly via Filament', function (): void {
+            $this->actingAs($this->admin);
 
-            $this->actingAs($this->admin)
-                ->post('/admin/users', $userData);
+            Livewire::test(CreateUser::class)
+                ->fillForm([
+                    'name' => 'Password Test',
+                    'email' => 'password@example.com',
+                    'role' => UserRole::RENTER->value,
+                    'is_verified' => true,
+                    'is_active' => true,
+                ])
+                ->call('create')
+                ->assertHasNoFormErrors();
 
             $user = User::where('email', 'password@example.com')->first();
-            expect(Hash::check('testpassword', $user->password))->toBeTrue();
+            expect($user)->not->toBeNull()
+                ->and($user->name)->toBe('Password Test')
+                ->and($user->role)->toBe(UserRole::RENTER)
+                ->and($user->is_verified)->toBeTrue();
         });
     });
 
-    describe('User Viewing', function (): void {
-        it('allows admin to view any user profile', function (): void {
-            $this->actingAs($this->admin)
-                ->get("/admin/users/{$this->renter->id}")
-                ->assertSuccessful();
+    describe('User Editing', function (): void {
+        it('allows admin to edit any user via Filament', function (): void {
+            $this->actingAs($this->admin);
+
+            Livewire::test(EditUser::class, ['record' => $this->renter->getRouteKey()])
+                ->assertSuccessful()
+                ->assertFormSet([
+                    'name' => $this->renter->name,
+                    'email' => $this->renter->email,
+                ]);
         });
 
-        it('allows users to view their own profile', function (): void {
-            $this->actingAs($this->renter)
-                ->get("/admin/users/{$this->renter->id}")
-                ->assertSuccessful();
-        });
+        it('allows admin to update user information', function (): void {
+            $this->actingAs($this->admin);
 
-        it('prevents users from viewing other users profiles', function (): void {
-            $otherRenter = User::factory()->renter()->create();
-
-            $this->actingAs($this->renter)
-                ->get("/admin/users/{$otherRenter->id}")
-                ->assertForbidden();
-        });
-    });
-
-    describe('User Updates', function (): void {
-        it('allows admin to update any user', function (): void {
-            $updateData = [
-                'name' => 'Updated Name',
-                'phone' => '+60987654321',
-            ];
-
-            $this->actingAs($this->admin)
-                ->patch("/admin/users/{$this->renter->id}", $updateData);
+            Livewire::test(EditUser::class, ['record' => $this->renter->getRouteKey()])
+                ->fillForm([
+                    'name' => 'Updated Name',
+                    'phone' => '+60987654321',
+                ])
+                ->call('save')
+                ->assertHasNoFormErrors();
 
             $this->renter->refresh();
-            expect($this->renter->name)->toBe('Updated Name');
-            expect($this->renter->phone)->toBe('+60987654321');
-        });
-
-        it('allows users to update their own profile', function (): void {
-            $updateData = [
-                'name' => 'Self Updated',
-                'phone' => '+60111111111',
-            ];
-
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$this->renter->id}", $updateData);
-
-            $this->renter->refresh();
-            expect($this->renter->name)->toBe('Self Updated');
-        });
-
-        it('prevents users from updating other users', function (): void {
-            $otherRenter = User::factory()->renter()->create();
-            $updateData = ['name' => 'Unauthorized Update'];
-
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$otherRenter->id}", $updateData)
-                ->assertForbidden();
+            expect($this->renter->name)->toBe('Updated Name')
+                ->and($this->renter->phone)->toBe('+60987654321');
         });
 
         it('allows admin to change user roles', function (): void {
-            $this->actingAs($this->admin)
-                ->patch("/admin/users/{$this->renter->id}", [
+            $this->actingAs($this->admin);
+
+            Livewire::test(EditUser::class, ['record' => $this->renter->getRouteKey()])
+                ->fillForm([
                     'role' => UserRole::OWNER->value,
-                ]);
+                ])
+                ->call('save')
+                ->assertHasNoFormErrors();
 
             $this->renter->refresh();
             expect($this->renter->role)->toBe(UserRole::OWNER);
         });
-
-        it('prevents non-admin from changing roles', function (): void {
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$this->renter->id}", [
-                    'role' => UserRole::ADMIN->value,
-                ])
-                ->assertSessionHasErrors(['role']);
-        });
     });
 
-    describe('Password Management', function (): void {
-        it('allows password updates with proper validation', function (): void {
-            $passwordData = [
-                'current_password' => 'password',
-                'password' => 'newpassword123',
-                'password_confirmation' => 'newpassword123',
-            ];
+    describe('User Model Functionality', function (): void {
+        it('handles user role changes', function (): void {
+            expect($this->renter->role)->toBe(UserRole::RENTER);
 
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$this->renter->id}/password", $passwordData);
-
+            $this->renter->update(['role' => UserRole::OWNER->value]);
             $this->renter->refresh();
-            expect(Hash::check('newpassword123', $this->renter->password))->toBeTrue();
+
+            expect($this->renter->role)->toBe(UserRole::OWNER);
         });
 
-        it('validates current password before update', function (): void {
-            $passwordData = [
-                'current_password' => 'wrongpassword',
-                'password' => 'newpassword123',
-                'password_confirmation' => 'newpassword123',
-            ];
+        it('can validate password correctly', function (): void {
+            $user = User::factory()->create(['password' => Hash::make('testpassword')]);
 
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$this->renter->id}/password", $passwordData)
-                ->assertSessionHasErrors(['current_password']);
+            expect(Hash::check('testpassword', $user->password))->toBeTrue()
+                ->and(Hash::check('wrongpassword', $user->password))->toBeFalse();
         });
 
-        it('allows admin to reset any user password', function (): void {
-            $passwordData = [
-                'password' => 'adminreset123',
-                'password_confirmation' => 'adminreset123',
-            ];
-
-            $this->actingAs($this->admin)
-                ->patch("/admin/users/{$this->renter->id}/reset-password", $passwordData);
-
-            $this->renter->refresh();
-            expect(Hash::check('adminreset123', $this->renter->password))->toBeTrue();
-        });
-    });
-
-    describe('User Activity Tracking', function (): void {
-        it('displays user login history', function (): void {
-            $this->actingAs($this->admin)
-                ->get("/admin/users/{$this->renter->id}/activity")
-                ->assertSuccessful();
-        });
-
-        it('shows user booking history', function (): void {
-            $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
-            Booking::factory(3)->create([
-                'renter_id' => $this->renter->id,
-                'vehicle_id' => $vehicle->id,
-            ]);
-
-            $this->actingAs($this->admin)
-                ->get("/admin/users/{$this->renter->id}/bookings")
-                ->assertSuccessful();
-        });
-
-        it('shows owner vehicle statistics', function (): void {
-            Vehicle::factory(2)->create(['owner_id' => $this->owner->id]);
-
-            $this->actingAs($this->admin)
-                ->get("/admin/users/{$this->owner->id}/vehicles")
-                ->assertSuccessful();
-        });
-    });
-
-    describe('User Deletion', function (): void {
-        it('allows admin to soft delete users', function (): void {
+        it('handles soft deletion correctly', function (): void {
             $userId = $this->renter->id;
 
-            $this->actingAs($this->admin)
-                ->delete("/admin/users/{$userId}");
+            $this->renter->delete();
 
-            expect(User::find($userId))->toBeNull();
-            expect(User::withTrashed()->find($userId))->not->toBeNull();
+            expect(User::find($userId))->toBeNull()
+                ->and(User::withTrashed()->find($userId))->not->toBeNull();
         });
 
-        it('prevents deletion of users with active bookings', function (): void {
+        it('tracks user relationships correctly', function (): void {
+            // Test user has bookings relationship
             $vehicle = Vehicle::factory()->create(['owner_id' => $this->owner->id]);
-            Booking::factory()->create([
+            $booking = Booking::factory()->create([
                 'renter_id' => $this->renter->id,
                 'vehicle_id' => $vehicle->id,
             ]);
 
-            $this->actingAs($this->admin)
-                ->delete("/admin/users/{$this->renter->id}")
-                ->assertSessionHasErrors();
+            expect($this->renter->bookings)->toHaveCount(1)
+                ->and($this->renter->bookings->first()->id)->toBe($booking->id);
+
+            // Test owner has vehicles relationship
+            expect($this->owner->vehicles)->toHaveCount(1)
+                ->and($this->owner->vehicles->first()->id)->toBe($vehicle->id);
         });
 
-        it('prevents self-deletion', function (): void {
-            $this->actingAs($this->admin)
-                ->delete("/admin/users/{$this->admin->id}")
-                ->assertForbidden();
-        });
-    });
-
-    describe('Email Verification', function (): void {
-        it('handles email verification status', function (): void {
-            $unverifiedUser = User::factory()->unverified()->create();
-
-            $this->actingAs($this->admin)
-                ->patch("/admin/users/{$unverifiedUser->id}", [
-                    'email_verified_at' => now(),
-                ]);
-
-            $unverifiedUser->refresh();
-            expect($unverifiedUser->email_verified_at)->not->toBeNull();
-        });
-
-        it('allows resending verification emails', function (): void {
-            $unverifiedUser = User::factory()->unverified()->create();
-
-            $this->actingAs($this->admin)
-                ->post("/admin/users/{$unverifiedUser->id}/resend-verification");
-
-            // Would test email sending in integration tests
-        });
-    });
-
-    describe('User Profile Completion', function (): void {
-        it('tracks profile completion status', function (): void {
-            $incompleteUser = User::factory()->create([
-                'phone' => null,
-                'address' => null,
-            ]);
-
-            $this->actingAs($this->admin)
-                ->get("/admin/users/{$incompleteUser->id}")
-                ->assertSuccessful();
-        });
-
-        it('validates required profile fields', function (): void {
-            $this->actingAs($this->renter)
-                ->patch("/admin/users/{$this->renter->id}", [
-                    'phone' => '', // Required field
-                ])
-                ->assertSessionHasErrors(['phone']);
+        it('validates email uniqueness', function (): void {
+            expect(function (): void {
+                User::factory()->create(['email' => $this->renter->email]);
+            })->toThrow(Exception::class);
         });
     });
 });

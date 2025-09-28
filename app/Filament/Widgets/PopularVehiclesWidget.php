@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\VehicleResource\Schemas\VehicleInfolist;
 use App\Models\Vehicle;
 use Filament\Actions\Action;
 use Filament\Tables;
@@ -26,11 +27,6 @@ class PopularVehiclesWidget extends BaseWidget
                     ->limit(8)
             )
             ->columns([
-                Tables\Columns\ImageColumn::make('featured_image')
-                    ->label(__('widgets.image'))
-                    ->size(80)
-                    ->square()
-                    ->defaultImageUrl(url('/images/car-placeholder.jpg')),
 
                 Tables\Columns\TextColumn::make('make')
                     ->label(__('widgets.vehicle'))
@@ -41,12 +37,12 @@ class PopularVehiclesWidget extends BaseWidget
                 Tables\Columns\BadgeColumn::make('category')
                     ->label(__('widgets.category'))
                     ->colors([
-                        'success' => 'economy',
-                        'info' => 'compact',
-                        'warning' => 'midsize',
-                        'primary' => 'fullsize',
-                        'danger' => 'luxury',
-                        'gray' => 'suv',
+                        'success' => __('enums.vehicle_category.economy'),
+                        'info' => __('enums.vehicle_category.compact'),
+                        'warning' => __('enums.vehicle_category.midsize'),
+                        'primary' => __('enums.vehicle_category.fullsize'),
+                        'danger' => __('enums.vehicle_category.luxury'),
+                        'gray' => __('enums.vehicle_category.suv'),
                     ]),
 
                 Tables\Columns\TextColumn::make('bookings_count')
@@ -68,7 +64,7 @@ class PopularVehiclesWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('total_revenue')
                     ->label(__('widgets.revenue'))
                     ->state(fn ($record) => $record->bookings()
-                        ->where('status', 'completed')
+                        ->where('car_rental_bookings.status', 'completed')
                         ->sum('total_amount'))
                     ->money(config('app.currency', 'MYR'))
                     ->color('success'),
@@ -86,8 +82,8 @@ class PopularVehiclesWidget extends BaseWidget
                 Action::make('view')
                     ->label(__('widgets.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Vehicle $vehicle): string => route('filament.admin.resources.vehicles.view', $vehicle)
-                    ),
+                    ->modalHeading(fn (Vehicle $vehicle): string => __('resources.vehicle').': '.$vehicle->make.' '.$vehicle->model)
+                    ->infolist(fn (): array => VehicleInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
 
                 Action::make('book')
                     ->label(__('widgets.book'))

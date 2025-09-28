@@ -31,12 +31,12 @@ test('can create booking with calculated fields', function (): void {
         'vehicle_id' => $vehicle->id,
         'start_date' => $startDate,
         'end_date' => $endDate,
-        'days' => 2,
+        'days' => 3, // Will be auto-calculated anyway
         'daily_rate' => 100,
-        'subtotal' => 200,
-        'insurance_fee' => 20, // 10% of subtotal
-        'tax_amount' => 30, // 15% of subtotal
-        'total_amount' => 250, // subtotal + insurance + tax
+        'subtotal' => 300, // 3 days * 100
+        'insurance_fee' => 30, // 10% of subtotal
+        'tax_amount' => 45, // 15% of subtotal
+        'total_amount' => 375, // subtotal + insurance + tax
         'status' => 'pending',
         'payment_status' => 'pending',
         'pickup_location' => 'Downtown',
@@ -46,12 +46,12 @@ test('can create booking with calculated fields', function (): void {
     expect($booking)->not->toBeNull();
     expect($booking->renter_id)->toBe($renter->id);
     expect($booking->vehicle_id)->toBe($vehicle->id);
-    expect($booking->days)->toBe(2);
-    expect($booking->daily_rate)->toBe(100.00);
-    expect($booking->subtotal)->toBe(200.00);
-    expect($booking->insurance_fee)->toBe(20.00);
-    expect($booking->tax_amount)->toBe(30.00);
-    expect($booking->total_amount)->toBe(250.00);
+    expect($booking->days)->toBe(3); // start_date to end_date inclusive (today+1 to today+3 = 3 days)
+    expect($booking->daily_rate)->toBe('100.00'); // decimal:2 returns string
+    expect($booking->subtotal)->toBe('300.00'); // 3 days * 100
+    expect($booking->insurance_fee)->toBe('30.00'); // 10% of subtotal
+    expect($booking->tax_amount)->toBe('45.00'); // 15% of subtotal
+    expect($booking->total_amount)->toBe('375.00'); // subtotal + insurance + tax
 });
 
 test('booking model has working days attribute', function (): void {

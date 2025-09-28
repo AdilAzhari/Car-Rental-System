@@ -1,10 +1,16 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\VehicleResource;
+use App\Filament\Resources\VehicleResource\Pages\ListVehicles;
+use App\Filament\Resources\VehicleResource\Pages\EditVehicle;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -13,9 +19,9 @@ it('allows admin to access users resource methods', function (): void {
     $this->actingAs($admin);
 
     // Test UserResource permissions
-    expect(UserResource::canCreate())->toBeTrue();
-    expect(UserResource::canViewAny())->toBeTrue();
-    expect(UserResource::shouldRegisterNavigation())->toBeTrue();
+    expect(UserResource::canCreate())->toBeTrue()
+        ->and(UserResource::canViewAny())->toBeTrue()
+        ->and(UserResource::shouldRegisterNavigation())->toBeTrue();
 });
 
 it('allows admin to access vehicle actions', function (): void {
@@ -27,40 +33,52 @@ it('allows admin to access vehicle actions', function (): void {
     expect(VehicleResource::canCreate())->toBeTrue();
 });
 
-it('allows admin to view users resource page', function (): void {
+it('allows admin to view users list in Filament', function (): void {
     $admin = User::factory()->create(['role' => 'admin']);
+    $users = User::factory(3)->create();
+
     $this->actingAs($admin);
 
-    $response = $this->get('/admin/users');
-    expect($response->status())->toBe(200);
+    Livewire::test(ListUsers::class)
+        ->assertSuccessful()
+        ->assertCanSeeTableRecords($users);
 });
 
-it('allows admin to view vehicles with actions available', function (): void {
+it('allows admin to view vehicles list in Filament', function (): void {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $vehicles = Vehicle::factory(3)->create();
+
+    $this->actingAs($admin);
+
+    Livewire::test(ListVehicles::class)
+        ->assertSuccessful()
+        ->assertCanSeeTableRecords($vehicles);
+});
+
+it('allows admin to edit vehicle in Filament', function (): void {
     $admin = User::factory()->create(['role' => 'admin']);
     $vehicle = Vehicle::factory()->create();
 
     $this->actingAs($admin);
 
-    $response = $this->get('/admin/vehicles');
-    expect($response->status())->toBe(200);
+    Livewire::test(EditVehicle::class, ['record' => $vehicle->getRouteKey()])
+        ->assertSuccessful()
+        ->assertFormSet([
+            'make' => $vehicle->make,
+            'model' => $vehicle->model,
+        ]);
 });
 
-it('allows admin to view individual vehicle record', function (): void {
+it('allows admin to edit user in Filament', function (): void {
     $admin = User::factory()->create(['role' => 'admin']);
-    $vehicle = Vehicle::factory()->create();
+    $user = User::factory()->create();
 
     $this->actingAs($admin);
 
-    $response = $this->get("/admin/vehicles/{$vehicle->id}");
-    expect($response->status())->toBe(200);
-});
-
-it('allows admin to edit vehicle record', function (): void {
-    $admin = User::factory()->create(['role' => 'admin']);
-    $vehicle = Vehicle::factory()->create();
-
-    $this->actingAs($admin);
-
-    $response = $this->get("/admin/vehicles/{$vehicle->id}/edit");
-    expect($response->status())->toBe(200);
+    Livewire::test(EditUser::class, ['record' => $user->getRouteKey()])
+        ->assertSuccessful()
+        ->assertFormSet([
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
 });

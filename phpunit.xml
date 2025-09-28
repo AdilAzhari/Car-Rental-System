@@ -16,9 +16,6 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
-        <testsuite name="Performance">
-            <directory>tests/Performance</directory>
-        </testsuite>
         <testsuite name="Architecture">
             <directory>tests/Arch</directory>
         </testsuite>

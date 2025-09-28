@@ -7,6 +7,7 @@ use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\UserResource\Schemas\UserInfolist;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use BackedEnum;
@@ -316,7 +317,9 @@ class UserResource extends Resource
                     ->icon('heroicon-m-arrow-down-tray'),
             ])
             ->actions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->modalHeading(fn ($record): string => __('resources.user').': '.$record->name)
+                    ->infolist(fn (): array => UserInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
@@ -346,7 +349,6 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
-            'view' => Pages\ViewUser::route('/{record}'),
         ];
     }
 

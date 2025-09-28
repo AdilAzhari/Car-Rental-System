@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
 use App\Models\Booking;
 use Filament\Actions\Action;
 use Filament\Tables;
@@ -97,15 +98,14 @@ class RecentBookingsWidget extends BaseWidget
                 Action::make('view')
                     ->label(__('widgets.view'))
                     ->icon('heroicon-m-eye')
-                    ->url(fn (Booking $booking): string => route('filament.admin.resources.bookings.view', $booking)
-                    ),
+                    ->modalHeading(fn (Booking $booking): string => __('resources.booking').' #BK-'.$booking->id)
+                    ->infolist(fn (): array => BookingInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
 
                 Action::make('edit')
                     ->label(__('widgets.edit'))
                     ->icon('heroicon-m-pencil')
                     ->color('warning')
-                    ->url(fn (Booking $booking): string => route('filament.admin.resources.bookings.edit', $booking)
-                    ),
+                    ->url(fn (Booking $booking): string => route('filament.admin.resources.bookings.edit', $booking)),
 
                 Action::make('confirm')
                     ->label(__('widgets.confirm'))

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\Schemas\UserInfolist;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -17,7 +18,9 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
+            ViewAction::make()
+                ->modalHeading(fn (): string => __('resources.user').': '.$this->record->name)
+                ->infolist(fn (): array => UserInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
 
             Action::make('verify')
                 ->label(__('resources.verify_user'))
@@ -89,6 +92,6 @@ class EditUser extends EditRecord
     #[\Override]
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Payments\Tables;
 
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
+use App\Enums\UserRole;
+use App\Filament\Resources\Payments\Schemas\PaymentInfolist;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PaymentsTable
@@ -40,10 +43,14 @@ class PaymentsTable
                 TextColumn::make('payment_method')
                     ->label(__('resources.payment_method'))
                     ->badge()
+                    ->formatStateUsing(fn ($state): string => $state instanceof PaymentMethod ? $state->label() : (string) $state)
+                    ->getStateUsing(fn ($record) => $record->payment_method instanceof PaymentMethod ? $record->payment_method->label() : (string) $record->payment_method)
                     ->sortable(),
 
                 BadgeColumn::make('payment_status')
                     ->label(__('resources.status'))
+                    ->formatStateUsing(fn ($state): string => $state instanceof PaymentStatus ? $state->label() : (string) $state)
+                    ->getStateUsing(fn ($record) => $record->payment_status instanceof PaymentStatus ? $record->payment_status->label() : (string) $record->payment_status)
                     ->colors([
                         'info' => 'processing',
                         'success' => 'confirmed',
@@ -72,45 +79,36 @@ class PaymentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('payment_status')
-                    ->label(__('resources.payment_status'))
-                    ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'processing' => 'Processing',
-                        'failed' => 'Failed',
-                        'refunded' => 'Refunded',
-                        'cancelled' => 'Cancelled',
-                        'unpaid' => 'Unpaid',
-                    ])
-                    ->multiple(),
+                //                SelectFilter::make('payment_status')
+                //                    ->label(__('resources.payment_status'))
+                //                    ->options(collect(PaymentStatus::cases())->pluck('label', 'value'))
+                //                    ->multiple(),
 
-                SelectFilter::make('payment_method')
-                    ->label(__('resources.payment_method'))
-                    ->options([
-                        'stripe' => 'Stripe',
-                        'visa' => 'Visa',
-                        'credit' => 'Credit Card',
-                        'tng' => 'Touch n Go',
-                        'touch_n_go' => 'Touch n Go',
-                        'cash' => 'Cash',
-                        'bank_transfer' => 'Bank Transfer',
-                    ])
-                    ->multiple(),
+                //                SelectFilter::make('payment_method')
+                //                    ->label(__('resources.payment_method'))
+                //                    ->options(collect(PaymentMethod::cases())->pluck('label', 'value'))
+                //                    ->multiple(),
 
-                SelectFilter::make('booking_id')
-                    ->label(__('resources.booking_id'))
-                    ->relationship('booking', 'id')
-                    ->searchable(),
+                //                SelectFilter::make('booking_id')
+                //                    ->label(__('resources.booking_id'))
+                //                    ->relationship('booking', 'id')
+                //                    ->searchable(),
             ])
             ->recordActions([
-                ViewAction::make()->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, ['admin', 'owner', 'renter'])),
-                EditAction::make()->visible(fn (): bool => auth()->user() && auth()->user()->role === 'admin'),
+                ViewAction::make()
+                    ->visible(fn (): bool => auth()->user() && in_array(auth()->user()->role, UserRole::values()))
+                    ->modalHeading(fn ($record): string => __('resources.payment').' #'.$record->id)
+                    ->infolist(fn (): array => PaymentInfolist::configure(new \Filament\Schemas\Schema)->getComponents()),
+                EditAction::make()->visible(fn (): bool => auth()->user() && auth()->user()->role === UserRole::ADMIN->value),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->emptyStateHeading(__('resources.no_payments'))
+            ->emptyStateDescription(__('resources.no_payments_description'))
+            ->emptyStateIcon('heroicon-o-credit-card')
+            ->defaultSort('created_at', 'desc');
     }
 }

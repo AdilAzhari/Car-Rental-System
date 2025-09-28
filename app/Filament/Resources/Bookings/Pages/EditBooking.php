@@ -101,20 +101,20 @@ class EditBooking extends EditRecord
                     Select::make('status')
                         ->label('Booking Status')
                         ->options([
-                            'pending' => 'Pending',
-                            'confirmed' => 'Confirmed',
-                            'ongoing' => 'Ongoing',
-                            'completed' => 'Completed',
-                            'cancelled' => 'Cancelled',
+                            'pending' => __('enums.booking_status.pending'),
+                            'confirmed' => __('enums.booking_status.confirmed'),
+                            'ongoing' => __('enums.booking_status.ongoing'),
+                            'completed' => __('enums.booking_status.completed'),
+                            'cancelled' => __('enums.booking_status.cancelled'),
                         ])
                         ->default($this->record->status)
                         ->required(),
                     Select::make('payment_status')
                         ->label('Payment Status')
                         ->options([
-                            'unpaid' => 'Unpaid',
-                            'paid' => 'Paid',
-                            'refunded' => 'Refunded',
+                            'unpaid' => __('enums.payment_status.unpaid'),
+                            'paid' => __('enums.payment_status.paid'),
+                            'refunded' => __('enums.payment_status..refunded'),
                         ])
                         ->default($this->record->payment_status)
                         ->required(),

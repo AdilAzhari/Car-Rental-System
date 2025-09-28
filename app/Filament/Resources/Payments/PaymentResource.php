@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Payments;
 
+use App\Enums\UserRole;
 use App\Filament\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Resources\Payments\Pages\EditPayment;
 use App\Filament\Resources\Payments\Pages\ListPayments;
@@ -15,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Override;
 
 class PaymentResource extends Resource
 {
@@ -29,22 +31,23 @@ class PaymentResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    #[\Override]
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return PaymentForm::configure($schema);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return PaymentsTable::configure($table);
     }
 
-    #[\Override]
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
-        $builder = parent::getEloquentQuery();
+        $builder = parent::getEloquentQuery()
+            ->with(['booking', 'booking.renter', 'booking.vehicle']);
 
         // Scope based on user role
         $user = Auth::user();
@@ -52,13 +55,15 @@ class PaymentResource extends Resource
             return $builder->whereRaw('1 = 0'); // Return empty results if not authenticated
         }
 
-        if ($user->role === 'admin') {
+        if ($user->role === UserRole::ADMIN) {
             // Admin can see all payments
             return $builder;
-        } elseif ($user->role === 'owner') {
+        } elseif ($user->role === UserRole::OWNER) {
             // Owner can see payments for their vehicles
-            return $builder->whereHas('booking.vehicle', function ($q) use ($user): void {
-                $q->where('owner_id', $user->id);
+            return $builder->whereHas('booking', function ($q) use ($user): void {
+                $q->whereHas('vehicle', function ($vehicleQuery) use ($user): void {
+                    $vehicleQuery->where('owner_id', $user->id);
+                });
             });
         } else {
             // Renter can see their own payments
@@ -72,10 +77,10 @@ class PaymentResource extends Resource
     {
         $user = Auth::user();
 
-        return $user && $user->role == 'admin';
+        return $user && $user->role === UserRole::ADMIN;
     }
 
-    #[\Override]
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -85,17 +90,11 @@ class PaymentResource extends Resource
 
     public static function getPages(): array
     {
-        $pages = [
+        return [
             'index' => ListPayments::route('/'),
+            'create' => CreatePayment::route('/create'),
+            'edit' => EditPayment::route('/{record}/edit'),
         ];
-
-        $user = Auth::user();
-        if ($user && $user->role === 'admin') {
-            $pages['create'] = CreatePayment::route('/create');
-            $pages['edit'] = EditPayment::route('/{record}/edit');
-        }
-
-        return $pages;
     }
 
     public static function getNavigationBadge(): ?string
@@ -105,9 +104,9 @@ class PaymentResource extends Resource
             return null;
         }
 
-        if ($user->role === 'admin') {
+        if ($user->role === UserRole::ADMIN) {
             return static::getModel()::where('payment_status', 'pending')->count();
-        } elseif ($user->role === 'owner') {
+        } elseif ($user->role === UserRole::OWNER) {
             return static::getModel()::whereHas('booking.vehicle', fn ($q) => $q->where('owner_id', $user->id))
                 ->where('payment_status', 'pending')->count();
         } else {
