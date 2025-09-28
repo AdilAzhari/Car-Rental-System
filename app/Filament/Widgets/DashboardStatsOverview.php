@@ -369,13 +369,13 @@ class DashboardStatsOverview extends BaseWidget
             ", [$currentMonth, $user->id]);
 
             // Get review stats
-            $reviewStats = DB::selectOne("
+            $reviewStats = DB::selectOne('
                 SELECT
                     COUNT(*) as total,
                     SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as current_month
                 FROM car_rental_reviews
                 WHERE user_id = ?
-            ", [$currentMonth, $user->id]);
+            ', [$currentMonth, $user->id]);
 
             return [
                 'bookings' => $bookingStats ?: (object) ['total' => 0, 'active' => 0, 'pending' => 0, 'completed' => 0, 'current_month' => 0],

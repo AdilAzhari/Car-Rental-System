@@ -19,7 +19,7 @@ class FilamentCacheService
 
     public static function getWidgetData(string $widget, callable $callback, ?int $ttl = null): mixed
     {
-        if (!config('filament.cache.widgets.enabled', true)) {
+        if (! config('filament.cache.widgets.enabled', true)) {
             return $callback();
         }
 
@@ -32,7 +32,7 @@ class FilamentCacheService
 
     public static function getResourceData(string $resource, callable $callback, ?int $ttl = null): mixed
     {
-        if (!config('filament.cache.resources.enabled', true)) {
+        if (! config('filament.cache.resources.enabled', true)) {
             return $callback();
         }
 
@@ -44,7 +44,7 @@ class FilamentCacheService
 
     public static function getNavigationData(string $panel, callable $callback, ?int $ttl = null): mixed
     {
-        if (!config('filament.cache.navigation.enabled', true)) {
+        if (! config('filament.cache.navigation.enabled', true)) {
             return $callback();
         }
 

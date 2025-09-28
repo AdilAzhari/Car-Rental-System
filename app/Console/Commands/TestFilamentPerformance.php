@@ -30,7 +30,7 @@ class TestFilamentPerformance extends Command
             ['Active Bookings', $stats['active_bookings']],
             ['Today Revenue', $stats['today_revenue']],
             ['Average Rating', $stats['avg_rating']],
-            ['Execution Time', round($dashboardTime * 1000, 2) . 'ms'],
+            ['Execution Time', round($dashboardTime * 1000, 2).'ms'],
         ]);
 
         // Test 2: Optimized vs Non-optimized Queries
@@ -46,8 +46,8 @@ class TestFilamentPerformance extends Command
         $regularTime = microtime(true) - $startTime;
 
         $this->table(['Query Type', 'Records', 'Time (ms)', 'Improvement'], [
-            ['Optimized Booking Query', $optimizedBookings->count(), round($optimizedTime * 1000, 2) . 'ms', '-'],
-            ['Regular Booking Query', $regularBookings->count(), round($regularTime * 1000, 2) . 'ms', round((($regularTime - $optimizedTime) / $regularTime) * 100, 1) . '%'],
+            ['Optimized Booking Query', $optimizedBookings->count(), round($optimizedTime * 1000, 2).'ms', '-'],
+            ['Regular Booking Query', $regularBookings->count(), round($regularTime * 1000, 2).'ms', round((($regularTime - $optimizedTime) / $regularTime) * 100, 1).'%'],
         ]);
 
         // Test 3: User Query Performance
@@ -60,8 +60,8 @@ class TestFilamentPerformance extends Command
         $regularUserTime = microtime(true) - $startTime;
 
         $this->table(['Query Type', 'Records', 'Time (ms)', 'Improvement'], [
-            ['Optimized User Query', $optimizedUsers->count(), round($optimizedUserTime * 1000, 2) . 'ms', '-'],
-            ['Regular User Query', $regularUsers->count(), round($regularUserTime * 1000, 2) . 'ms', round((($regularUserTime - $optimizedUserTime) / $regularUserTime) * 100, 1) . '%'],
+            ['Optimized User Query', $optimizedUsers->count(), round($optimizedUserTime * 1000, 2).'ms', '-'],
+            ['Regular User Query', $regularUsers->count(), round($regularUserTime * 1000, 2).'ms', round((($regularUserTime - $optimizedUserTime) / $regularUserTime) * 100, 1).'%'],
         ]);
 
         // Test 4: Vehicle Query Performance
@@ -74,8 +74,8 @@ class TestFilamentPerformance extends Command
         $regularVehicleTime = microtime(true) - $startTime;
 
         $this->table(['Query Type', 'Records', 'Time (ms)', 'Improvement'], [
-            ['Optimized Vehicle Query', $optimizedVehicles->count(), round($optimizedVehicleTime * 1000, 2) . 'ms', '-'],
-            ['Regular Vehicle Query', $regularVehicles->count(), round($regularVehicleTime * 1000, 2) . 'ms', round((($regularVehicleTime - $optimizedVehicleTime) / $regularVehicleTime) * 100, 1) . '%'],
+            ['Optimized Vehicle Query', $optimizedVehicles->count(), round($optimizedVehicleTime * 1000, 2).'ms', '-'],
+            ['Regular Vehicle Query', $regularVehicles->count(), round($regularVehicleTime * 1000, 2).'ms', round((($regularVehicleTime - $optimizedVehicleTime) / $regularVehicleTime) * 100, 1).'%'],
         ]);
 
         // Test 5: Database Query Count
@@ -101,7 +101,7 @@ class TestFilamentPerformance extends Command
 
         $this->table(['Approach', 'Queries Executed', 'Reduction'], [
             ['Optimized (Eager Loading)', $optimizedQueries, '-'],
-            ['Regular (N+1 Problem)', $regularQueries, round((($regularQueries - $optimizedQueries) / $regularQueries) * 100, 1) . '%'],
+            ['Regular (N+1 Problem)', $regularQueries, round((($regularQueries - $optimizedQueries) / $regularQueries) * 100, 1).'%'],
         ]);
 
         // Test 6: Bulk Operations Performance
@@ -119,8 +119,8 @@ class TestFilamentPerformance extends Command
             $regularBulkTime = microtime(true) - $startTime;
 
             $this->table(['Operation Type', 'Records', 'Time (ms)', 'Improvement'], [
-                ['Optimized Bulk Query', count($sampleIds), round($bulkTime * 1000, 2) . 'ms', '-'],
-                ['Regular Bulk Query', count($sampleIds), round($regularBulkTime * 1000, 2) . 'ms', round((($regularBulkTime - $bulkTime) / $regularBulkTime) * 100, 1) . '%'],
+                ['Optimized Bulk Query', count($sampleIds), round($bulkTime * 1000, 2).'ms', '-'],
+                ['Regular Bulk Query', count($sampleIds), round($regularBulkTime * 1000, 2).'ms', round((($regularBulkTime - $bulkTime) / $regularBulkTime) * 100, 1).'%'],
             ]);
         } else {
             $this->warn('No booking records found for bulk operation testing.');
@@ -136,7 +136,7 @@ class TestFilamentPerformance extends Command
         $this->line('   • Cached dashboard statistics');
 
         if ($dashboardTime > 0.1) {
-            $this->warn('⚠️  Dashboard stats query is slow (>' . round($dashboardTime * 1000) . 'ms). Consider adding database indexes.');
+            $this->warn('⚠️  Dashboard stats query is slow (>'.round($dashboardTime * 1000).'ms). Consider adding database indexes.');
         }
 
         return self::SUCCESS;

@@ -34,6 +34,7 @@ class BookingsTable
             ->modifyQueryUsing(function ($query) use ($optimizationService) {
                 // Apply query optimizations
                 $query = $optimizationService->optimizePagination($query, 25);
+
                 return $optimizationService->monitorQueryPerformance($query, 'BookingsTable');
             })
             ->columns([

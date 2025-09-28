@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\FilamentCacheService;
 use Illuminate\Console\Command;
 
 class OptimizePerformance extends Command
@@ -68,10 +67,10 @@ class OptimizePerformance extends Command
     {
         $process = popen($command, 'r');
         if ($process) {
-            while (!feof($process)) {
+            while (! feof($process)) {
                 $line = fgets($process);
                 if ($line) {
-                    $this->line('   ' . trim($line));
+                    $this->line('   '.trim($line));
                 }
             }
             $exitCode = pclose($process);
