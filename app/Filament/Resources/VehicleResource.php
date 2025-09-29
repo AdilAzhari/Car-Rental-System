@@ -460,6 +460,7 @@ class VehicleResource extends Resource
 
                 BadgeColumn::make('category')
                     ->label(__('resources.category'))
+                    ->formatStateUsing(fn ($state): string => $state ? ucfirst((string) $state) : 'N/A')
                     ->colors([
                         'success' => 'economy',
                         'info' => 'compact',
@@ -467,6 +468,10 @@ class VehicleResource extends Resource
                         'primary' => 'fullsize',
                         'danger' => 'luxury',
                         'gray' => 'suv',
+                        'orange' => 'sports',
+                        'purple' => 'pickup',
+                        'indigo' => 'minivan',
+                        'emerald' => 'convertible',
                     ]),
 
                 BadgeColumn::make('status')
