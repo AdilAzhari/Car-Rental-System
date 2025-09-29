@@ -2,16 +2,18 @@
 
 namespace App\Services;
 
+use App\Filament\Widgets\DashboardStatsOverview;
 use Illuminate\Support\Facades\Cache;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class FilamentCacheService
 {
     public static function getCacheKey(string $type, ?string $identifier = null): string
     {
-        $key = "filament.{$type}";
+        $key = "filament.$type";
 
         if ($identifier) {
-            $key .= ".{$identifier}";
+            $key .= ".$identifier";
         }
 
         return $key;
@@ -54,6 +56,9 @@ class FilamentCacheService
         return Cache::remember($key, $ttl, $callback);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function clearWidgetCache(?string $widget = null): void
     {
         if ($widget) {
@@ -100,6 +105,9 @@ class FilamentCacheService
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function clearAllCache(): void
     {
         self::clearWidgetCache();
@@ -113,7 +121,7 @@ class FilamentCacheService
         // This can be called during deployment or via a scheduled command
 
         // Example: Pre-load dashboard stats
-        app(\App\Filament\Widgets\DashboardStatsOverview::class)->getCachedData();
+        app(DashboardStatsOverview::class)->getCachedData();
 
         // Example: Pre-load navigation
         // Navigation will be cached on first load

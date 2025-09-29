@@ -275,11 +275,15 @@ class ActivityLogResource extends Resource
                         Payment::class => __('resources.payment'),
                     ]),
 
-                SelectFilter::make('user_id')
+                SelectFilter::make('causer_id')
                     ->label(__('resources.user'))
-//                    ->relationship('causer', 'causer')
+                    ->options(fn () => User::pluck('name', 'id')->toArray())
                     ->searchable()
-                    ->preload(),
+                    ->query(fn (Builder $builder, array $data) => $builder->when(
+                        $data['value'],
+                        fn (Builder $builder, $value): Builder => $builder->where('causer_id', $value)
+                            ->where('causer_type', User::class)
+                    )),
 
                 Filter::make('created_at')
                     ->form([

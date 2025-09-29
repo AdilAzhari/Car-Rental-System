@@ -71,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->plugins([
-                SpotlightPlugin::make()
+                SpotlightPlugin::make(),
             ])
             ->sidebarCollapsibleOnDesktop()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

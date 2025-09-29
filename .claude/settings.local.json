@@ -85,7 +85,9 @@
       "Bash(git rebase:*)",
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --msg-filter 'sed \"\"s/🤖 Generated with \\[Claude Code\\](.*)//\"\" | sed \"\"/^Co-Authored-By: Claude <noreply@anthropic.com>/d\"\" | sed \"\"/^$/d\"\"' -- --all)",
       "Bash(git show:*)",
-      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --msg-filter 'sed \"\"s/🤖 Generated with \\[Claude Code\\](.*)//g\"\" | sed \"\"/^Co-Authored-By: Claude <noreply@anthropic.com>/d\"\" | sed \"\"/^$/d\"\"' -- --all)"
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --msg-filter 'sed \"\"s/🤖 Generated with \\[Claude Code\\](.*)//g\"\" | sed \"\"/^Co-Authored-By: Claude <noreply@anthropic.com>/d\"\" | sed \"\"/^$/d\"\"' -- --all)",
+      "Bash(for hash in 653b3b9 752d586 5417f48 d450cf8 571042d)",
+      "Bash(do echo \"=== Checking commit $hash ===\" git show --format=\"%B\" -s $hash)"
     ],
     "deny": [],
     "ask": []

@@ -70,6 +70,54 @@ class ActivityLogInfolist
                             ]),
                     ]),
 
+                Section::make(__('resources.values_properties'))
+                    ->description(__('resources.values_properties_description'))
+                    ->icon('heroicon-m-document-text')
+                    ->schema([
+                        TextEntry::make('properties')
+                            ->label(__('resources.properties'))
+                            ->formatStateUsing(function ($state, $record): string {
+                                if (! $state || (is_object($state) && method_exists($state, 'isEmpty') && $state->isEmpty()) || ($state === [])) {
+                                    return __('resources.no_properties_available');
+                                }
+
+                                $output = '';
+                                $properties = is_array($state) ? $state : $state->toArray();
+
+                                foreach ($properties as $key => $value) {
+                                    $output .= "**{$key}:**\n";
+
+                                    if (is_array($value) || is_object($value)) {
+                                        $output .= "```json\n".json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n```\n\n";
+                                    } elseif (is_bool($value)) {
+                                        $output .= ($value ? 'true' : 'false')."\n\n";
+                                    } elseif (is_null($value)) {
+                                        $output .= "null\n\n";
+                                    } else {
+                                        $output .= $value."\n\n";
+                                    }
+                                }
+
+                                return $output;
+                            })
+                            ->markdown()
+                            ->columnSpanFull()
+                            ->visible(fn ($record): bool => $record->properties && (
+                                (is_object($record->properties) && method_exists($record->properties, 'isNotEmpty') && $record->properties->isNotEmpty()) ||
+                                (is_array($record->properties) && $record->properties !== [])
+                            )),
+
+                        TextEntry::make('properties')
+                            ->label(__('resources.no_properties'))
+                            ->formatStateUsing(fn (): string => __('resources.no_properties_available'))
+                            ->visible(fn ($record): bool => ! $record->properties || (
+                                (is_object($record->properties) && method_exists($record->properties, 'isEmpty') && $record->properties->isEmpty()) ||
+                                (is_array($record->properties) && $record->properties === [])
+                            ))
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
+
                 Section::make(__('resources.system_information'))
                     ->icon('heroicon-m-clock')
                     ->schema([

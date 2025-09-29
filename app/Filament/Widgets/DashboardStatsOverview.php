@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\UserRole;
 use App\Helpers\CurrencyHelper;
 use App\Models\Booking;
 use App\Models\Review;
@@ -32,7 +33,7 @@ class DashboardStatsOverview extends BaseWidget
     {
         $user = auth()->user();
 
-        return "dashboard_stats_{$prefix}_{$user->role}_{$user->id}_".now()->format('Y-m-d-H');
+        return "dashboard_stats_{$prefix}_{$user->role->value}_{$user->id}_".now()->format('Y-m-d-H');
     }
 
     private function getCachedData(string $key, callable $callback, int $ttl = 3600)
@@ -48,9 +49,9 @@ class DashboardStatsOverview extends BaseWidget
         $lastMonth = now()->subMonth()->startOfMonth();
 
         // Generate stats based on user role
-        if ($user->role === 'admin') {
+        if ($user->role === UserRole::ADMIN) {
             return $this->getAdminStats($currentMonth, $lastMonth);
-        } elseif ($user->role === 'owner') {
+        } elseif ($user->role === UserRole::OWNER) {
             return $this->getOwnerStats($user, $currentMonth, $lastMonth);
         } else {
             return $this->getRenterStats();
@@ -186,7 +187,7 @@ class DashboardStatsOverview extends BaseWidget
             WITH RECURSIVE date_series AS (
                 SELECT DATE(?) as date
                 UNION ALL
-                SELECT DATE(date, '+1 day')
+                SELECT DATE_ADD(date, INTERVAL 1 DAY)
                 FROM date_series
                 WHERE date < DATE(?)
             )

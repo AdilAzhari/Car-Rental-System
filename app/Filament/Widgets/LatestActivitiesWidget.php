@@ -20,7 +20,7 @@ class LatestActivitiesWidget extends BaseWidget
         return $table
             ->query(Activity::query()->latest()->limit(10))
             ->columns([
-                Tables\Columns\TextColumn::make(__('widgets.description'))
+                Tables\Columns\TextColumn::make('description')
                     ->label(__('resources.activity'))
                     ->searchable()
                     ->limit(50)
@@ -30,7 +30,7 @@ class LatestActivitiesWidget extends BaseWidget
                         return strlen($state) > 50 ? $state : null;
                     }),
 
-                Tables\Columns\BadgeColumn::make(__('widgets.event'))
+                Tables\Columns\BadgeColumn::make('event')
                     ->label(__('widgets.event'))
                     ->colors([
                         'success' => 'created',
@@ -41,7 +41,7 @@ class LatestActivitiesWidget extends BaseWidget
                         'gray' => 'default',
                     ]),
 
-                Tables\Columns\TextColumn::make(__('widgets.subject_type'))
+                Tables\Columns\TextColumn::make('subject_type')
                     ->label(__('widgets.subject'))
                     ->formatStateUsing(fn ($state): string => $state ? class_basename($state) : 'System')
                     ->badge()

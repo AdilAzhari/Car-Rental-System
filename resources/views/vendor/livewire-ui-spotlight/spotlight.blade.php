@@ -21,7 +21,7 @@
          @endforeach
          @keydown.window.escape="isOpen = false"
          @toggle-spotlight.window="toggleOpen()"
-         class="fixed z-50 px-4 pt-16 flex items-start justify-center inset-0 sm:pt-24">
+         class="fixed z-50 px-4 pt-4 flex items-start justify-center inset-0 sm:pt-8">
         <div x-show="isOpen" @click="isOpen = false" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-150"
              x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
@@ -33,7 +33,7 @@
              x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95"
-             class="relative bg-gray-900 rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+             class="relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transform transition-all max-w-2xl w-full">
             <div class="relative">
                 <div class="absolute h-full right-5 flex items-center">
                     <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -48,19 +48,31 @@
                        @keydown.prevent.arrow-down="selectDown()" x-ref="input" x-model="input"
                        type="text"
                        style="caret-color: #6b7280; border: 0 !important;"
-                       class="appearance-none w-full bg-transparent px-6 py-4 text-gray-300 text-lg placeholder-gray-500 focus:border-0 focus:border-transparent focus:shadow-none outline-none focus:outline-none"
+                       class="appearance-none w-full bg-transparent px-6 py-5 text-gray-900 dark:text-gray-100 text-lg placeholder-gray-400 dark:placeholder-gray-500 focus:border-0 focus:border-transparent focus:shadow-none outline-none focus:outline-none"
                        x-bind:placeholder="inputPlaceholder">
             </div>
-            <div class="border-t border-gray-800" x-show="filteredItems().length > 0" style="display: none;">
-                <ul x-ref="results" style="max-height: 265px;" class="overflow-y-auto">
+            <div class="border-t border-gray-200 dark:border-gray-700" x-show="filteredItems().length > 0" style="display: none;">
+                <ul x-ref="results" style="max-height: 320px;" class="overflow-y-auto">
                     <template x-for="(item, i) in filteredItems()" :key>
                         <li>
-                            <button @click="go(item[0].item.id)" class="block w-full px-6 py-3 text-left"
-                                    :class="{ 'bg-gray-700': selected === i, 'hover:bg-gray-800': selected !== i }">
-                                <span x-text="item[0].item.name"
-                                      :class="{'text-gray-300': selected !== i, 'text-white': selected === i }"></span>
-                                <span x-text="item[0].item.description" class="ml-1"
-                                      :class="{'text-gray-500': selected !== i, 'text-gray-400': selected === i }"></span>
+                            <button @click="go(item[0].item.id)" class="block w-full px-6 py-4 text-left border-l-4 border-transparent transition-all duration-150"
+                                    :class="{
+                                        'bg-gray-50 dark:bg-gray-800 border-l-blue-500': selected === i,
+                                        'hover:bg-gray-50 dark:hover:bg-gray-800': selected !== i
+                                    }">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span x-text="item[0].item.name" class="block font-medium"
+                                              :class="{'text-gray-900 dark:text-gray-100': selected !== i, 'text-blue-700 dark:text-blue-300': selected === i }"></span>
+                                        <span x-text="item[0].item.description" class="block text-sm mt-1"
+                                              :class="{'text-gray-500 dark:text-gray-400': selected !== i, 'text-blue-600 dark:text-blue-400': selected === i }"></span>
+                                    </div>
+                                    <div x-show="selected === i" class="text-gray-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
                             </button>
                         </li>
                     </template>

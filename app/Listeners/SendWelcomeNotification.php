@@ -22,6 +22,13 @@ class SendWelcomeNotification implements ShouldQueue
     {
         $user = $event->user;
 
+        // Always update last login time for Login events
+        if ($event instanceof Login) {
+            $user->update([
+                'last_login_at' => now(),
+            ]);
+        }
+
         // Only send welcome notification for new users
         if ($user->is_new_user) {
             // Send welcome notification
@@ -31,11 +38,6 @@ class SendWelcomeNotification implements ShouldQueue
             if (! $user->has_changed_default_password) {
                 $user->notify((new PasswordChangeReminder)->delay(now()->addDays(7)));
             }
-
-            // Update last login time
-            $user->update([
-                'last_login_at' => now(),
-            ]);
         }
     }
 }
