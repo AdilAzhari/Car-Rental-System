@@ -46,6 +46,8 @@ Route::get('/cars/{id}/reserve', [ReservationController::class, 'reserve'])->nam
 // Payment routes (payment checkout and return)
 Route::get('/booking/{booking}/payment', [BookingController::class, 'paymentCheckout'])->name('booking.payment.checkout');
 Route::get('/booking/payment/return/{booking}', [BookingController::class, 'paymentReturn'])->name('booking.payment.return');
+Route::get('/booking/payment/success/{booking}', [BookingController::class, 'paymentSuccess'])->name('booking.payment.success');
+Route::get('/booking/payment/cancel/{booking}', [BookingController::class, 'paymentCancel'])->name('booking.payment.cancel');
 
 // Authenticated routes
 Route::middleware('auth')->group(function (): void {

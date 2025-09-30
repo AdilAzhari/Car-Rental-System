@@ -28,6 +28,7 @@ class PaymentService
 
         return match ($paymentMethod) {
             'stripe', 'visa', 'credit' => $this->processStripePayment($booking, $paymentData),
+            'stripe_checkout' => $this->processStripeCheckout($booking),
             'tng', 'touch_n_go' => $this->processTouchNGoPayment($booking),
             'cash' => $this->processCashPayment($booking),
             'bank_transfer' => $this->processBankTransferPayment($booking),
@@ -112,6 +113,31 @@ class PaymentService
                 'message' => 'Payment processing failed: '.$e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Process Stripe Checkout payment (redirect to hosted checkout)
+     */
+    private function processStripeCheckout(Booking $booking): array
+    {
+        // For Stripe Checkout, we just need to set the booking to pending_payment status
+        // The actual payment processing happens via the checkout session
+        $booking->update([
+            'status' => 'pending_payment',
+            'payment_status' => 'pending',
+        ]);
+
+        Log::info('Booking prepared for Stripe Checkout', [
+            'booking_id' => $booking->id,
+            'payment_method' => 'stripe_checkout',
+        ]);
+
+        return [
+            'success' => true,
+            'status' => 'pending_checkout',
+            'message' => 'Booking created. Redirecting to payment...',
+            'redirect_to_checkout' => true,
+        ];
     }
 
     /**

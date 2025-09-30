@@ -32,8 +32,8 @@ class NewBookingForOwner extends Notification implements ShouldQueue
             ->line('Renter: '.$this->booking->renter->first_name.' '.$this->booking->renter->last_name)
             ->line('Dates: '.$this->booking->start_date->format('M d, Y').' - '.$this->booking->end_date->format('M d, Y'))
             ->line('Total Amount: $'.number_format($this->booking->total_amount, 2))
-            ->line('Payment Method: '.ucfirst($this->booking->payment_method))
-            ->line('Status: '.ucfirst($this->booking->status))
+            ->line('Payment Method: '.ucfirst(is_string($this->booking->payment_method) ? $this->booking->payment_method : $this->booking->payment_method->value))
+            ->line('Status: '.ucfirst((string) $this->booking->status->value))
             ->action('View Booking Details', config('app.frontend_url').'/owner/bookings/'.$this->booking->id)
             ->line('Please prepare your vehicle for the rental period.');
     }

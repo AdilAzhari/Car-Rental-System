@@ -25,7 +25,7 @@ class PaymentController extends Controller
     {
         $request->validate([
             'booking_id' => 'required|exists:car_rental_bookings,id',
-            'payment_method' => 'required|in:stripe,visa,credit,tng,touch_n_go,cash,bank_transfer',
+            'payment_method' => 'required|in:stripe,stripe_checkout,visa,credit,tng,touch_n_go,cash,bank_transfer',
             'payment_method_id' => 'sometimes|string', // For Stripe payments
         ]);
 
@@ -190,6 +190,112 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create payment intent.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Create Stripe Checkout session for car booking
+     */
+    public function createCheckoutSession(Request $request): JsonResponse
+    {
+        $request->validate([
+            'booking_id' => 'required|exists:car_rental_bookings,id',
+        ]);
+
+        try {
+            $booking = Booking::with('vehicle')->findOrFail($request->booking_id);
+
+            // Check if user owns this booking
+            if ($booking->renter_id !== $request->user()->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access to booking.',
+                ], 403);
+            }
+
+            // Check if booking is in valid state for payment
+            if (! in_array($booking->status, ['pending', 'pending_payment'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This booking cannot be paid for.',
+                ], 400);
+            }
+
+            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+            $session = \Stripe\Checkout\Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => strtolower((string) config('app.currency', 'myr')),
+                        'product_data' => [
+                            'name' => "{$booking->vehicle->make} {$booking->vehicle->model} Rental",
+                            'description' => "Car rental from {$booking->start_date} to {$booking->end_date}",
+                            'images' => $booking->vehicle->featured_image ? [asset('storage/'.$booking->vehicle->featured_image)] : [],
+                        ],
+                        'unit_amount' => (int) ($booking->total_amount * 100), // Convert to cents
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('booking.payment.success', [
+                    'booking' => $booking->id,
+                    'session_id' => '{CHECKOUT_SESSION_ID}',
+                ]),
+                'cancel_url' => route('booking.payment.cancel', $booking->id),
+                'metadata' => [
+                    'booking_id' => $booking->id,
+                    'user_id' => $booking->renter_id,
+                    'vehicle_id' => $booking->vehicle_id,
+                ],
+                'customer_email' => $request->user()->email,
+                'expires_at' => now()->addMinutes(30)->timestamp, // Session expires in 30 minutes
+            ]);
+
+            // Create a pending payment record
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $booking->total_amount,
+                'payment_method' => 'stripe',
+                'payment_gateway' => 'stripe',
+                'gateway_transaction_id' => $session->id,
+                'status' => 'pending',
+                'gateway_response' => json_encode([
+                    'session_id' => $session->id,
+                    'session_url' => $session->url,
+                ]),
+                'processed_at' => now(),
+            ]);
+
+            // Update booking status
+            $booking->update([
+                'status' => 'pending_payment',
+                'payment_status' => 'pending',
+            ]);
+
+            Log::info('Stripe Checkout session created', [
+                'booking_id' => $booking->id,
+                'session_id' => $session->id,
+                'user_id' => $request->user()->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'checkout_url' => $session->url,
+                'session_id' => $session->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Stripe Checkout session creation failed', [
+                'user_id' => $request->user()->id,
+                'booking_id' => $request->booking_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create payment session.',
             ], 500);
         }
     }

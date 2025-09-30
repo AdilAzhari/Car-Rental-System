@@ -47,6 +47,17 @@ return [
         'cache_hours' => env('TRAFFIC_CACHE_HOURS', 24),
     ],
 
+    'jpj_sms' => [
+        'api_key' => env('JPJ_SMS_API_KEY'),
+        'provider_url' => env('JPJ_SMS_PROVIDER_URL'),
+        'jpj_number' => env('JPJ_NUMBER', '32728'),
+    ],
+
+    'maxis_api' => [
+        'key' => env('MAXIS_API_KEY'),
+        'endpoint' => env('MAXIS_API_ENDPOINT', 'https://api.maxis.com.my'),
+    ],
+
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),

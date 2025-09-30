@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\TwilioWebhookController;
 use App\Http\Controllers\Api\UserFavoritesController;
+use App\Http\Controllers\Api\VehicleAvailabilityController;
 use App\Http\Controllers\ImageUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,10 +16,22 @@ Route::middleware(['auth:sanctum'])->get('/user', fn (Request $request) => $requ
 Route::middleware(['throttle:60,1'])->group(function (): void {
     Route::get('/cars', [CarController::class, 'index']);
     Route::get('/cars/{id}', [CarController::class, 'show']);
+
+    // Vehicle availability routes (public for browsing)
+    Route::get('/vehicles/{vehicleId}/availability/calendar', [VehicleAvailabilityController::class, 'getAvailabilityCalendar']);
+    Route::post('/vehicles/check-availability', [VehicleAvailabilityController::class, 'checkDateRangeAvailability']);
+    Route::get('/vehicles/{vehicleId}/availability/next-available', [VehicleAvailabilityController::class, 'getNextAvailableDates']);
+    Route::post('/vehicles/availability/summary', [VehicleAvailabilityController::class, 'getAvailabilitySummary']);
 });
 
 // Public webhook routes (no rate limit for webhooks)
 Route::post('/webhooks/stripe', [PaymentController::class, 'stripeWebhook']);
+Route::post('/webhooks/twilio/sms', [TwilioWebhookController::class, 'handleSms']);
+Route::post('/webhooks/twilio/call', [TwilioWebhookController::class, 'handleCall']);
+Route::post('/webhooks/jpj-response', [TwilioWebhookController::class, 'handleSms'])->name('api.webhooks.jpj-response');
+
+// Test route for webhook (remove in production)
+Route::post('/webhooks/twilio/test', [TwilioWebhookController::class, 'test']);
 
 // Protected routes with different rate limits based on action sensitivity
 Route::middleware(['auth:sanctum'])->group(function (): void {
@@ -47,6 +61,7 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::post('/payments/process', [PaymentController::class, 'processPayment']);
         Route::post('/payments/intent', [PaymentController::class, 'createPaymentIntent']);
+        Route::post('/payments/checkout', [PaymentController::class, 'createCheckoutSession']);
         Route::post('/payments/{paymentId}/refund', [PaymentController::class, 'processRefund']);
     });
 

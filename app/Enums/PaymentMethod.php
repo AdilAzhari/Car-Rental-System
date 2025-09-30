@@ -6,6 +6,7 @@ namespace App\Enums;
 
 enum PaymentMethod: string
 {
+    case STRIPE_CHECKOUT = 'stripe_checkout';
     case VISA = 'visa';
     case CREDIT = 'credit';
     case CASH = 'cash';
@@ -29,6 +30,7 @@ enum PaymentMethod: string
     public function label(): string
     {
         return match ($this) {
+            self::STRIPE_CHECKOUT => __('enums.payment_method.stripe_checkout'),
             self::VISA => __('enums.payment_method.visa'),
             self::CREDIT => __('enums.payment_method.credit_card'),
             self::CASH => __('enums.payment_method.cash'),
@@ -57,6 +59,7 @@ enum PaymentMethod: string
     public function icon(): string
     {
         return match ($this) {
+            self::STRIPE_CHECKOUT => 'credit-card',
             self::VISA => 'credit-card',
             self::CREDIT => 'credit-card',
             self::CASH => 'banknotes',

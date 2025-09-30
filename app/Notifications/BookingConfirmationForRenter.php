@@ -31,14 +31,14 @@ class BookingConfirmationForRenter extends Notification implements ShouldQueue
             ->line('Vehicle: '.$this->booking->vehicle->make.' '.$this->booking->vehicle->model)
             ->line('Dates: '.$this->booking->start_date->format('M d, Y').' - '.$this->booking->end_date->format('M d, Y'))
             ->line('Total Amount: $'.number_format($this->booking->total_amount, 2))
-            ->line('Status: '.ucfirst($this->booking->status));
+            ->line('Status: '.ucfirst((string) $this->booking->status->value));
 
         if ($this->booking->payment_method === 'cash') {
             $mailMessage->line('**Payment Method:** Cash')
                 ->line('Please contact our office to complete the payment process.')
                 ->line('Your booking is pending approval and will be confirmed once payment is received.');
         } else {
-            $mailMessage->line('**Payment Method:** '.ucfirst($this->booking->payment_method));
+            $mailMessage->line('**Payment Method:** '.ucfirst(is_string($this->booking->payment_method) ? $this->booking->payment_method : $this->booking->payment_method->value));
         }
 
         return $mailMessage->action('View Booking', config('app.frontend_url').'/bookings/'.$this->booking->id)

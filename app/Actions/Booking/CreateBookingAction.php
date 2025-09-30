@@ -6,9 +6,11 @@ use App\DTOs\BookingCalculationDTO;
 use App\DTOs\CreateBookingDTO;
 use App\Events\BookingCreated;
 use App\Models\Booking;
+use App\Services\BookingConflictResolutionService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 readonly class CreateBookingAction
@@ -16,7 +18,8 @@ readonly class CreateBookingAction
     public function __construct(
         private PaymentService $paymentService,
         private ValidateVehicleAvailabilityAction $validateVehicleAvailabilityAction,
-        private TransactionService $transactionService
+        private TransactionService $transactionService,
+        private BookingConflictResolutionService $bookingConflictResolutionService
     ) {}
 
     public function execute(array $validatedData): Booking
@@ -110,16 +113,38 @@ readonly class CreateBookingAction
                     'auth_user' => auth()->user()->toArray(),
                 ]);
 
-                // Create booking
-                $booking = Booking::query()->create($bookingData);
+                // Create booking with database constraint handling
+                try {
+                    $booking = Booking::query()->create($bookingData);
 
-                Log::info('✨ BOOKING CREATED SUCCESSFULLY', [
-                    'user_id' => auth()->id(),
-                    'booking_id' => $booking->id,
-                    'booking_exists_in_db' => Booking::query()->where('id', $booking->id)->exists(),
-                    'created_at' => $booking->created_at,
-                    'booking_data' => $booking->toArray(),
-                ]);
+                    Log::info('✨ BOOKING CREATED SUCCESSFULLY', [
+                        'user_id' => auth()->id(),
+                        'booking_id' => $booking->id,
+                        'booking_exists_in_db' => Booking::query()->where('id', $booking->id)->exists(),
+                        'created_at' => $booking->created_at,
+                        'booking_data' => $booking->toArray(),
+                    ]);
+                } catch (QueryException $e) {
+                    // Handle database constraint violations (booking overlap triggers)
+                    if (str_contains($e->getMessage(), 'already booked during the selected time period')) {
+                        Log::warning('Database constraint violation - booking overlap detected', [
+                            'user_id' => auth()->id(),
+                            'vehicle_id' => $vehicle->id,
+                            'dates' => "{$createBookingDTO->startDate->toDateString()} to {$createBookingDTO->endDate->toDateString()}",
+                            'error' => $e->getMessage(),
+                        ]);
+
+                        // Use conflict resolution service to provide helpful error message
+                        throw $this->bookingConflictResolutionService->handleDatabaseConflict(
+                            $vehicle->id,
+                            $createBookingDTO->startDate->toDateString(),
+                            $createBookingDTO->endDate->toDateString()
+                        );
+                    }
+
+                    // Re-throw other database exceptions
+                    throw $e;
+                }
 
                 // Process payment for card payments
                 if ($createBookingDTO->paymentMethod === 'visa' || $createBookingDTO->paymentMethod === 'credit') {

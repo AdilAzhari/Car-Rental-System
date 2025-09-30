@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\ConcurrentBookingTest" file="Concurrent Booking (Tests\Feature\ConcurrentBooking)" tests="1" assertions="3" errors="0" failures="0" skipped="0" time="2.513034">
+    <testcase name="Allows non overlapping bookings" file="Concurrent Booking (Tests\Feature\ConcurrentBooking)::Allows non overlapping bookings" class="Tests\Feature\ConcurrentBookingTest" classname="Tests.Feature.ConcurrentBookingTest" assertions="3" time="2.513034"/>
+  </testsuite>
+</testsuites>

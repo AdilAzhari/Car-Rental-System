@@ -19,7 +19,7 @@
         "laravel/tinker": "^2.10",
         "livewire/livewire": "^3.0",
         "predis/predis": "*",
-        "pxlrbt/filament-spotlight": "*",
+        "pxlrbt/filament-spotlight": "^2.0",
         "spatie/laravel-activitylog": "^4.8",
         "stripe/stripe-php": "^17.6",
         "twilio/sdk": "*"

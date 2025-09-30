@@ -59,6 +59,50 @@ class VehicleRepository
             ->exists();
     }
 
+    /**
+     * Check vehicle availability with pessimistic locking to prevent race conditions
+     */
+    public function checkAvailabilityWithLock(int $vehicleId, string $startDate, string $endDate): bool
+    {
+        // First, lock the vehicle record to prevent concurrent modifications
+        $vehicle = Vehicle::query()
+            ->lockForUpdate()
+            ->findOrFail($vehicleId);
+
+        // Check if vehicle is available for booking
+        if (! $vehicle->is_available || $vehicle->status !== \App\Enums\VehicleStatus::PUBLISHED) {
+            return false;
+        }
+
+        // Check for overlapping bookings with pessimistic locking
+        $hasConflictingBookings = $vehicle->bookings()
+            ->lockForUpdate()
+            ->whereIn('status', ['confirmed', 'ongoing', 'pending'])
+            ->whereNull('deleted_at')
+            ->where(function ($query) use ($startDate, $endDate): void {
+                $query->where(function ($dateQuery) use ($startDate): void {
+                    // New booking starts during an existing booking
+                    $dateQuery->where('start_date', '<=', $startDate)
+                        ->where('end_date', '>', $startDate);
+                })->orWhere(function ($dateQuery) use ($endDate): void {
+                    // New booking ends during an existing booking
+                    $dateQuery->where('start_date', '<', $endDate)
+                        ->where('end_date', '>=', $endDate);
+                })->orWhere(function ($dateQuery) use ($startDate, $endDate): void {
+                    // New booking completely encompasses an existing booking
+                    $dateQuery->where('start_date', '>=', $startDate)
+                        ->where('end_date', '<=', $endDate);
+                })->orWhere(function ($dateQuery) use ($startDate, $endDate): void {
+                    // Existing booking completely encompasses new booking
+                    $dateQuery->where('start_date', '<=', $startDate)
+                        ->where('end_date', '>=', $endDate);
+                });
+            })
+            ->exists();
+
+        return ! $hasConflictingBookings;
+    }
+
     public function getOwnerVehicles(int $ownerId): Collection
     {
         return Vehicle::with(['images', 'bookings' => function ($query): void {

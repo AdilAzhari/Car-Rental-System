@@ -60,13 +60,45 @@
                         </div>
                     </div>
 
+                    <!-- Date Selection Calendar -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <VehicleAvailabilityCalendar
+                            v-if="car"
+                            :vehicle-id="car.id"
+                            :daily-rate="car.daily_rate"
+                            @date-selected="handleDateSelection"
+                            @error="handleCalendarError"
+                        />
+                        <div v-if="errors.calendar" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p class="text-sm text-red-700">{{ errors.calendar }}</p>
+                        </div>
+                    </div>
+
                     <!-- Booking Details Form -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Booking Details</h2>
-                        
+
                         <form @submit.prevent="submitReservation" class="space-y-4">
-                            <!-- Dates -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Selected Dates Display (Read-only) -->
+                            <div v-if="form.start_date && form.end_date" class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h3 class="font-medium text-blue-900 mb-2">Selected Dates</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-600">Check-in:</span>
+                                        <span class="font-medium text-gray-900 ml-2">{{ formatDisplayDate(form.start_date) }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Check-out:</span>
+                                        <span class="font-medium text-gray-900 ml-2">{{ formatDisplayDate(form.end_date) }}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-sm text-blue-700">
+                                    Duration: {{ bookingDays }} day{{ bookingDays !== 1 ? 's' : '' }} • Total: ${{ totalPrice.toFixed(2) }}
+                                </div>
+                            </div>
+
+                            <!-- Fallback Date Inputs (Hidden by default, shown if calendar fails) -->
+                            <div v-else-if="showFallbackDateInputs" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                                     <input
@@ -96,10 +128,46 @@
                                 </div>
                             </div>
 
+                            <!-- Prompt to select dates if none selected -->
+                            <div v-else class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    <p class="text-sm text-yellow-800">Please select your rental dates using the calendar above to continue.</p>
+                                </div>
+                            </div>
+
                             <!-- Payment Method -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
                                 <div class="space-y-3">
+                                    <!-- Stripe Checkout - Primary Payment Option -->
+                                    <label class="flex items-center p-4 border-2 border-blue-500 rounded-lg cursor-pointer bg-blue-50" :class="{'bg-blue-100': form.payment_method === 'stripe_checkout'}">
+                                        <input
+                                            v-model="form.payment_method"
+                                            type="radio"
+                                            value="stripe_checkout"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        >
+                                        <div class="ml-3 flex items-center justify-between w-full">
+                                            <div class="flex items-center">
+                                                <div class="flex space-x-1 mr-3">
+                                                    <!-- Stripe logo -->
+                                                    <svg class="w-12 h-8" viewBox="0 0 60 25" fill="none">
+                                                        <path d="M59.5 12.5c0-6.9-5.6-12.5-12.5-12.5s-12.5 5.6-12.5 12.5 5.6 12.5 12.5 12.5 12.5-5.6 12.5-12.5z" fill="#6772E5"/>
+                                                        <path d="M49.9 10.8c-.3-.7-.9-1.1-1.7-1.1-.5 0-.9.2-1.2.6v-.5h-.9v5.6h.9v-2.8c0-.9.4-1.4 1-1.4.6 0 .9.4.9 1.3v2.9h.9v-3.2c0-1.2-.5-1.4-.9-1.4zm-5.2-1.1c-.8 0-1.4.3-1.8.8v-.7h-.9v5.6h.9v-2.8c0-.9.4-1.4 1-1.4s.9.4.9 1.3v2.9h.9v-3.2c0-1.2-.5-1.4-.9-1.4zm-4.9.1c-.4 0-.8.1-1.1.4v-.3h-.9v5.6h.9v-3.4c.2-.2.5-.3.8-.3.3 0 .5.1.6.4l.8-.4c-.2-.7-.7-1-1.1-1zm-3.6-.1c-.9 0-1.5.7-1.5 1.6s.6 1.6 1.5 1.6c.4 0 .8-.1 1.1-.4l-.4-.7c-.2.2-.4.3-.7.3-.5 0-.8-.3-.8-.8s.3-.8.8-.8c.3 0 .5.1.7.3l.4-.7c-.3-.3-.7-.4-1.1-.4zm-3.1.1h-.9v3.1c0 .6-.3.9-.7.9s-.7-.3-.7-.9v-3.1h-.9v3.1c0 1.1.6 1.7 1.6 1.7s1.6-.6 1.6-1.7v-3.1zm-4.6-.1c-.9 0-1.5.7-1.5 1.6s.6 1.6 1.5 1.6 1.5-.7 1.5-1.6-.6-1.6-1.5-1.6zm0 2.4c-.4 0-.6-.4-.6-.8s.2-.8.6-.8.6.4.6.8-.2.8-.6.8zm-3.4-2.3h-.6v-.9h-.9v.9h-.4v.8h.4v2.1c0 .7.3 1.1 1 1.1.2 0 .4 0 .6-.1v-.8c-.1 0-.2.1-.3.1-.2 0-.3-.1-.3-.3v-2.1h.6v-.8zm-3.7-.1c-.4 0-.8.2-1 .5v-.4h-.9v4.4h.9v-1.6c.2.3.6.5 1 .5.8 0 1.4-.7 1.4-1.6s-.6-1.8-1.4-1.8zm-.2 2.6c-.4 0-.7-.3-.7-.8s.3-.8.7-.8.7.3.7.8-.3.8-.7.8zm-3.6-2.6c-.4 0-.8.2-1 .5v-.4h-.9v4.4h.9v-1.6c.2.3.6.5 1 .5.8 0 1.4-.7 1.4-1.6s-.6-1.8-1.4-1.8zm-.2 2.6c-.4 0-.7-.3-.7-.8s.3-.8.7-.8.7.3.7.8-.3.8-.7.8z" fill="white"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <div class="font-semibold text-gray-900">Secure Card Payment</div>
+                                                    <div class="text-sm text-gray-600">Powered by Stripe • Instant confirmation</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-sm text-blue-600 font-semibold bg-white px-2 py-1 rounded-full">Recommended</div>
+                                        </div>
+                                    </label>
+
                                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50" :class="{'bg-blue-50 border-blue-500': form.payment_method === 'visa'}">
                                         <input
                                             v-model="form.payment_method"
@@ -114,11 +182,10 @@
                                                     <path d="M18.5 11h-3.2l-2 10h3.2l2-10zm7.4 6.5c0-1.5-1.9-2.3-3-2.8-.7-.3-1.1-.5-1.1-.8 0-.4.4-.8 1.3-.8.7 0 1.2.2 1.6.3l.3-1.8c-.4-.1-1-.3-1.8-.3-1.9 0-3.3 1-3.3 2.4 0 1 .9 1.6 1.6 2 .7.4 1 .6 1 1s-.4.7-1.1.7c-.9 0-1.4-.3-1.8-.4l-.3 1.8c.4.2 1.2.3 2 .3 2.1-.1 3.6-1 3.6-2.5zm5.9-6.4c-.4 0-.8.2-1 .6l-3.6 8.8h2l.4-1.1h2.4l.2 1.1h1.8l-1.6-10h-1.6zm.3 7.1l1-2.7.6 2.7h-1.6zm-10.6-7.1l-1.9 6.8-.2-1c-.3-1-.6-2.1-1.9-2.6-.6-.2-1.4-.4-2.2-.4h-.1l.1.2c0 0 .8.2 1.6.6 1.2.7 1.4 1.6 1.8 3.1l1.2 4.3h2l3.1-10h-1.5z" fill="white"/>
                                                 </svg>
                                                 <div>
-                                                    <div class="font-medium text-gray-900">Visa</div>
-                                                    <div class="text-sm text-gray-600">Instant confirmation</div>
+                                                    <div class="font-medium text-gray-900">Visa (Legacy)</div>
+                                                    <div class="text-sm text-gray-600">Direct card entry</div>
                                                 </div>
                                             </div>
-                                            <div class="text-sm text-green-600 font-medium">Recommended</div>
                                         </div>
                                     </label>
 
@@ -239,6 +306,18 @@
                                 </div>
                             </div>
 
+                            <div v-else-if="form.payment_method === 'stripe_checkout'" class="bg-blue-50 p-3 rounded-md">
+                                <div class="flex">
+                                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <div class="text-sm">
+                                        <p class="text-blue-800 font-medium">Secure Stripe Payment</p>
+                                        <p class="text-blue-700">You'll be redirected to Stripe's secure checkout page.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div v-else-if="form.payment_method === 'visa' || form.payment_method === 'credit'" class="bg-green-50 p-3 rounded-md">
                                 <div class="flex">
                                     <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -270,11 +349,13 @@
                         >
                             <span v-if="submitting">Processing...</span>
                             <span v-else-if="form.payment_method === 'cash'">Request Booking</span>
+                            <span v-else-if="form.payment_method === 'stripe_checkout'">Continue to Payment</span>
                             <span v-else>Confirm & Book</span>
                         </button>
 
                         <p class="text-xs text-gray-500 mt-2 text-center">
                             <span v-if="form.payment_method === 'cash'">No payment required now</span>
+                            <span v-else-if="form.payment_method === 'stripe_checkout'">Secure payment via Stripe</span>
                             <span v-else>You'll be charged immediately</span>
                         </p>
                     </div>
@@ -378,6 +459,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import VehicleAvailabilityCalendar from '@/Components/VehicleAvailabilityCalendar.vue'
 import axios from 'axios'
 
 // Define props
@@ -407,12 +489,13 @@ const showSuccessModal = ref(false)
 const bookingResult = ref(null)
 const bookingResponse = ref(null)
 const errors = ref({})
+const showFallbackDateInputs = ref(false)
 
 const form = ref({
     car_id: props.car?.id || null,
     start_date: props.booking_params?.start_date || '',
     end_date: props.booking_params?.end_date || '',
-    payment_method: 'visa',
+    payment_method: 'stripe_checkout', // Default to Stripe Checkout
     special_requests: '',
     agree_terms: false
 })
@@ -468,6 +551,32 @@ const calculateTotal = () => {
             form.value.end_date = startDate.toISOString().split('T')[0]
         }
     }
+}
+
+const handleDateSelection = (dateSelection) => {
+    console.log('📅 Date selection from calendar:', dateSelection)
+    form.value.start_date = dateSelection.startDate
+    form.value.end_date = dateSelection.endDate
+    errors.value.calendar = null
+    errors.value.start_date = null
+    errors.value.end_date = null
+}
+
+const handleCalendarError = (errorMessage) => {
+    console.error('📅 Calendar error:', errorMessage)
+    errors.value.calendar = errorMessage
+    showFallbackDateInputs.value = true
+}
+
+const formatDisplayDate = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
 }
 
 const submitReservation = async () => {
@@ -534,7 +643,14 @@ const submitReservation = async () => {
 
         bookingResult.value = response.data.booking
         bookingResponse.value = response.data
-        showSuccessModal.value = true
+
+        // Handle Stripe Checkout redirection
+        if (form.value.payment_method === 'stripe_checkout') {
+            console.log('🔄 Redirecting to Stripe Checkout...')
+            await handleStripeCheckout(response.data.booking.id)
+        } else {
+            showSuccessModal.value = true
+        }
 
     } catch (error) {
         console.error('❌ Booking error:', error)
@@ -581,6 +697,44 @@ const submitReservation = async () => {
         } else {
             errors.value = { general: 'An unexpected error occurred. Please try again.' }
         }
+    } finally {
+        submitting.value = false
+    }
+}
+
+const handleStripeCheckout = async (bookingId) => {
+    try {
+        console.log('🔄 Creating Stripe Checkout session for booking:', bookingId)
+
+        // Ensure we have CSRF cookie for authenticated requests
+        await axios.get('/sanctum/csrf-cookie')
+
+        const response = await axios.post('/api/payments/checkout', {
+            booking_id: bookingId
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+
+        console.log('✅ Stripe Checkout session created:', response.data)
+
+        if (response.data.success && response.data.checkout_url) {
+            console.log('🚀 Redirecting to Stripe Checkout:', response.data.checkout_url)
+            // Redirect to Stripe Checkout
+            window.location.href = response.data.checkout_url
+        } else {
+            throw new Error(response.data.message || 'Failed to create checkout session')
+        }
+
+    } catch (error) {
+        console.error('❌ Stripe Checkout creation failed:', error)
+
+        // Show error and fall back to showing success modal
+        errors.value.general = error.response?.data?.message || 'Failed to redirect to payment. Please try again.'
+        showSuccessModal.value = true
     } finally {
         submitting.value = false
     }

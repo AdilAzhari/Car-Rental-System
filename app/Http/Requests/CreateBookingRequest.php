@@ -41,7 +41,7 @@ class CreateBookingRequest extends FormRequest
             'payment_method' => [
                 'required',
                 'string',
-                'in:stripe,visa,credit,tng,touch_n_go,cash,bank_transfer',
+                'in:stripe,stripe_checkout,visa,credit,tng,touch_n_go,cash,bank_transfer',
             ],
             'payment_method_id' => [
                 'required_if:payment_method,visa,credit,stripe',

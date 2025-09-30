@@ -11,12 +11,7 @@ use Random\RandomException;
 
 readonly class TrafficViolationService
 {
-    private string $checkNumber;
-
-    public function __construct(private ?SmsService $smsService)
-    {
-        $this->checkNumber = config('services.traffic_violations.check_number', '32728');
-    }
+    public function __construct(private ?SmsService $smsService) {}
 
     /**
      * Check traffic violations for a specific vehicle using SMS
@@ -42,22 +37,15 @@ readonly class TrafficViolationService
                 // Use test mode - directly process violation response without SMS
                 $violationsData = $this->processViolationResponse($plateNumber);
             } else {
-                // Send SMS to check violations
-                $result = $this->smsService->sendTrafficCheck($plateNumber, $this->checkNumber);
+                // Try to get real JPJ data via SMS integration
+                $violationsData = $this->checkViaRealSms($plateNumber);
 
-                if (! $result['success']) {
-                    Log::warning('SMS failed, falling back to test mode', [
+                if (! $violationsData) {
+                    Log::warning('Real SMS check failed, falling back to test mode', [
                         'plate_number' => $plateNumber,
-                        'error' => $result['message'],
                     ]);
-                    // Fallback to test mode if SMS fails
+                    // Fallback to test mode if real SMS fails
                     $violationsData = $this->processViolationResponse($plateNumber);
-                } else {
-                    // Wait for response (in real implementation, this would be handled via webhook)
-                    sleep(5);
-
-                    // For now, simulate getting response - in production, this would come from SMS webhook
-                    $violationsData = $this->processViolationResponse($plateNumber, $result['response']['sid'] ?? null);
                 }
             }
 
@@ -425,40 +413,95 @@ readonly class TrafficViolationService
     }
 
     /**
-     * Create sample violation data for testing
+     * Check violations via real SMS to JPJ (alternative approach)
      */
-    public function createSampleViolations(Vehicle $vehicle): void
+    private function checkViaRealSms(string $plateNumber): ?array
     {
-        $sampleViolations = [
-            [
-                'type' => 'Speeding',
-                'date' => now()->subDays(15)->toDateString(),
-                'location' => 'PLUS Highway KM 15.2',
-                'fine_amount' => 150.00,
-                'status' => 'pending',
-                'reference' => 'TRF-2025-001234',
-                'due_date' => now()->addDays(30)->toDateString(),
-                'description' => 'Speed limit exceeded by 20km/h',
-            ],
-            [
-                'type' => 'Traffic Light Violation',
-                'date' => now()->subDays(8)->toDateString(),
-                'location' => 'Jalan Bukit Bintang Intersection',
-                'fine_amount' => 300.00,
-                'status' => 'pending',
-                'reference' => 'TRF-2025-001567',
-                'due_date' => now()->addDays(23)->toDateString(),
-                'description' => 'Running red light',
-            ],
-        ];
+        try {
+            // For direct SMS to JPJ, we would need a different approach
+            // Since Twilio can't send to short codes, we could:
+            // 1. Use a different SMS provider that supports short codes
+            // 2. Use JPJ's web API if available
+            // 3. Use a third-party service that interfaces with JPJ
 
-        $violationData = [
-            'violations' => $sampleViolations,
-            'total_fines_amount' => 450.00,
-            'has_violations' => true,
-            'has_pending_violations' => true,
-        ];
+            // For now, let's implement a webhook-based approach
+            // where we send SMS via external service and receive response via webhook
 
-        $this->updateVehicleViolations($vehicle, $violationData);
+            return $this->checkViaWebhookResponse($plateNumber);
+
+        } catch (Exception $e) {
+            Log::error('Real SMS check failed', [
+                'plate_number' => $plateNumber,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Check for webhook response data
+     */
+    private function checkViaWebhookResponse(string $plateNumber): ?array
+    {
+        // Get all cache keys that match the pattern
+        // Note: This is a simplified implementation
+        // In production, you might want to use Redis SCAN or similar
+
+        for ($i = 0; $i < 10; $i++) {
+            $possibleKey = "jpj_response_{$plateNumber}_".substr(md5($plateNumber.$i), 0, 8);
+            if (Cache::has($possibleKey)) {
+                $data = Cache::get($possibleKey);
+                Log::info('Found JPJ webhook response', [
+                    'plate_number' => $plateNumber,
+                    'cache_key' => $possibleKey,
+                ]);
+
+                return $data;
+            }
+        }
+
+        // If no webhook response found, try to trigger SMS check
+        // This would be where you integrate with external SMS service
+        // that can send to JPJ short codes
+
+        return null;
+    }
+
+    /**
+     * Get JPJ response by message SID (called from webhook)
+     */
+    public function getResponseByMessageSid(string $messageSid): ?array
+    {
+        $plateNumber = Cache::get("jpj_lookup_{$messageSid}");
+        if (! $plateNumber) {
+            return null;
+        }
+
+        $cacheKey = "jpj_response_{$plateNumber}_{$messageSid}";
+
+        return Cache::get($cacheKey);
+    }
+
+    /**
+     * Process real JPJ response from webhook
+     */
+    public function processWebhookResponse(string $plateNumber, array $responseData): void
+    {
+        // Update vehicle with real data
+        $vehicle = Vehicle::where('plate_number', $plateNumber)->first();
+        if ($vehicle) {
+            $this->updateVehicleViolations($vehicle, $responseData);
+
+            // Also update main cache
+            $cacheKey = "traffic_violations_{$plateNumber}";
+            Cache::put($cacheKey, $responseData, now()->addHours(24));
+
+            Log::info('Vehicle updated with webhook JPJ response', [
+                'vehicle_id' => $vehicle->id,
+                'plate_number' => $plateNumber,
+                'violations_count' => count($responseData['violations']),
+            ]);
+        }
     }
 }

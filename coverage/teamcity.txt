@@ -1,0 +1,5 @@
+##teamcity[testCount count='1' flowId='13652']
+##teamcity[testSuiteStarted name='Tests\Feature\ConcurrentBookingTest' locationHint='php_qn://C:\laragon\www\CarRentSystem\tests\Feature\ConcurrentBookingTest.php::\Tests\Feature\ConcurrentBookingTest' flowId='13652']
+##teamcity[testStarted name='test_allows_non_overlapping_bookings' locationHint='php_qn://C:\laragon\www\CarRentSystem\tests\Feature\ConcurrentBookingTest.php::\Tests\Feature\ConcurrentBookingTest::test_allows_non_overlapping_bookings' flowId='13652']
+##teamcity[testFinished name='test_allows_non_overlapping_bookings' duration='63' flowId='13652']
+##teamcity[testSuiteFinished name='Tests\Feature\ConcurrentBookingTest' flowId='13652']
