@@ -258,6 +258,11 @@ const getImageUrl = (imagePath) => {
         return imagePath
     }
 
+    // If path already starts with /storage/, return as is
+    if (imagePath.startsWith('/storage/')) {
+        return imagePath
+    }
+
     // Remove leading slash if present to avoid double slashes
     const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath
 

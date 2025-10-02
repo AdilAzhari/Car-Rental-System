@@ -209,7 +209,7 @@ class BookingConflictController extends Controller
                     ->orderByDesc('cancelled_bookings_count')
                     ->take(5)
                     ->get(['id', 'make', 'model', 'year'])
-                    ->map(fn($vehicle): array => [
+                    ->map(fn ($vehicle): array => [
                         'vehicle' => "{$vehicle->make} {$vehicle->model} ({$vehicle->year})",
                         'cancelled_count' => $vehicle->cancelled_bookings_count,
                     ]),
@@ -221,7 +221,7 @@ class BookingConflictController extends Controller
                     ->orderByDesc('booking_count')
                     ->take(5)
                     ->get()
-                    ->map(fn($row): array => [
+                    ->map(fn ($row): array => [
                         'hour' => $row->hour.':00',
                         'booking_count' => $row->booking_count,
                     ]),

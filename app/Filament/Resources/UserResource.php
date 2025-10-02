@@ -26,7 +26,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -133,10 +132,10 @@ class UserResource extends Resource
                                     ->helperText(__('resources.verified_users_helper'))
                                     ->default(false),
 
-                                Toggle::make('is_active')
-                                    ->label(__('resources.account_active'))
-                                    ->helperText(__('resources.inactive_accounts_helper'))
-                                    ->default(true),
+                                //                                Toggle::make('is_active')
+                                //                                    ->label(__('resources.account_active'))
+                                //                                    ->helperText(__('resources.inactive_accounts_helper'))
+                                //                                    ->default(true),
                             ]),
                     ]),
 
@@ -218,20 +217,23 @@ class UserResource extends Resource
                     ->copyable()
                     ->icon('heroicon-m-envelope'),
 
-                BadgeColumn::make('role')
+                TextColumn::make('role')
                     ->label(__('resources.role'))
                     ->getStateUsing(fn ($record) => $record->role instanceof UserRole ? $record->role->value : (string) $record->role)
                     ->formatStateUsing(fn ($state): string => (string) $state)
-                    ->colors([
-                        'danger' => 'admin',
-                        'warning' => 'owner',
-                        'success' => 'renter',
-                    ])
-                    ->icons([
-                        'heroicon-m-shield-check' => 'admin',
-                        'heroicon-m-building-storefront' => 'owner',
-                        'heroicon-m-user' => 'renter',
-                    ]),
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        'admin' => 'danger',
+                        'owner' => 'warning',
+                        'renter' => 'success',
+                        default => 'gray',
+                    })
+                    ->icon(fn ($state): string => match ($state) {
+                        'admin' => 'heroicon-m-shield-check',
+                        'owner' => 'heroicon-m-building-storefront',
+                        'renter' => 'heroicon-m-user',
+                        default => 'heroicon-m-user',
+                    }),
 
                 BooleanColumn::make('is_verified')
                     ->label(__('resources.verified'))
@@ -240,12 +242,12 @@ class UserResource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger'),
 
-                BooleanColumn::make('is_active')
-                    ->label(__('resources.active'))
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('gray'),
+                //                BooleanColumn::make('is_active')
+                //                    ->label(__('resources.active'))
+                //                    ->trueIcon('heroicon-o-check-circle')
+                //                    ->falseIcon('heroicon-o-x-circle')
+                //                    ->trueColor('success')
+                //                    ->falseColor('gray'),
 
                 TextColumn::make('phone')
                     ->label(__('resources.phone'))
@@ -287,12 +289,12 @@ class UserResource extends Resource
                         '0' => __('resources.unverified'),
                     ]),
 
-                SelectFilter::make('is_active')
-                    ->label(__('resources.account_status'))
-                    ->options([
-                        '1' => __('resources.active'),
-                        '0' => __('resources.inactive'),
-                    ]),
+                //                SelectFilter::make('is_active')
+                //                    ->label(__('resources.account_status'))
+                //                    ->options([
+                //                        '1' => __('resources.active'),
+                //                        '0' => __('resources.inactive'),
+                //                    ]),
 
                 Filter::make('created_at')
                     ->form([
@@ -361,6 +363,25 @@ class UserResource extends Resource
     public static function getNavigationBadgeColor(): string|array|null
     {
         return static::getModel()::count() > 100 ? 'warning' : 'primary';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'phone'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.email') => $record->email,
+            __('resources.phone') => $record->phone ?: '—',
+            __('resources.role') => ucfirst($record->role->value ?? $record->role),
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery();
     }
 
     #[\Override]

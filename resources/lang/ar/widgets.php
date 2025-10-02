@@ -198,4 +198,9 @@ return [
     'available_for_vehicle' => 'متاح للمركبة',
     'status_ongoing' => 'جاري',
     'export' => 'تصدير',
+
+    'current_month_earnings' => 'ايرادات الشهر الحالي',
+    'requiring_action' => '',
+    'needs_attention' => '',
+    'month_revenue' => '',
 ];

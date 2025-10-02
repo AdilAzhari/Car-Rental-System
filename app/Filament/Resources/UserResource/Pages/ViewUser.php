@@ -83,8 +83,8 @@ class ViewUser extends ViewRecord
                                     ->label(__('resources.account_verified'))
                                     ->boolean(),
 
-                                IconEntry::make('is_active')
-                                    ->label(__('resources.account_active'))
+                                IconEntry::make('status')
+                                    ->label(__('resources.status'))
                                     ->boolean(),
                             ]),
 

@@ -367,4 +367,24 @@ class ActivityLogResource extends Resource
     {
         return false; // Activity logs should not be editable
     }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['description', 'log_name', 'causer.name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.log_name') => $record->log_name ?: '—',
+            __('resources.event') => ucfirst($record->event ?? '—'),
+            __('resources.user') => $record->causer?->name ?? __('resources.system'),
+            __('resources.timestamp') => $record->created_at->diffForHumans(),
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['causer', 'subject']);
+    }
 }

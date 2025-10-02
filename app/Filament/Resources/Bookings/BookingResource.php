@@ -101,4 +101,24 @@ class BookingResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'renter.name', 'vehicle.make', 'vehicle.model'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.booking') => 'BK-'.str_pad((string) $record->id, 6, '0', STR_PAD_LEFT),
+            __('resources.renter') => $record->renter->name ?? '—',
+            __('resources.vehicle') => $record->vehicle ? "{$record->vehicle->make} {$record->vehicle->model}" : '—',
+            __('resources.status') => ucfirst($record->status->value ?? $record->status),
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['renter', 'vehicle']);
+    }
 }

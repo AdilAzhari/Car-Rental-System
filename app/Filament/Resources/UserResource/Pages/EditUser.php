@@ -43,38 +43,38 @@ class EditUser extends EditRecord
                         ->send();
                 }),
 
-            Action::make('suspend')
-                ->label(__('resources.suspend_user'))
-                ->icon('heroicon-m-no-symbol')
-                ->color(Color::Orange)
-                ->visible(fn () => $this->record->is_active)
-                ->requiresConfirmation()
-                ->modalHeading(__('resources.suspend_user_account'))
-                ->modalDescription(__('resources.suspend_user_description'))
-                ->action(function (): void {
-                    $this->record->update(['is_active' => false]);
+            //            Action::make('suspend')
+            //                ->label(__('resources.suspend_user'))
+            //                ->icon('heroicon-m-no-symbol')
+            //                ->color(Color::Orange)
+            // //                ->visible(fn () => $this->record->is_active)
+            //                ->requiresConfirmation()
+            //                ->modalHeading(__('resources.suspend_user_account'))
+            //                ->modalDescription(__('resources.suspend_user_description'))
+            //                ->action(function (): void {
+            // //                    $this->record->update(['is_active' => false]);
+            //
+            //                    Notification::make()
+            //                        ->warning()
+            //                        ->title(__('resources.user_suspended'))
+            //                        ->body(__('resources.user_suspended_body'))
+            //                        ->send();
+            //                }),
 
-                    Notification::make()
-                        ->warning()
-                        ->title(__('resources.user_suspended'))
-                        ->body(__('resources.user_suspended_body'))
-                        ->send();
-                }),
-
-            Action::make('activate')
-                ->label(__('resources.activate_user'))
-                ->icon('heroicon-m-check-circle')
-                ->color(Color::Green)
-                ->visible(fn (): bool => ! $this->record->is_active)
-                ->action(function (): void {
-                    $this->record->update(['is_active' => true]);
-
-                    Notification::make()
-                        ->success()
-                        ->title(__('resources.user_activated'))
-                        ->body(__('resources.user_activated_body'))
-                        ->send();
-                }),
+            //            Action::make('activate')
+            //                ->label(__('resources.activate_user'))
+            //                ->icon('heroicon-m-check-circle')
+            //                ->color(Color::Green)
+            // //                ->visible(fn (): bool => ! $this->record->is_active)
+            //                ->action(function (): void {
+            // //                    $this->record->update(['is_active' => true]);
+            //
+            //                    Notification::make()
+            //                        ->success()
+            //                        ->title(__('resources.user_activated'))
+            //                        ->body(__('resources.user_activated_body'))
+            //                        ->send();
+            //                }),
 
             DeleteAction::make(),
         ];

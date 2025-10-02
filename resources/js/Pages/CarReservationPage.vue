@@ -766,8 +766,13 @@ const getImageUrl = (imagePath) => {
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
         return imagePath
     }
+    // If path already starts with /storage/, return as is
+    if (imagePath.startsWith('/storage/')) {
+        return imagePath
+    }
     // Construct URL for storage path
-    return `/storage/${imagePath}`
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath
+    return `/storage/${cleanPath}`
 }
 
 const handleImageError = (event) => {

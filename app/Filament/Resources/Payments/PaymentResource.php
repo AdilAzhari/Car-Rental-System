@@ -114,4 +114,24 @@ class PaymentResource extends Resource
                 ->where('payment_status', 'pending')->count();
         }
     }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['transaction_id', 'booking.id', 'booking.renter.name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.transaction_id') => $record->transaction_id ?? '—',
+            __('resources.amount') => 'RM '.number_format($record->amount, 2),
+            __('resources.status') => ucfirst($record->payment_status ?? '—'),
+            __('resources.method') => ucfirst($record->payment_method ?? '—'),
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['booking.renter', 'booking.vehicle']);
+    }
 }

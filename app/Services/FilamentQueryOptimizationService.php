@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FilamentQueryOptimizationService
 {
@@ -18,11 +19,13 @@ class FilamentQueryOptimizationService
         return Booking::query()
             ->select([
                 'id', 'renter_id', 'vehicle_id', 'start_date', 'end_date',
-                'total_amount', 'status', 'created_at', 'updated_at',
+                'total_amount', 'status', 'created_at', 'updated_at', 'payment_status', 'dropoff_location', 'pickup_location', 'total_amount',
+                'insurance_fee', 'subtotal', 'days', 'daily_rate', 'tax_amount',
+                'special_requests',
             ])
             ->with([
                 'renter:id,name,email',
-                'vehicle:id,owner_id,make,model,year,daily_rate',
+                'vehicle:id,owner_id,make,model,year,daily_rate,plate_number',
                 'vehicle.owner:id,name',
             ]);
     }
@@ -35,7 +38,8 @@ class FilamentQueryOptimizationService
         return User::query()
             ->select([
                 'id', 'name', 'email', 'role', 'status', 'email_verified_at',
-                'created_at', 'updated_at',
+                'created_at', 'updated_at', 'is_verified', 'last_login_at',
+                'password_changed_at',
             ])
             ->withCount(['vehicles', 'bookings', 'reviews']);
     }
@@ -48,11 +52,10 @@ class FilamentQueryOptimizationService
         return Vehicle::query()
             ->select([
                 'id', 'owner_id', 'make', 'model', 'year', 'daily_rate',
-                'status', 'is_available', 'created_at', 'updated_at',
+                'status', 'is_available', 'created_at', 'updated_at', 'plate_number', 'category',
             ])
             ->with([
                 'owner:id,name,email',
-                // Note: Adjust image fields based on actual schema
                 'images:id,vehicle_id,image_path,alt_text',
             ])
             ->withCount(['bookings', 'reviews']);
@@ -154,7 +157,7 @@ class FilamentQueryOptimizationService
             $builder->afterQuery(function () use ($startTime, $context): void {
                 $executionTime = microtime(true) - $startTime;
                 if ($executionTime > 0.1) { // Log slow queries (>100ms)
-                    \Log::warning('Slow query detected', [
+                    Log::warning('Slow query detected', [
                         'context' => $context,
                         'execution_time' => $executionTime,
                         'query' => request()->fullUrl(),

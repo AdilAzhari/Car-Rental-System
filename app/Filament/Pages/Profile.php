@@ -20,6 +20,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
+use Override;
 
 class Profile extends Page implements HasForms
 {
@@ -32,45 +33,45 @@ class Profile extends Page implements HasForms
     public ?array $data = [];
 
     // Form properties
-    public $name;
+    public string $name;
 
-    public $email;
+    public string $email;
 
     public $phone;
 
     public $date_of_birth;
 
-    public $address;
+    public string $address;
 
     public $license_number;
 
-    public $avatar = [];
+    public array $avatar = [];
 
-    public $id_document_path = [];
+    public array $id_document_path = [];
 
-    public $license_document_path = [];
+    public array $license_document_path = [];
 
-    public $role;
+    public string $role;
 
     public $status;
 
-    public $is_verified;
+    public bool $is_verified;
 
     public $preferred_language;
 
-    #[\Override]
+    #[Override]
     public function getView(): string
     {
         return 'filament.pages.profile';
     }
 
-    #[\Override]
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('resources.my_profile');
     }
 
-    #[\Override]
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('resources.account_settings');
@@ -318,7 +319,7 @@ class Profile extends Page implements HasForms
                                     ->default(fn () => auth()->user()->created_at->format('d M Y'))
                                     ->suffixIcon('heroicon-m-calendar-days'),
 
-                                TextInput::make('last_login_display')
+                                TextInput::make('last_login_at')
                                     ->label(__('resources.last_login'))
                                     ->disabled()
                                     ->default(fn () => auth()->user()->last_login_at ?
@@ -385,7 +386,7 @@ class Profile extends Page implements HasForms
             ->success()
             ->send();
 
-        // If password was changed, redirect to login
+        // If password was changed, redirect to log in
         if (isset($data['password'])) {
             Notification::make()
                 ->title(__('resources.password_changed_login_required'))

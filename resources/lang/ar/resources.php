@@ -40,6 +40,7 @@ return [
     'inactive' => 'غير نشط',
     'admin' => 'مدير',
     'customer' => 'عميل',
+    'customers' => 'العملاء',
     'owner' => 'مالك مركبة',
     'account_details' => 'تفاصيل الحساب',
     'driver_information' => 'معلومات السائق',
@@ -523,4 +524,12 @@ return [
     'change_photo' => 'تغيير الصورة',
     'unnamed_user' => 'مستخدم بدون اسم',
     'vehicle_details' => 'تفاصيل المركبة',
+    'upcoming_bookings' => 'الحجوزات القادمة',
+    'overdue_bookings' => 'الحجوزات المتأخرة',
+    'needs_attention' => 'تحتاج إلى الانتباه',
+    'revenue_this_month' => 'إيرادات هذا الشهر',
+    'active_bookings' => 'الحجوزات النشطة',
+    'administrators' => 'المديرون',
+    'vehicle_owners' => 'مالكو المركبات',
+
 ];

@@ -382,6 +382,7 @@ return [
     'availability' => 'Availability',
     'book_now' => 'Book Now',
     'customer' => 'Customer',
+    'customers' => 'Customers',
     'duration' => 'Duration',
     'booked_on' => 'Booked On',
     'vehicle' => 'Vehicle',
@@ -534,4 +535,12 @@ return [
     'hide' => 'Hide',
     'show_review_confirmation' => 'Show Review Confirmation',
     'hide_review_confirmation' => 'Hide Review Confirmation',
+    'upcoming_bookings' => 'Upcoming Bookings',
+    'overdue_bookings' => 'Overdue Bookings',
+    'needs_attention' => 'Needs Attention',
+    'revenue_this_month' => 'Revenue This Month',
+    'active_bookings' => 'Active Bookings',
+
+    'administrators' => 'Administrators',
+    'vehicle_owners' => 'Vehicle Owners',
 ];

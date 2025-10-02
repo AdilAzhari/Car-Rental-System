@@ -279,6 +279,25 @@ class ReviewResource extends Resource
         return $totalCount > 0 ? 'primary' : 'gray';
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['comment', 'renter.name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.reviewer') => $record->renter->name ?? '—',
+            __('resources.rating') => str_repeat('⭐', (int) $record->rating).' ('.$record->rating.'/5)',
+            __('resources.vehicle') => $record->vehicle ? "{$record->vehicle->make} {$record->vehicle->model}" : '—',
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['renter', 'vehicle']);
+    }
+
     #[\Override]
     public static function getEloquentQuery(): Builder
     {

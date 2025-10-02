@@ -16,7 +16,10 @@ This enterprise-grade car rental management system provides a complete solution 
 ## Screenshots
 
 ### 🎯 Admin Dashboard & Analytics
-![Dashboard Overview](screenshots/dashboard.png)
+<div align="center">                                                                                                    
+    <img src="public/Screenshot/admin_Dashboard.png" alt="Homepage" width="800">                                               
+    <p><i>Dashboard Overview</i></p>                                                                     
+  </div>  
 *Real-time business metrics, revenue tracking, and fleet monitoring with interactive charts*
 
 ### 🚗 Fleet Management
@@ -24,7 +27,10 @@ This enterprise-grade car rental management system provides a complete solution 
 *Comprehensive vehicle inventory with advanced filtering, status tracking, and bulk operations*
 
 ### 📅 Booking System
-![Booking Calendar](screenshots/calendar.png)
+<div align="center">                                                                                                    
+    <img src="public/Screenshot/Bookign_callendar.png" alt="Homepage" width="800">                                               
+    <p><i>Booking Calendar</i></p>                                                                     
+  </div> 
 *Visual booking management with drag-and-drop functionality and availability timeline*
 
 ### 💰 Payment Processing
@@ -34,10 +40,6 @@ This enterprise-grade car rental management system provides a complete solution 
 ### 👥 User Management
 ![User Administration](screenshots/users.png)
 *Customer profiles, role management, and verification workflows*
-
-### 📱 Mobile Responsive
-![Mobile Interface](screenshots/mobile.png)
-*Fully responsive design optimized for tablets and mobile devices*
 
 *Note: Screenshots showcase the application with **Malaysian Ringgit (RM)** currency and **bilingual Arabic/English** interface*
 

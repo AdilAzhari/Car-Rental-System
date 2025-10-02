@@ -31,7 +31,7 @@ class BookingConflictResolutionService
 
         return [
             'has_conflicts' => true,
-            'conflicts' => $conflicts->map(fn($booking): array => [
+            'conflicts' => $conflicts->map(fn ($booking): array => [
                 'booking_id' => $booking->id,
                 'start_date' => $booking->start_date,
                 'end_date' => $booking->end_date,

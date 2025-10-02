@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\TwilioWebhookController;
 use App\Http\Controllers\Api\UserFavoritesController;
 use App\Http\Controllers\Api\VehicleAvailabilityController;
@@ -25,10 +26,13 @@ Route::middleware(['throttle:60,1'])->group(function (): void {
 });
 
 // Public webhook routes (no rate limit for webhooks)
-Route::post('/webhooks/stripe', [PaymentController::class, 'stripeWebhook']);
+Route::post('/webhooks/stripe', [StripeController::class, 'webhook'])->name('stripe.webhook');
 Route::post('/webhooks/twilio/sms', [TwilioWebhookController::class, 'handleSms']);
 Route::post('/webhooks/twilio/call', [TwilioWebhookController::class, 'handleCall']);
 Route::post('/webhooks/jpj-response', [TwilioWebhookController::class, 'handleSms'])->name('api.webhooks.jpj-response');
+
+// Public Stripe routes
+Route::get('/stripe/publishable-key', [StripeController::class, 'getPublishableKey']);
 
 // Test route for webhook (remove in production)
 Route::post('/webhooks/twilio/test', [TwilioWebhookController::class, 'test']);
@@ -63,6 +67,12 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         Route::post('/payments/intent', [PaymentController::class, 'createPaymentIntent']);
         Route::post('/payments/checkout', [PaymentController::class, 'createCheckoutSession']);
         Route::post('/payments/{paymentId}/refund', [PaymentController::class, 'processRefund']);
+
+        // Stripe payment routes
+        Route::post('/stripe/payment-intent', [StripeController::class, 'createPaymentIntent'])->name('stripe.payment-intent');
+        Route::post('/stripe/confirm-payment', [StripeController::class, 'confirmPayment'])->name('stripe.confirm-payment');
+        Route::post('/stripe/process-payment', [StripeController::class, 'processPayment'])->name('stripe.process-payment');
+        Route::get('/stripe/payment-return/{booking}', [StripeController::class, 'paymentReturn'])->name('stripe.payment-return');
     });
 
     // Admin-only operations - Very strict limits

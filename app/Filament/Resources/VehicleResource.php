@@ -33,7 +33,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -50,6 +49,8 @@ class VehicleResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static UnitEnum|string|null $navigationGroup = null;
+
+    protected static ?string $recordTitleAttribute = 'model';
 
     public static function getNavigationGroup(): ?string
     {
@@ -119,11 +120,11 @@ class VehicleResource extends Resource
                         Grid::make()
                             ->schema([
                                 TextInput::make('plate_number')
-                                    ->label(__('resources.license_plate'))
+                                    ->label(__('resources.plate_number'))
                                     ->required()
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(20)
-                                    ->placeholder(__('resources.license_plate_placeholder'))
+                                    ->placeholder(__('resources.plate_number'))
                                     ->suffixIcon('heroicon-m-identification'),
 
                                 TextInput::make('vin')
@@ -453,37 +454,42 @@ class VehicleResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('plate_number')
-                    ->label(__('resources.license'))
+                    ->label(__('resources.plate_number'))
                     ->searchable()
                     ->fontFamily('mono')
                     ->copyable(),
 
-                BadgeColumn::make('category')
+                TextColumn::make('category')
                     ->label(__('resources.category'))
                     ->formatStateUsing(fn ($state): string => $state ? ucfirst((string) $state) : 'N/A')
-                    ->colors([
-                        'success' => 'economy',
-                        'info' => 'compact',
-                        'warning' => 'midsize',
-                        'primary' => 'fullsize',
-                        'danger' => 'luxury',
-                        'gray' => 'suv',
-                        'orange' => 'sports',
-                        'purple' => 'pickup',
-                        'indigo' => 'minivan',
-                        'emerald' => 'convertible',
-                    ]),
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        'economy' => 'success',
+                        'compact' => 'info',
+                        'midsize' => 'warning',
+                        'fullsize' => 'primary',
+                        'luxury' => 'danger',
+                        'suv' => 'gray',
+                        'sports' => 'orange',
+                        'pickup' => 'purple',
+                        'minivan' => 'indigo',
+                        'convertible' => 'emerald',
+                        'electric' => 'green',
+                        default => 'gray',
+                    }),
 
-                BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label(__('resources.status'))
                     ->getStateUsing(fn ($record) => $record->status instanceof VehicleStatus ? $record->status->value : (string) $record->status)
                     ->formatStateUsing(fn ($state): string => (string) $state)
-                    ->colors([
-                        'success' => VehicleStatus::PUBLISHED->value,
-                        'warning' => VehicleStatus::DRAFT->value,
-                        'danger' => VehicleStatus::MAINTENANCE->value,
-                        'gray' => VehicleStatus::ARCHIVED->value,
-                    ]),
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        VehicleStatus::PUBLISHED->value => 'success',
+                        VehicleStatus::DRAFT->value => 'warning',
+                        VehicleStatus::MAINTENANCE->value => 'danger',
+                        VehicleStatus::ARCHIVED->value => 'gray',
+                        default => 'gray',
+                    }),
 
                 BooleanColumn::make('is_available')
                     ->label(__('resources.available'))
@@ -508,7 +514,7 @@ class VehicleResource extends Resource
                     ->badge()
                     ->color('info'),
 
-                BadgeColumn::make('has_pending_violations')
+                TextColumn::make('has_pending_violations')
                     ->label(__('resources.traffic_violations'))
                     ->getStateUsing(function ($record): string {
                         if (empty($record->traffic_violations)) {
@@ -523,11 +529,13 @@ class VehicleResource extends Resource
 
                         return 'resolved';
                     })
-                    ->colors([
-                        'success' => 'none',
-                        'warning' => 'resolved',
-                        'danger' => fn ($state): bool => str_contains((string) $state, 'pending'),
-                    ])
+                    ->badge()
+                    ->color(fn ($state): string => match (true) {
+                        $state === __('vehicles.none') => 'success',
+                        $state === 'resolved' => 'warning',
+                        str_contains((string) $state, 'pending') => 'danger',
+                        default => 'gray',
+                    })
                     ->icons([
                         'heroicon-o-check-circle' => 'none',
                         'heroicon-o-exclamation-triangle' => fn ($state): bool => str_contains((string) $state, 'pending'),
@@ -696,6 +704,26 @@ class VehicleResource extends Resource
         $count = (int) static::getNavigationBadge();
 
         return $count > 10 ? 'success' : ($count > 5 ? 'warning' : 'primary');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['make', 'model', 'plate_number', 'owner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            __('resources.make') => $record->make,
+            __('resources.model') => $record->model,
+            __('resources.plate_number') => $record->plate_number,
+            __('resources.daily_rate') => 'RM '.number_format($record->daily_rate, 2),
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['owner']);
     }
 
     #[Override]

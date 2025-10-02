@@ -96,12 +96,19 @@ const cardComplete = ref(false)
 const stripe = ref(null)
 const elements = ref(null)
 const cardElement = ref(null)
+const errorMessage = ref('')
 
 // Computed
 const currencySymbol = computed(() => {
-    // You can customize this based on your app's currency config
     return 'RM '
 })
+
+// Get auth token
+const getAuthToken = () => {
+    return document.querySelector('meta[name="auth-token"]')?.getAttribute('content') ||
+           localStorage.getItem('auth_token') ||
+           ''
+}
 
 // Methods
 const formatDate = (dateString) => {
@@ -110,74 +117,92 @@ const formatDate = (dateString) => {
 
 const initializeStripe = async () => {
     try {
+        // Fetch publishable key from backend
+        const keyResponse = await fetch('/api/stripe/publishable-key')
+        const keyData = await keyResponse.json()
+
+        if (!keyData.success || !keyData.publishable_key) {
+            throw new Error('Failed to get Stripe publishable key')
+        }
+
         // Load Stripe.js
         if (!window.Stripe) {
             const script = document.createElement('script')
             script.src = 'https://js.stripe.com/v3/'
             script.onload = () => {
-                setupStripeElements()
+                setupStripeElements(keyData.publishable_key)
             }
             document.head.appendChild(script)
         } else {
-            setupStripeElements()
+            setupStripeElements(keyData.publishable_key)
         }
     } catch (error) {
         console.error('Failed to load Stripe:', error)
+        errorMessage.value = 'Failed to initialize payment system'
         showStripeForm.value = false
     }
 }
 
-const setupStripeElements = () => {
-    if (!props.stripe_key) {
-        console.error('Stripe key not provided')
-        showStripeForm.value = false
-        return
-    }
+const setupStripeElements = (publishableKey) => {
+    try {
+        stripe.value = window.Stripe(publishableKey)
+        elements.value = stripe.value.elements()
 
-    stripe.value = window.Stripe(props.stripe_key)
-    elements.value = stripe.value.elements()
-
-    // Create card element
-    cardElement.value = elements.value.create('card', {
-        style: {
-            base: {
-                fontSize: '16px',
-                color: '#424770',
-                '::placeholder': {
-                    color: '#aab7c4',
+        // Create card element with better styling
+        cardElement.value = elements.value.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
                 },
             },
-        },
-    })
+        })
 
-    cardElement.value.mount('#card-element')
+        cardElement.value.mount('#card-element')
 
-    // Listen for changes
-    cardElement.value.on('change', (event) => {
-        const displayError = document.getElementById('card-errors')
-        if (event.error) {
-            displayError.textContent = event.error.message
-            cardComplete.value = false
-        } else {
-            displayError.textContent = ''
-            cardComplete.value = event.complete
-        }
-    })
+        // Listen for changes
+        cardElement.value.on('change', (event) => {
+            const displayError = document.getElementById('card-errors')
+            if (event.error) {
+                displayError.textContent = event.error.message
+                errorMessage.value = event.error.message
+                cardComplete.value = false
+            } else {
+                displayError.textContent = ''
+                errorMessage.value = ''
+                cardComplete.value = event.complete
+            }
+        })
+    } catch (error) {
+        console.error('Failed to setup Stripe elements:', error)
+        errorMessage.value = 'Failed to setup payment form'
+        showStripeForm.value = false
+    }
 }
 
 const submitStripePayment = async () => {
     if (!stripe.value || !cardElement.value || processing.value) return
 
     processing.value = true
+    errorMessage.value = ''
 
     try {
-        // Create payment intent
-        const intentResponse = await fetch('/api/payments/intent', {
+        // Create payment intent via our new Stripe API
+        const intentResponse = await fetch('/api/stripe/payment-intent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
+                'Authorization': `Bearer ${getAuthToken()}`
             },
             body: JSON.stringify({
                 booking_id: props.booking.id
@@ -196,6 +221,9 @@ const submitStripePayment = async () => {
             {
                 payment_method: {
                     card: cardElement.value,
+                    billing_details: {
+                        email: props.booking.renter?.email
+                    }
                 }
             }
         )
@@ -204,14 +232,35 @@ const submitStripePayment = async () => {
             throw new Error(error.message)
         }
 
-        // Payment succeeded
+        // Confirm payment with backend
         if (paymentIntent.status === 'succeeded') {
-            // Redirect to success page
-            router.visit(`/booking/payment/return/${props.booking.id}?payment_intent=${paymentIntent.id}&status=succeeded`)
+            const confirmResponse = await fetch('/api/stripe/confirm-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'Authorization': `Bearer ${getAuthToken()}`
+                },
+                body: JSON.stringify({
+                    payment_intent_id: paymentIntent.id,
+                    booking_id: props.booking.id
+                })
+            })
+
+            const confirmData = await confirmResponse.json()
+
+            if (confirmData.success) {
+                // Redirect to success page
+                router.visit(`/booking/${props.booking.id}?payment=success`)
+            } else {
+                throw new Error(confirmData.message || 'Payment confirmation failed')
+            }
         }
 
     } catch (error) {
         console.error('Payment failed:', error)
+        errorMessage.value = error.message
         const errorElement = document.getElementById('card-errors')
         if (errorElement) {
             errorElement.textContent = error.message
@@ -223,14 +272,16 @@ const submitStripePayment = async () => {
 
 const processPayment = async (method) => {
     processing.value = true
+    errorMessage.value = ''
 
     try {
-        const response = await fetch('/api/payments/process', {
+        const response = await fetch('/api/stripe/process-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
+                'Authorization': `Bearer ${getAuthToken()}`
             },
             body: JSON.stringify({
                 booking_id: props.booking.id,
@@ -246,8 +297,11 @@ const processPayment = async (method) => {
                 // Redirect to Touch 'n Go payment page
                 window.location.href = data.payment_url
             } else if (method === 'cash') {
-                // Show success message for cash payment
-                router.visit(`/booking/payment/return/${props.booking.id}?method=cash&status=pending`)
+                // Redirect to booking page with success message
+                router.visit(`/booking/${props.booking.id}?payment=cash`)
+            } else if (method === 'bank_transfer') {
+                // Redirect to booking page with bank transfer info
+                router.visit(`/booking/${props.booking.id}?payment=bank_transfer`)
             }
         } else {
             throw new Error(data.message || 'Payment processing failed')
@@ -255,6 +309,7 @@ const processPayment = async (method) => {
 
     } catch (error) {
         console.error('Payment failed:', error)
+        errorMessage.value = error.message
         alert('Payment failed: ' + error.message)
     } finally {
         processing.value = false
