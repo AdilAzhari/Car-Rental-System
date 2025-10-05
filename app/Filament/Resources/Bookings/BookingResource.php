@@ -104,7 +104,12 @@ class BookingResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'renter.name', 'vehicle.make', 'vehicle.model'];
+        return ['id'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array

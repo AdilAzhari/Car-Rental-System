@@ -281,7 +281,12 @@ class ReviewResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['comment', 'renter.name'];
+        return ['comment'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array

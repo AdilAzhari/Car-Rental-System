@@ -708,7 +708,12 @@ class VehicleResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['make', 'model', 'plate_number', 'owner.name'];
+        return ['make', 'model', 'plate_number'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array

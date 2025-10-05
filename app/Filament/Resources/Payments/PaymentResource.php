@@ -117,7 +117,12 @@ class PaymentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['transaction_id', 'booking.id', 'booking.renter.name'];
+        return ['transaction_id'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array

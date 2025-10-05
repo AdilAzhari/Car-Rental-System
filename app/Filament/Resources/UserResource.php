@@ -367,7 +367,12 @@ class UserResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'email', 'phone'];
+        return ['name', 'email'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array

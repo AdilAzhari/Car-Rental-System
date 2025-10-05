@@ -370,7 +370,12 @@ class ActivityLogResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['description', 'log_name', 'causer.name'];
+        return ['description', 'log_name'];
+    }
+
+    public static function getGlobalSearchResultsLimit(): int
+    {
+        return 5;
     }
 
     public static function getGlobalSearchResultDetails($record): array
