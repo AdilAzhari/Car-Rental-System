@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\ActivityLogResource\Pages;
 
 use App\Filament\Resources\ActivityLogResource;
+use App\Models\Booking;
+use App\Models\User;
+use App\Models\Vehicle;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,18 +27,18 @@ class ListActivityLogs extends ListRecords
                 ->icon('heroicon-m-calendar-days'),
 
             'users' => Tab::make('User Activities')
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', \App\Models\User::class))
-                ->badge(fn () => Activity::query()->where('subject_type', \App\Models\User::class)->count())
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', User::class))
+                ->badge(fn () => Activity::query()->where('subject_type', User::class)->count())
                 ->icon('heroicon-m-user-group'),
 
             'vehicles' => Tab::make('Vehicle Activities')
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', \App\Models\Vehicle::class))
-                ->badge(fn () => Activity::query()->where('subject_type', \App\Models\Vehicle::class)->count())
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', Vehicle::class))
+                ->badge(fn () => Activity::query()->where('subject_type', Vehicle::class)->count())
                 ->icon('heroicon-m-truck'),
 
             'bookings' => Tab::make('Booking Activities')
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', \App\Models\Booking::class))
-                ->badge(fn () => Activity::query()->where('subject_type', \App\Models\Booking::class)->count())
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('subject_type', Booking::class))
+                ->badge(fn () => Activity::query()->where('subject_type', Booking::class)->count())
                 ->icon('heroicon-m-calendar'),
 
             'auth' => Tab::make('Authentication')
