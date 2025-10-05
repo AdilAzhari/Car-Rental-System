@@ -125,8 +125,8 @@ class PaymentResource extends Resource
         return [
             __('resources.transaction_id') => $record->transaction_id ?? '—',
             __('resources.amount') => 'RM '.number_format($record->amount, 2),
-            __('resources.status') => ucfirst($record->payment_status ?? '—'),
-            __('resources.method') => ucfirst($record->payment_method ?? '—'),
+            __('resources.status') => $record->payment_status?->label() ?? '—',
+            __('resources.method') => $record->payment_method?->label() ?? '—',
         ];
     }
 

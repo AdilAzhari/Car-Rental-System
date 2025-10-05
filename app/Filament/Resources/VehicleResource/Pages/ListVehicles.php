@@ -40,32 +40,32 @@ class ListVehicles extends ListRecords
                 ->badge($allCount),
 
             'published' => Tab::make(__('resources.published'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PUBLISHED))
                 ->badge($publishedCount)
                 ->icon('heroicon-m-check-circle'),
 
             'available' => Tab::make(__('resources.available'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PUBLISHED)->where('is_available', true))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PUBLISHED)->where('is_available', true))
                 ->badge($availableCount)
                 ->icon('heroicon-m-hand-thumb-up'),
 
             'pending' => Tab::make(__('resources.pending'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::PENDING))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::PENDING))
                 ->badge($pendingCount)
                 ->icon('heroicon-m-clock'),
 
             'approved' => Tab::make(__('resources.approved'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::APPROVED))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::APPROVED))
                 ->badge($approvedCount)
                 ->icon('heroicon-m-check-badge'),
 
             'rejected' => Tab::make(__('resources.rejected'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::REJECTED))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::REJECTED))
                 ->badge($rejectedCount)
                 ->icon('heroicon-m-x-circle'),
 
             'maintenance' => Tab::make(__('resources.maintenance'))
-                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('status', VehicleStatus::MAINTENANCE))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', VehicleStatus::MAINTENANCE))
                 ->badge($maintenanceCount)
                 ->icon('heroicon-m-wrench-screwdriver'),
         ];

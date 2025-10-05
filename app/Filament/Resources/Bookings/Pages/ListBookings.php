@@ -30,27 +30,27 @@ class ListBookings extends ListRecords
                 ->badge(fn (): string => (string) Booking::count()),
 
             'active' => Tab::make(__('resources.active_bookings'))
-                ->modifyQueryUsing(fn (Builder $builder): Builder => $builder->active())
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->active())
                 ->badge(fn (): string => (string) Booking::query()->active()->count())
                 ->badgeColor('success'),
 
             'upcoming' => Tab::make(__('resources.upcoming_bookings'))
-                ->modifyQueryUsing(fn (Builder $builder): Builder => $builder->upcoming(7)) // next 7 days
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->upcoming(7)) // next 7 days
                 ->badge(fn (): string => (string) Booking::query()->upcoming(7)->count())
                 ->badgeColor('info'),
 
             'overdue' => Tab::make(__('resources.overdue_bookings'))
-                ->modifyQueryUsing(fn (Builder $builder): Builder => $builder->overdue())
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->overdue())
                 ->badge(fn (): string => (string) Booking::query()->overdue()->count())
                 ->badgeColor('danger'),
 
             'attention' => Tab::make(__('resources.needs_attention'))
-                ->modifyQueryUsing(fn (Builder $builder): Builder => $builder->requiringAttention())
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->requiringAttention())
                 ->badge(fn (): string => (string) Booking::query()->requiringAttention()->count())
                 ->badgeColor('warning'),
 
             'revenue_this_month' => Tab::make(__('resources.revenue_this_month'))
-                ->modifyQueryUsing(fn (Builder $builder): Builder => $builder->revenueInPeriod(
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->revenueInPeriod(
                     now()->startOfMonth(),
                     now()->endOfMonth(),
                     $user->role === UserRole::OWNER ? $user->id : null
