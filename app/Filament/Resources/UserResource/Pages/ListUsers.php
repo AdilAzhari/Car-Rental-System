@@ -39,27 +39,27 @@ class ListUsers extends ListRecords
                 ->badge($allCount),
 
             'admins' => Tab::make(__('resources.administrators'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', UserRole::ADMIN))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', UserRole::ADMIN))
                 ->badge($adminCount)
                 ->icon('heroicon-m-shield-check'),
 
             'owners' => Tab::make(__('resources.vehicle_owners'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', UserRole::OWNER))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', UserRole::OWNER))
                 ->badge($ownerCount)
                 ->icon('heroicon-m-building-storefront'),
 
             'renters' => Tab::make(__('resources.customers'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('role', UserRole::RENTER))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('role', UserRole::RENTER))
                 ->badge($renterCount)
                 ->icon('heroicon-m-user'),
 
             'verified' => Tab::make(__('resources.verified'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_verified', true))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('is_verified', true))
                 ->badge($verifiedCount)
                 ->icon('heroicon-m-check-badge'),
 
             'unverified' => Tab::make(__('resources.unverified'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_verified', false))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('is_verified', false))
                 ->badge($unverifiedCount)
                 ->icon('heroicon-m-exclamation-triangle'),
         ];

@@ -44,27 +44,27 @@ class ListReviews extends ListRecords
                 ->icon('heroicon-m-eye'),
 
             'hidden' => Tab::make('Hidden')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_visible', false))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('is_visible', false))
                 ->badge($hiddenCount)
                 ->icon('heroicon-m-eye-slash'),
 
             'high_rating' => Tab::make('5 Stars')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', 5))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('rating', 5))
                 ->badge($highRatingCount)
                 ->icon('heroicon-m-star'),
 
             'good_rating' => Tab::make('4+ Stars')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', '>=', 4))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('rating', '>=', 4))
                 ->badge($goodRatingCount)
                 ->icon('heroicon-m-hand-thumb-up'),
 
             'low_rating' => Tab::make('Low Ratings')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('rating', '<=', 2))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('rating', '<=', 2))
                 ->badge($lowRatingCount)
                 ->icon('heroicon-m-exclamation-triangle'),
 
             'recent' => Tab::make('Recent (7 days)')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('created_at', '>=', now()->subDays(7)))
+                ->modifyQueryUsing(fn (Builder $builder) => $builder->where('created_at', '>=', now()->subDays(7)))
                 ->badge($recentCount)
                 ->icon('heroicon-m-calendar-days'),
         ];

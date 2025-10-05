@@ -73,7 +73,6 @@ class ReviewResource extends Resource
                                     ->label(__('resources.booking'))
                                     ->relationship('booking', 'id')
                                     ->searchable()
-                                    ->preload()
                                     ->required()
                                     ->getOptionLabelFromRecordUsing(fn ($record): string => "Booking #{$record->id} - {$record->vehicle->make} {$record->vehicle->model}")
                                     ->createOptionForm([
@@ -84,7 +83,6 @@ class ReviewResource extends Resource
                                     ->label(__('resources.reviewer'))
                                     ->relationship('renter', 'name')
                                     ->searchable()
-                                    ->preload()
                                     ->required()
                                     ->placeholder(__('resources.select_reviewer_placeholder')),
                             ]),

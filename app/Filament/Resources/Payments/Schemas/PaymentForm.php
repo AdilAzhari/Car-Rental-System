@@ -71,7 +71,6 @@ class PaymentForm
                                 }
                             })
                             ->searchable()
-                            ->preload()
                             ->required(),
 
                         TextInput::make('amount')

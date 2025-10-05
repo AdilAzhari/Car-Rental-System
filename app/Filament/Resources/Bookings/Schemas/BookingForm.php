@@ -31,23 +31,25 @@ class BookingForm
                                     ->label(__('resources.renter'))
                                     ->relationship('renter', 'name')
                                     ->searchable()
-                                    ->preload()
                                     ->required()
                                     ->visible(fn (): bool => auth()->user()->role !== UserRole::RENTER),
 
                                 Select::make('vehicle_id')
                                     ->label(__('resources.vehicle'))
-                                    ->relationship('vehicle', modifyQueryUsing: fn ($query) => $query->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('status', 'published')->where('is_available', true)
-                                    )
+                                    ->relationship(
+                                        'vehicle',
+                                        modifyQueryUsing: fn ($query) => $query
+                                            ->select(['id', 'make', 'model', 'plate_number', 'daily_rate'])
+                                            ->when(auth()->user()->role === UserRole::RENTER, fn ($q) => $q->where('status', 'published')->where('is_available', true))
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Vehicle $vehicle): string => "$vehicle->make $vehicle->model ($vehicle->plate_number)")
                                     ->searchable(['make', 'model', 'plate_number'])
-                                    ->preload()
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state, $livewire): void {
                                         if ($state) {
-                                            $vehicle = Vehicle::query()->find($state);
+                                            // Get vehicle from the cached relationship data instead of querying again
+                                            $vehicle = Vehicle::query()->select(['id', 'daily_rate'])->find($state);
                                             if ($vehicle) {
                                                 $set('daily_rate', $vehicle->daily_rate);
                                                 self::calculateTotals($set, $get);

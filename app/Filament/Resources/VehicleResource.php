@@ -223,7 +223,6 @@ class VehicleResource extends Resource
                                     ->label(__('resources.vehicle_owner'))
                                     ->relationship('owner', 'name')
                                     ->searchable()
-                                    ->preload()
                                     ->required()
                                     ->createOptionForm([
                                         TextInput::make('name')->required(),
